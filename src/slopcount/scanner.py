@@ -34,8 +34,9 @@ class ScannedFile:
 
 class Gitignore:
     """Упрощённый .gitignore: пустые строки/#комментарии игнорируются,
-    паттерны без '/' матчатся по имени, с '/' — по префиксу пути,
-    поддерживаются glob-суффиксы fnmatch. Полной git-семантики нет — осознанно."""
+    паттерны без '/' матчатся по имени компоненты пути; литеральные паттерны
+    с '/' — по префиксу пути; glob-паттерны — через fnmatch.
+    Полной git-семантики нет — осознанно."""
 
     def __init__(self, root: Path):
         self.patterns: list[str] = []
@@ -50,6 +51,8 @@ class Gitignore:
         parts = Path(relpath).parts
         for pat in self.patterns:
             if "/" in pat:
+                if relpath == pat or relpath.startswith(pat + "/"):
+                    return True
                 if fnmatch.fnmatch(relpath, f"*{pat}") or fnmatch.fnmatch(relpath, pat):
                     return True
             else:
@@ -75,7 +78,11 @@ def scan(root: Path) -> list[ScannedFile]:
                 kind, lang = PROSE_EXTS[ext], None
             else:
                 kind, lang = "other", None
-            out.append(ScannedFile(rel, lang, kind, full.stat().st_size))
+            try:
+                size = full.stat().st_size
+            except OSError:
+                continue
+            out.append(ScannedFile(rel, lang, kind, size))
     return sorted(out, key=lambda f: f.path)
 
 

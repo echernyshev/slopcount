@@ -39,3 +39,22 @@ def test_read_text_none_for_binary(tmp_path):
     make(tmp_path)
     assert read_text(tmp_path / "data.bin") is None
     assert read_text(tmp_path / "README.md") == "# hi\n"
+
+
+def test_gitignore_slash_pattern_prefix_semantics(tmp_path):
+    make(tmp_path)
+    (tmp_path / "a" / "b").mkdir(parents=True)
+    (tmp_path / "a" / "b" / "gen.py").write_text("x = 1\n")
+    (tmp_path / ".gitignore").write_text("a/b/\n")
+    files = {f.path for f in scan(tmp_path)}
+    assert "a/b/gen.py" not in files
+    assert "README.md" in files
+    gi = Gitignore(tmp_path)
+    assert gi.matches("a/b/gen.py") and not gi.matches("ab/c.py")
+
+
+def test_scan_survives_broken_symlink(tmp_path):
+    make(tmp_path)
+    (tmp_path / "dangling").symlink_to(tmp_path / "nonexistent")
+    files = [f.path for f in scan(tmp_path)]  # не должно упасть
+    assert "dangling" not in files
