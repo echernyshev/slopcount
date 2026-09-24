@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "slopcount"
+version = "0.1.0"
+description = "Count the AI slop in your project and the cost of comprehending it. A loving sloccount parody."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Egor Chernyshev" }]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Environment :: Console",
+    "Topic :: Software Development",
+]
+
+[project.scripts]
+slopcount = "slopcount.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+perplexity = ["transformers>=4.40", "torch>=2.2"]
+treesitter = ["tree-sitter>=0.21", "tree-sitter-python>=0.21"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slopcount"]
