@@ -6,7 +6,9 @@ from slopcount.extractors import extract_comments
 def count_sloc(text: str, language: str) -> int:
     """Физический SLOC: непустые строки, не являющиеся комментариями
     целиком (докстринги — комментарии). Ограничение сканера: строка «код +
-    трейлинг-комментарий» тоже исключается — колонок у нас нет."""
+    трейлинг-комментарий» тоже исключается — колонок у нас нет. Для
+    неизвестных extractor'у языков комментариев не знаем — считаются все
+    непустые строки."""
     lines = text.split("\n")
     comment_lines: set[int] = set()
     for block in extract_comments(text, language):
