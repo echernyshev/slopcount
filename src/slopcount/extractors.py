@@ -12,7 +12,7 @@ _TRIPLE = re.compile(r'(?:[rbfu]*)("""|\'\'\')(.*)$')
 
 @dataclass(frozen=True)
 class CommentBlock:
-    start_line: int          # 1-based (см. контракт нумерации в extract_comments)
+    start_line: int          # физическая строка файла, 1-based
     lines: list[str]         # очищенные строки текста комментария
     is_docstring: bool = False
 
@@ -29,10 +29,7 @@ def extract_comments(text: str, language: str) -> list[CommentBlock]:
     """Приближение: без полноценного лексера строк. Строковые литералы с
     маркерами внутри — редкий шум, принято осознанно (задокументировано).
 
-    Нумерация start_line (контракт тестов): 1-based; внутренние строки
-    многострочного docstring исключаются из нумерации последующих блоков,
-    т.е. комментарии после docstring нумеруются так, как если бы тело
-    docstring было свёрнуто в его строки-ограничители."""
+    Нумерация: start_line — физическая строка файла, 1-based."""
     if language == "python":
         return _python(text)
     if language in HASH_LANGS:
@@ -103,9 +100,7 @@ def _python(text: str) -> list[CommentBlock]:
             if j < len(lines):  # закрывающий ограничитель найден
                 body.append(lines[j].split(quote, 1)[0].strip())
             out.append(CommentBlock(i + 1, [b for b in body if b], True))
-            # тело docstring исключается из нумерации следующих блоков
-            del lines[i + 1:j]
-            i += 2  # пропустить строку с закрывающим ограничителем
+            i = j + 1  # за строку с закрывающим ограничителем
             continue
         if "#" in line:
             out.append(CommentBlock(i + 1, [line.split("#", 1)[1].strip()]))

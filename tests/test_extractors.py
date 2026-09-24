@@ -19,8 +19,9 @@ def test_python_comments_and_docstrings():
     assert doc[0].start_line == 2
     assert any("Great question!" in line for b in doc for line in b.lines)
     inline = [(b.start_line, b.lines[0]) for b in blocks if not b.is_docstring]
-    assert (4, "Initialize the counter") in inline
-    assert (5, "top-level comment") in inline
+    # физические номера строк файла (докстринг занимает строки 2-5)
+    assert (6, "Initialize the counter") in inline
+    assert (7, "top-level comment") in inline
 
 
 C_LIKE = '''\
