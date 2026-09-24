@@ -1,0 +1,54 @@
+[[rule]]
+pattern = 'Great question!'
+weight = 5
+description = "Classic LLM enthusiasm"
+
+[[rule]]
+pattern = 'Certainly!'
+weight = 5
+description = "Eager assistant energy"
+
+[[rule]]
+pattern = 'As an AI language model'
+weight = 5
+description = "Self-identification"
+
+[[rule]]
+pattern = "It's not .{0,40}, it's"
+weight = 3
+description = "The 'not X but Y' rhetorical flip"
+
+[[rule]]
+pattern = "Here's a comprehensive"
+weight = 3
+description = "Comprehensive-guide opener"
+
+[[rule]]
+pattern = "let'?s delve (?:deeper )?into"
+weight = 2
+description = "Delving, as promised"
+
+[[rule]]
+pattern = "It'?s important to note"
+weight = 2
+description = "Important note, noted"
+
+[[rule]]
+pattern = "In conclusion[,.]"
+weight = 2
+description = "Essay-style conclusion"
+
+[[rule]]
+pattern = "dive (?:deep|right) into"
+weight = 2
+description = "Diving deep"
+
+[[rule]]
+pattern = "seamlessly"
+weight = 2
+description = "Seamlessness worship"
+
+[[rule]]
+pattern = "robust solution"
+weight = 2
+description = "Robust solution boilerplate"

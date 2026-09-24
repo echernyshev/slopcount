@@ -1,0 +1,34 @@
+[[rule]]
+pattern = 'Отличный вопрос!'
+weight = 5
+description = "Classic LLM enthusiasm (ru)"
+
+[[rule]]
+pattern = 'Конечно!'
+weight = 5
+description = "Eager assistant energy (ru)"
+
+[[rule]]
+pattern = 'Как ИИ,? я'
+weight = 5
+description = "Self-identification (ru)"
+
+[[rule]]
+pattern = 'Давайте рассмотрим'
+weight = 3
+description = "Let-us-consider opener (ru)"
+
+[[rule]]
+pattern = 'Важно отметить'
+weight = 2
+description = "Important note, noted (ru)"
+
+[[rule]]
+pattern = 'В заключение'
+weight = 2
+description = "Essay-style conclusion (ru)"
+
+[[rule]]
+pattern = 'Комплексное решение'
+weight = 2
+description = "Comprehensive solution boilerplate (ru)"
