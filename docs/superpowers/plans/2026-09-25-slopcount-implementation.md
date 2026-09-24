@@ -742,12 +742,9 @@ def count_sloc(text: str, language: str) -> int:
     lines = text.splitlines()
     comment_lines: set[int] = set()
     for block in extract_comments(text, language):
-        if block.is_docstring:
-            comment_lines.update(range(block.start_line, block.start_line + len(block.lines) + 2))
-        else:
-            comment_lines.add(block.start_line)
-    # докстринг-блок: start..close включительно; lines может сжать пустые —
-    # пересчитаем консервативно: любая строка внутри тройных кавычек уже помечена
+        # инвариант: блок занимает ровно len(lines) физических строк,
+        # начиная со start_line (пустые строки НЕ фильтруются)
+        comment_lines.update(range(block.start_line, block.start_line + len(block.lines)))
     n = 0
     for i, line in enumerate(lines, 1):
         if line.strip() and i not in comment_lines:
