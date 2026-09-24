@@ -85,7 +85,7 @@ README.md                             # Task 25
 **Files:**
 - Create: `pyproject.toml`, `.gitignore`, `src/slopcount/__init__.py`, `src/slopcount/cli.py`, `tests/test_cli.py`
 
-- [ ] **Step 1: Создать pyproject.toml**
+- [x] **Step 1: Создать pyproject.toml**
 
 ```toml
 [build-system]
@@ -135,7 +135,7 @@ dist/
 __version__ = "0.1.0"
 ```
 
-- [ ] **Step 2: Написать failing-тест CLI**
+- [x] **Step 2: Написать failing-тест CLI**
 
 `tests/test_cli.py`:
 
@@ -153,12 +153,12 @@ def test_version_flag(capsys):
     assert __version__ in out
 ```
 
-- [ ] **Step 3: Убедиться, что тест падает**
+- [x] **Step 3: Убедиться, что тест падает**
 
 Run: `pip install -e ".[dev]" && python -m pytest tests/test_cli.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'slopcount.cli'`
 
-- [ ] **Step 4: Реализовать минимальный cli.py**
+- [x] **Step 4: Реализовать минимальный cli.py**
 
 `src/slopcount/cli.py`:
 
@@ -182,7 +182,7 @@ def main(argv=None) -> int:
     return 0
 ```
 
-- [ ] **Step 5: Прогнать тест и закоммитить**
+- [x] **Step 5: Прогнать тест и закоммитить**
 
 Run: `python -m pytest tests/test_cli.py -v` → PASS
 
