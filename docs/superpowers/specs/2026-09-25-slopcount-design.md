@@ -107,8 +107,9 @@ md      ─→ docs ─────→ [code_style] ──┼──→ evidence 
 Регекс-правила из TOML-каталогов (`phrases_en.toml`, `phrases_ru.toml`;
 юзер расширяет через `--rules`). Вес по «токсичности»:
 
-- вес **5** (железная улика): `Great question!`, `Certainly!`,
-  `As an AI language model`, «Отличный вопрос!», «Конечно!»
+- вес **5** (железная улика): `Great question!`, `\bCertainly!` (граница
+  слова — не ловит «Uncertainly!»), `As an AI language model`,
+  «Отличный вопрос!», `\bКонечно!` (не ловит «Бесконечно!»)
 - вес **3**: `It's not X, it's Y` (паттерн), `Here's a comprehensive ...`,
   «Давайте рассмотрим подробнее»
 - вес **2**: `Let's delve into`, `It's important to note`, `In conclusion`,

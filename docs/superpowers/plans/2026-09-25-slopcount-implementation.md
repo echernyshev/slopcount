@@ -779,7 +779,7 @@ weight = 5
 description = "Classic LLM enthusiasm"
 
 [[rule]]
-pattern = 'Certainly!'
+pattern = '\bCertainly!'
 weight = 5
 description = "Eager assistant energy"
 
@@ -799,7 +799,7 @@ weight = 3
 description = "Comprehensive-guide opener"
 
 [[rule]]
-pattern = "let'?s delve (?:deeper )?into"
+pattern = "let'?s delve (?:deep(?:er)? )?into"
 weight = 2
 description = "Delving, as promised"
 
@@ -838,7 +838,7 @@ weight = 5
 description = "Classic LLM enthusiasm (ru)"
 
 [[rule]]
-pattern = 'Конечно!'
+pattern = '\bКонечно!'
 weight = 5
 description = "Eager assistant energy (ru)"
 
@@ -910,6 +910,7 @@ class PhraseRule:
 
 
 def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
+    import sys
     import tomllib
 
     rules: list[PhraseRule] = []
@@ -919,6 +920,7 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     paths = [Path(os.fspath(base / n)) for n in names] + list(extra_paths or [])
     for p in paths:
         if not p.is_file():
+            print(f"slopcount: rules file not found, skipped: {p}", file=sys.stderr)
             continue
         data = tomllib.loads(p.read_text(encoding="utf-8"))
         for r in data.get("rule", []):
