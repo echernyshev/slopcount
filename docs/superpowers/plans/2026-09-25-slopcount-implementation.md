@@ -700,7 +700,7 @@ git commit -m "feat: comment and docstring extraction per language family"
 **Files:**
 - Create: `src/slopcount/metrics/__init__.py` (пустой), `src/slopcount/metrics/sloc.py`, `tests/test_sloc.py`
 
-- [ ] **Step 1: Failing-тест**
+- [x] **Step 1: Failing-тест**
 
 `tests/test_sloc.py`:
 
@@ -715,7 +715,7 @@ def f():
     # comment
     x = 1
 
-    y = 2  # trailing comment counts as code
+    y = 2  # trailing comment: whole line excluded (no columns)
 '''
 
 
@@ -727,8 +727,8 @@ def test_sloc_c_language():
     assert count_sloc("// c\nint x;\n\n/* multi\nline */\nint y;\n", "c") == 2
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_sloc.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/metrics/sloc.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_sloc.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/metrics/sloc.py`:
 
 ```python
 from __future__ import annotations
@@ -755,8 +755,8 @@ def count_sloc(text: str, language: str) -> int:
 
 Примечание: точность подсчёта границ докстрингов — приближение; тесты фиксируют поведение.
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_sloc.py tests/test_extractors.py -v` → PASS (регресс extractors не сломан)
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_sloc.py tests/test_extractors.py -v` → PASS (регресс extractors не сломан)
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/metrics tests/test_sloc.py
