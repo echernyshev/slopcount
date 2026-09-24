@@ -198,7 +198,7 @@ git commit -m "feat: project skeleton with versioned CLI entry point"
 **Files:**
 - Create: `src/slopcount/evidence.py`, `tests/test_evidence.py`
 
-- [ ] **Step 1: Failing-тест**
+- [x] **Step 1: Failing-тест**
 
 `tests/test_evidence.py`:
 
@@ -238,10 +238,10 @@ def test_cognitivity_grades():
     assert CategoryTotals(files=1, slop_lines=10, weight=5).cognitivity == "low"
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_evidence.py -v`
+- [x] **Step 2: Run** `python -m pytest tests/test_evidence.py -v`
 Expected: FAIL — `No module named 'slopcount.evidence'`
 
-- [ ] **Step 3: Реализация** `src/slopcount/evidence.py`:
+- [x] **Step 3: Реализация** `src/slopcount/evidence.py`:
 
 ```python
 from __future__ import annotations
@@ -342,8 +342,8 @@ def aggregate(
     return report
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_evidence.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_evidence.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/evidence.py tests/test_evidence.py
