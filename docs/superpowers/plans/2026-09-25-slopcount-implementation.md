@@ -522,7 +522,7 @@ git commit -m "feat: file scanner with gitignore support and classification"
 **Files:**
 - Create: `src/slopcount/extractors.py`, `tests/test_extractors.py`
 
-- [ ] **Step 1: Failing-тест**
+- [x] **Step 1: Failing-тест**
 
 `tests/test_extractors.py`:
 
@@ -574,8 +574,8 @@ def test_unknown_language_returns_empty():
     assert extract_comments("whatever", "brainfuck") == []
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_extractors.py -v` → FAIL (модуля нет)
-- [ ] **Step 3: Реализация** `src/slopcount/extractors.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_extractors.py -v` → FAIL (модуля нет)
+- [x] **Step 3: Реализация** `src/slopcount/extractors.py`:
 
 ```python
 from __future__ import annotations
@@ -685,8 +685,8 @@ def _python(text: str) -> list[CommentBlock]:
     return out
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_extractors.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_extractors.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/extractors.py tests/test_extractors.py
@@ -738,8 +738,9 @@ from slopcount.extractors import extract_comments
 
 def count_sloc(text: str, language: str) -> int:
     """Физический SLOC: непустые строки, не являющиеся комментариями
-    целиком (докстринги — комментарии; трейлинг-комментарий — код)."""
-    lines = text.splitlines()
+    целиком (докстринги — комментарии). Ограничение сканера: строка «код +
+    трейлинг-комментарий» тоже исключается — колонок у нас нет."""
+    lines = text.split("\n")
     comment_lines: set[int] = set()
     for block in extract_comments(text, language):
         # инвариант: блок занимает ровно len(lines) физических строк,
