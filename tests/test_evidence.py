@@ -31,3 +31,10 @@ def test_cognitivity_grades():
     assert CategoryTotals(files=1, slop_lines=10, weight=40).cognitivity == "high"
     assert CategoryTotals(files=1, slop_lines=10, weight=20).cognitivity == "medium"
     assert CategoryTotals(files=1, slop_lines=10, weight=5).cognitivity == "low"
+
+
+def test_zero_sloc_edge():
+    ev = _ev("a.md", 1, Category.DOCS, 5)
+    assert aggregate([ev], sloc=0).slop_ratio == float("inf")
+    assert aggregate([], sloc=0).slop_ratio == 0.0
+    assert CategoryTotals(files=1, slop_lines=0, weight=7).cognitivity == "low"
