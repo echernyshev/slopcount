@@ -357,7 +357,7 @@ git commit -m "feat: evidence dataclass, categories and aggregation"
 **Files:**
 - Create: `src/slopcount/scanner.py`, `tests/test_scanner.py`
 
-- [ ] **Step 1: Failing-тест**
+- [x] **Step 1: Failing-тест**
 
 `tests/test_scanner.py`:
 
@@ -405,10 +405,10 @@ def test_read_text_none_for_binary(tmp_path):
     assert read_text(tmp_path / "README.md") == "# hi\n"
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_scanner.py -v`
+- [x] **Step 2: Run** `python -m pytest tests/test_scanner.py -v`
 Expected: FAIL — `No module named 'slopcount.scanner'`
 
-- [ ] **Step 3: Реализация** `src/slopcount/scanner.py`:
+- [x] **Step 3: Реализация** `src/slopcount/scanner.py`:
 
 ```python
 from __future__ import annotations
@@ -507,8 +507,8 @@ def read_text(path: Path) -> str | None:
         return None
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_scanner.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_scanner.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/scanner.py tests/test_scanner.py
