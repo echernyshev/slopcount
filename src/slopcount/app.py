@@ -5,6 +5,7 @@ from pathlib import Path
 
 from slopcount.detectors.code_style import CodeStyleDetector
 from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidence
+from slopcount.detectors.env_markers import EnvMarkerDetector
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
 from slopcount.metrics.sloc import count_sloc
@@ -65,5 +66,6 @@ def run(opts: Options) -> Report:
     rb = repo_bloat_evidence(files, sloc)
     if rb:
         evidences.append(rb)
+    evidences.extend(EnvMarkerDetector().detect(root, files, read_text))
     return aggregate(evidences, sloc=sloc, infected=infected,
                      skip_count=skip, root=str(root))

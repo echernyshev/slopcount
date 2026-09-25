@@ -44,3 +44,10 @@ def test_style_category_in_output():
     assert m and int(m.group(1)) == 2          # STYLE: defensive.py lines 2+13
     assert re.search(r"Total Suspicious Lines Of Prose \(SLOP\)\s+= \d+", out)
     assert "= 13" in out                       # 3 prose + 2 docs + 2 style + 6 infected
+
+
+def test_agency_row_in_output():
+    import re
+    code, out = run_cli([str(SLOP), "--lang", "en"])
+    m = re.search(r"Environment markers\s+(\d+)", out)
+    assert m and int(m.group(1)) == 1          # AGENCY: fixture CLAUDE.md marker
