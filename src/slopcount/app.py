@@ -51,6 +51,15 @@ def run(opts: Options) -> Report:
     phrase = PhraseDetector(load_rules(opts.rules))
     docs_bloat = DocsBloatDetector()
     style_detector = CodeStyleDetector()
+    pplx = None
+    if opts.perplexity:
+        from slopcount.detectors.perplexity import PerplexityDetector, available
+        if not available():
+            raise RuntimeError(
+                "slopcount: --perplexity requires extras; "
+                "pipx install 'slopcount[perplexity]' and "
+                "python -m slopcount.download_model")
+        pplx = PerplexityDetector()
     evidences: list[Evidence] = []
     infected: list[tuple[str, int]] = []
     sloc = 0
@@ -84,6 +93,8 @@ def run(opts: Options) -> Report:
         phrase_evs = phrase.detect(sf, text)
         evidences.extend(phrase_evs)
         file_evidences.extend(phrase_evs)
+        if pplx is not None and sf.kind in ("markdown", "prose"):
+            evidences.extend(pplx.detect(sf, text))
         prose_words += flagged_words(text, file_evidences)
     rb = repo_bloat_evidence(files, sloc)
     if rb:

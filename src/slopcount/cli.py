@@ -52,7 +52,11 @@ def main(argv=None) -> int:
         print(_("slopcount: path not found: {path}").format(path=opts.paths[0]),
               file=sys.stderr)
         return 2
-    report = run(opts)
+    try:
+        report = run(opts)
+    except RuntimeError as e:  # напр. --perplexity без extras: подсказка, exit 2
+        print(e, file=sys.stderr)
+        return 2
     if args.json_out:
         print(render_json(report))
     elif args.csv_out:

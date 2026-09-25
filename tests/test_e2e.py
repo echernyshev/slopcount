@@ -4,7 +4,10 @@ import subprocess
 from contextlib import redirect_stdout
 from pathlib import Path
 
+import pytest
+
 from slopcount.cli import main
+from slopcount.detectors.perplexity import available
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SLOP = FIXTURES / "slop_project"
@@ -137,3 +140,10 @@ def test_ru_stderr_messages(tmp_path, capsys):
     assert "файл правил не найден" in err          # rules file skipped
     assert main(["--lang", "ru", str(tmp_path / "nope")]) == 2
     assert "путь не найден" in capsys.readouterr().err
+
+
+def test_perplexity_without_extras_exit_2():
+    if available():
+        pytest.skip("extras installed")
+    code, out = run_cli([str(SLOP), "--perplexity", "--lang", "en"])
+    assert code == 2
