@@ -119,6 +119,18 @@ msgstr "slopcount: git-история недоступна; археологию
 msgid "slopcount: path not found: {path}"
 msgstr "slopcount: путь не найден: {path}"
 
+msgid "slopcount: path is a file, directory expected: {path}"
+msgstr "slopcount: путь — файл, ожидалась директория: {path}"
+
+msgid ""
+"slopcount: --perplexity requires extras; "
+"pipx install 'slopcount[perplexity]' and "
+"python -m slopcount.download_model"
+msgstr ""
+"slopcount: --perplexity требует extras; "
+"выполните pipx install 'slopcount[perplexity]' и "
+"python -m slopcount.download_model"
+
 msgid "slopcount: rules file not found, skipped: {p}"
 msgstr "slopcount: файл правил не найден, пропущен: {p}"
 

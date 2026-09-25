@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from slopcount.rules import load_rules
 
 
@@ -32,13 +34,16 @@ def test_missing_file_warns_and_defaults(tmp_path, capsys):
 
 
 def test_weight_default_and_bad_regex(tmp_path):
-    import re
     extra = tmp_path / "d.toml"
     extra.write_text('[[rule]]\npattern = "abc"\n')
     assert any(r.weight == 1 and r.description == "" for r in load_rules([extra]))
     extra.write_text('[[rule]]\npattern = "([unclosed"\n')
-    try:
+    with pytest.raises(RuntimeError):
         load_rules([extra])
-        raise AssertionError("expected re.error")
-    except re.error:
-        pass
+
+
+def test_bad_toml_raises_runtime_error(tmp_path):
+    extra = tmp_path / "broken.toml"
+    extra.write_text('[[rule]\npattern = "abc"\n')      # unclosed table
+    with pytest.raises(RuntimeError):
+        load_rules([extra])

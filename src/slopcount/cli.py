@@ -48,9 +48,14 @@ def main(argv=None) -> int:
         overhead=args.overhead, coffee_price=args.coffee_price,
         no_therapy=args.no_therapy, fail_above=args.fail_above,
         verdict_only=args.verdict_only, wide=args.wide)
-    if not Path(opts.paths[0]).exists():
-        print(_("slopcount: path not found: {path}").format(path=opts.paths[0]),
+    root = Path(opts.paths[0])
+    if not root.exists():
+        print(_("slopcount: path not found: {path}").format(path=root),
               file=sys.stderr)
+        return 2
+    if root.is_file():
+        print(_("slopcount: path is a file, directory expected: {path}")
+              .format(path=root), file=sys.stderr)
         return 2
     try:
         report = run(opts)

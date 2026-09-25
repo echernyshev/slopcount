@@ -57,9 +57,9 @@ def run(opts: Options) -> Report:
         from slopcount.detectors.perplexity import PerplexityDetector, available
         if not available():
             raise RuntimeError(
-                "slopcount: --perplexity requires extras; "
-                "pipx install 'slopcount[perplexity]' and "
-                "python -m slopcount.download_model")
+                _("slopcount: --perplexity requires extras; "
+                  "pipx install 'slopcount[perplexity]' and "
+                  "python -m slopcount.download_model"))
         pplx = PerplexityDetector()
     evidences: list[Evidence] = []
     infected: list[tuple[str, int]] = []

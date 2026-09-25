@@ -21,7 +21,8 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     Each catalog is a sequence of ``[[rule]]`` tables with ``pattern``
     (a regex, compiled case-insensitively), ``weight`` (int, default 1)
     and ``description`` (str, default ""). Missing files warn on stderr
-    and are skipped; a malformed regex raises :class:`re.error` from compile.
+    and are skipped; a malformed catalog (bad TOML, bad regex, wrong field
+    types) raises :class:`RuntimeError` — cli maps it to exit 2.
     """
     import os
     import sys
@@ -36,11 +37,15 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
             print(_("slopcount: rules file not found, skipped: {p}").format(p=p),
                   file=sys.stderr)
             continue
-        data = tomllib.loads(p.read_text(encoding="utf-8"))
-        for r in data.get("rule", []):
-            rules.append(PhraseRule(
-                pattern=re.compile(r["pattern"], re.IGNORECASE),
-                weight=int(r.get("weight", 1)),
-                description=r.get("description", ""),
-            ))
+        try:
+            data = tomllib.loads(p.read_text(encoding="utf-8"))
+            for r in data.get("rule", []):
+                rules.append(PhraseRule(
+                    pattern=re.compile(r["pattern"], re.IGNORECASE),
+                    weight=int(r.get("weight", 1)),
+                    description=r.get("description", ""),
+                ))
+        except (tomllib.TOMLDecodeError, re.error, KeyError, TypeError,
+                ValueError) as exc:
+            raise RuntimeError(f"slopcount: bad rules file {p}: {exc}")
     return rules

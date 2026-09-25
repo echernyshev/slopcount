@@ -33,3 +33,17 @@ def test_fail_below_ok():
 def test_runtime_error_exit_2(tmp_path):
     code, _ = run_cli([str(tmp_path / "nope"), "--lang", "en"])
     assert code == 2
+
+
+def test_file_path_exit_2(tmp_path):
+    f = tmp_path / "x.py"
+    f.write_text("x = 1\n")
+    code, _ = run_cli([str(f), "--lang", "en"])
+    assert code == 2
+
+
+def test_bad_rules_exit_2(tmp_path):
+    bad = tmp_path / "bad.toml"
+    bad.write_text('[[rule]]\npattern = "([unclosed"\n')
+    code, _ = run_cli([str(tmp_path), "--rules", str(bad), "--lang", "en"])
+    assert code == 2
