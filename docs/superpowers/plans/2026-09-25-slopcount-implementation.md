@@ -1030,7 +1030,7 @@ git commit -m "feat: phrase detector over comments and prose"
 **Files:**
 - Create: `src/slopcount/verdicts.py`, `tests/test_verdicts.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_verdicts.py`:
+- [x] **Step 1: Failing-тест** `tests/test_verdicts.py`:
 
 ```python
 from slopcount.verdicts import progress_bar, verdict_for
@@ -1055,8 +1055,8 @@ def test_progress_bar():
     assert progress_bar(50.0, width=4) == "[██░░] 50.0%"
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_verdicts.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/verdicts.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_verdicts.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/verdicts.py`:
 
 ```python
 from __future__ import annotations
@@ -1100,8 +1100,8 @@ def progress_bar(pct: float, width: int = 20) -> str:
     return "[" + "█" * filled + "░" * (width - filled) + f"] {pct:.1f}%"
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_verdicts.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_verdicts.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/verdicts.py tests/test_verdicts.py
