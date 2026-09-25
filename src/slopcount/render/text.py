@@ -74,3 +74,11 @@ def render_slocomo(report: Report) -> str:
 def render_verdict(report: Report) -> str:
     v = verdict_for(report.slop_ratio)
     return f"{_('VERDICT:')} {progress_bar(report.slop_ratio)}  {_(v.text)}"
+
+
+def render_details(report: Report, limit: int = 50) -> str:
+    out = [_("DETAILS (top evidence, most severe first):")]
+    evs = sorted(report.details, key=lambda e: -e.weight)[:limit]
+    for e in evs:
+        out.append(f"{e.file}:{e.line}  [{e.category.value}]  {e.description} → +{e.weight}")
+    return "\n".join(out)

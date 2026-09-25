@@ -5,7 +5,7 @@ from pathlib import Path
 
 from slopcount import __version__, i18n
 from slopcount.app import Options, run
-from slopcount.render.text import render_slocomo, render_text, render_verdict
+from slopcount.render.text import render_details, render_slocomo, render_text, render_verdict
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -50,6 +50,8 @@ def main(argv=None) -> int:
     if slocomo:
         print(slocomo)
     print(render_verdict(report))
+    if args.details:
+        print(render_details(report))
     return 0
 
 

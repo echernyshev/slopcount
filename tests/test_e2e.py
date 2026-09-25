@@ -104,3 +104,10 @@ def test_no_therapy_hides_line():
     code, out = run_cli([str(SLOP), "--no-therapy", "--lang", "en"])
     assert "Therapy Recommended" not in out
     assert "Coffee Required" in out
+
+
+def test_details_lists_evidence():
+    code, out = run_cli([str(SLOP), "--details", "--lang", "en"])
+    assert "DETAILS" in out
+    assert "greeter.py" in out
+    assert "[prose]" in out and "+5" in out
