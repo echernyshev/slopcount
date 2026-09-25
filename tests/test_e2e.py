@@ -34,4 +34,13 @@ def test_docs_category_in_output():
     code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Markdown specs\s+\d+\s+(\d+)", out)
     assert m and int(m.group(1)) == 2          # DOCS slop lines from fixture
-    assert "= 11" in out                       # total SLOP incl. 6 infected lines
+    assert "= 13" in out                       # total SLOP: 7 evidence lines + 6 infected
+
+
+def test_style_category_in_output():
+    import re
+    code, out = run_cli([str(SLOP), "--lang", "en"])
+    m = re.search(r"Code style\s+\d+\s+(\d+)", out)
+    assert m and int(m.group(1)) == 2          # STYLE: defensive.py lines 2+13
+    assert re.search(r"Total Suspicious Lines Of Prose \(SLOP\)\s+= \d+", out)
+    assert "= 13" in out                       # 3 prose + 2 docs + 2 style + 6 infected

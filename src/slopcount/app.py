@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from slopcount.detectors.code_style import CodeStyleDetector
 from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidence
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
@@ -41,6 +42,7 @@ def run(opts: Options) -> Report:
     files: list[ScannedFile] = scan(root)
     phrase = PhraseDetector(load_rules(opts.rules))
     docs_bloat = DocsBloatDetector()
+    style_detector = CodeStyleDetector()
     evidences: list[Evidence] = []
     infected: list[tuple[str, int]] = []
     sloc = 0
@@ -54,6 +56,7 @@ def run(opts: Options) -> Report:
             continue
         if sf.kind == "code":
             sloc += count_sloc(text, sf.language or "")
+            evidences.extend(style_detector.detect(sf, text))
         if sf.kind == "markdown":
             bloat = docs_bloat.detect(sf, text)
             evidences.extend(bloat.evidences)
