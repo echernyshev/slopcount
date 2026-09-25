@@ -111,3 +111,29 @@ def test_details_lists_evidence():
     assert "DETAILS" in out
     assert "greeter.py" in out
     assert "[prose]" in out and "+5" in out
+
+
+def test_ru_output():
+    code, out = run_cli([str(SLOP), "--lang", "ru"])
+    assert "ВЕРДИКТ:" in out and "Доля слопа" in out
+    assert "Итоги по источникам слопа" in out
+
+
+def test_ru_table_headers_and_cognitivity():
+    code, out = run_cli([str(SLOP), "--lang", "ru"])
+    assert "Источник" in out and "файлы" in out and "строки слопа" in out
+    assert "когнитивность" in out
+    assert "высокая" in out                       # Prose row: cognitivity=high
+    assert "Требуется кофе" in out and "чашка" in out
+
+
+def test_ru_stderr_messages(tmp_path, capsys):
+    (tmp_path / "m.py").write_text("x = 1\n")
+    assert main(["--lang", "ru", str(tmp_path), str(tmp_path),
+                 "--history", "5", "--rules", str(tmp_path / "nope.toml")]) == 0
+    err = capsys.readouterr().err
+    assert "указано несколько путей" in err        # multi-path warning
+    assert "git-история недоступна" in err         # git unavailable
+    assert "файл правил не найден" in err          # rules file skipped
+    assert main(["--lang", "ru", str(tmp_path / "nope")]) == 2
+    assert "путь не найден" in capsys.readouterr().err

@@ -26,6 +26,20 @@ def test_ngettext_english_forms():
     assert ngettext("%d cup", "%d cups", 5) % 5 == "5 cups"
 
 
+def test_russian_translation_active():
+    setup("ru")
+    assert _("Slop Ratio (SLOP/SLOC)") == "Доля слопа (SLOP/SLOC)"
+    assert _("VERDICT:") == "ВЕРДИКТ:"
+
+
+def test_russian_plurals():
+    setup("ru")
+    assert ngettext("%d cup", "%d cups", 1) % 1 == "1 чашка"
+    assert ngettext("%d cup", "%d cups", 3) % 3 == "3 чашки"
+    assert ngettext("%d cup", "%d cups", 5) % 5 == "5 чашек"
+    assert ngettext("%d cup", "%d cups", 21) % 21 == "21 чашка"
+
+
 @pytest.mark.parametrize(("env", "expected"), [
     ({"LANGUAGE": "ru:en", "LANG": "en_US.UTF-8"}, "ru"),
     ({"LC_ALL": "ru_RU.UTF-8", "LANG": "en"}, "ru"),

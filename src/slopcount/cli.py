@@ -6,6 +6,7 @@ from pathlib import Path
 
 from slopcount import __version__, i18n
 from slopcount.app import Options, run
+from slopcount.i18n import _
 from slopcount.render.csv_out import render_csv
 from slopcount.render.json_out import render_json
 from slopcount.render.text import render_details, render_slocomo, render_text, render_verdict
@@ -48,7 +49,8 @@ def main(argv=None) -> int:
         no_therapy=args.no_therapy, fail_above=args.fail_above,
         verdict_only=args.verdict_only, wide=args.wide)
     if not Path(opts.paths[0]).exists():
-        print(f"slopcount: path not found: {opts.paths[0]}", file=sys.stderr)
+        print(_("slopcount: path not found: {path}").format(path=opts.paths[0]),
+              file=sys.stderr)
         return 2
     report = run(opts)
     if args.json_out:

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from importlib import resources
 from pathlib import Path
 
+from slopcount.i18n import _
+
 
 @dataclass(frozen=True)
 class PhraseRule:
@@ -31,7 +33,8 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     paths = [Path(os.fspath(base / n)) for n in names] + list(extra_paths or [])
     for p in paths:
         if not p.is_file():
-            print(f"slopcount: rules file not found, skipped: {p}", file=sys.stderr)
+            print(_("slopcount: rules file not found, skipped: {p}").format(p=p),
+                  file=sys.stderr)
             continue
         data = tomllib.loads(p.read_text(encoding="utf-8"))
         for r in data.get("rule", []):

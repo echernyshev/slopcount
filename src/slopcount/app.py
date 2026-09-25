@@ -9,6 +9,7 @@ from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidenc
 from slopcount.detectors.env_markers import EnvMarkerDetector
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
+from slopcount.i18n import _
 from slopcount.metrics.cognitive import (approx_cognitive_complexity,
                                          halstead_seconds)
 from slopcount.metrics.sloc import count_sloc
@@ -45,8 +46,8 @@ def run(opts: Options) -> Report:
     root = Path(opts.paths[0])
     files: list[ScannedFile] = scan(root)
     if len(opts.paths) > 1:
-        print(f"slopcount: multiple paths given, scanning only the first: {opts.paths[0]}",
-              file=sys.stderr)
+        print(_("slopcount: multiple paths given, scanning only the first: {path}")
+              .format(path=opts.paths[0]), file=sys.stderr)
     phrase = PhraseDetector(load_rules(opts.rules))
     docs_bloat = DocsBloatDetector()
     style_detector = CodeStyleDetector()
@@ -96,7 +97,7 @@ def run(opts: Options) -> Report:
             evidences.extend(hist_evs)
             history_commits = commits
         except GitUnavailable:
-            print("slopcount: git history unavailable; skipping archaeology",
+            print(_("slopcount: git history unavailable; skipping archaeology"),
                   file=sys.stderr)
     report = aggregate(evidences, sloc=sloc, infected=infected,
                        skip_count=skip, root=str(root),

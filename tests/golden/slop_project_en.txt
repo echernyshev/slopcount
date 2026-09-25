@@ -20,6 +20,6 @@ Estimated Average Number of Therapists (Effort/Schedule)  = 0.04
 Total Estimated Cost to Comprehend                        = $ 282.67
 Context Windows Consumed                                  = 0.00 × 200K / 0.00 × 1M
 GPU-hours of Regret                                       = 0.00
-Coffee Required                                           = 1 ($ 4.00)
-Therapy Recommended                                       = 1 ($ 150.00)
+Coffee Required                                           = 1 cup ($ 4.00)
+Therapy Recommended                                       = 1 session ($ 150.00)
 VERDICT: [████████████████████] 162.5%  You ran slopcount inside slop. Recursion

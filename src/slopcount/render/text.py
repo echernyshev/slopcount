@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from slopcount.evidence import Category, Report
-from slopcount.i18n import _, fmt_float, fmt_int
+from slopcount.i18n import _, fmt_float, fmt_int, ngettext
 from slopcount.verdicts import progress_bar, verdict_for
 
 _ROW_LABELS = {
@@ -14,11 +14,12 @@ _ROW_LABELS = {
 
 
 def render_text(report: Report) -> str:
+    _cog = {"low": _("low"), "medium": _("medium"), "high": _("high")}
     out = []
     out.append(_("Totals grouped by slop origin (dominant slop source first):"))
     out.append("-" * 79)
-    out.append(f"{_('Origin'):<28}{'files':>10}{'slop lines':>14}"
-               f"{'slop %':>10}  {'cognitivity':<10}")
+    out.append(f"{_('Origin'):<28}{_('files'):>10}{_('slop lines'):>14}"
+               f"{_('slop %'):>10}  {_('cognitivity'):<10}")
     out.append("-" * 79)
     ordered = sorted(
         [c for c in Category if c is not Category.AGENCY],
@@ -30,7 +31,7 @@ def render_text(report: Report) -> str:
             name = name + f" ({report.history_commits})"
         pct = (t.slop_lines / report.slop * 100) if report.slop else 0.0
         out.append(f"{name:<28}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
-                   f"{fmt_float(pct, 1):>10}  {t.cognitivity:<10}")
+                   f"{fmt_float(pct, 1):>10}  {_cog[t.cognitivity]:<10}")
     agency = report.agency
     name = _(_ROW_LABELS[Category.AGENCY])
     out.append(f"{name:<28}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}"
@@ -62,12 +63,14 @@ def render_slocomo(report: Report) -> str:
         f" = {fmt_float(r.context_windows_200k)} × 200K / {fmt_float(r.context_windows_1m)} × 1M",
         f"{_('GPU-hours of Regret'):<57} = {fmt_float(r.gpu_hours)}",
         f"{_('Coffee Required'):<57}"
-        f" = {fmt_int(r.coffee_cups)} ($ {fmt_float(r.coffee_cost)})",
+        f" = {ngettext('%d cup', '%d cups', r.coffee_cups) % r.coffee_cups}"
+        f" ($ {fmt_float(r.coffee_cost)})",
     ]
     if r.therapy_sessions:
+        sessions = ngettext("%d session", "%d sessions", r.therapy_sessions)
         lines.append(
             f"{_('Therapy Recommended'):<57}"
-            f" = {fmt_int(r.therapy_sessions)} ($ {fmt_float(r.therapy_cost)})")
+            f" = {sessions % r.therapy_sessions} ($ {fmt_float(r.therapy_cost)})")
     return "\n".join(lines)
 
 

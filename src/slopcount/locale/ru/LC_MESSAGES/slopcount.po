@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: slopcount 0.1.0\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Totals grouped by slop origin (dominant slop source first):"
+msgstr "Итоги по источникам слопа (доминирующий источник первым):"
+
+msgid "Origin"
+msgstr "Источник"
+
+msgid "files"
+msgstr "файлы"
+
+msgid "slop lines"
+msgstr "строки слопа"
+
+msgid "slop %"
+msgstr "слоп %"
+
+msgid "cognitivity"
+msgstr "когнитивность"
+
+msgid "low"
+msgstr "низкая"
+
+msgid "medium"
+msgstr "средняя"
+
+msgid "high"
+msgstr "высокая"
+
+msgid "Markdown specs"
+msgstr "Markdown-спеки"
+
+msgid "Prose (comments/docstrings)"
+msgstr "Проза (комментарии/докстринги)"
+
+msgid "Code style"
+msgstr "Стиль кода"
+
+msgid "Git history"
+msgstr "Git-история"
+
+msgid "Environment markers"
+msgstr "Маркеры окружения"
+
+msgid "Total Physical Source Lines of Code (SLOC)"
+msgstr "Всего физических строк кода (SLOC)"
+
+msgid "Total Suspicious Lines Of Prose (SLOP)"
+msgstr "Всего подозрительных строк прозы (SLOP)"
+
+msgid "Slop Ratio (SLOP/SLOC)"
+msgstr "Доля слопа (SLOP/SLOC)"
+
+msgid "Cognitive Awareness Effort, Person-Years (Person-Months)"
+msgstr "Усилие осознания, человеко-годы (человеко-месяцы)"
+
+msgid "(SLOCOMO model, Person-Months = 2.4 * (KSLOP**1.05))"
+msgstr "(Модель SLOCOMO, человеко-месяцы = 2.4 * (KSLOP**1.05))"
+
+msgid "Schedule of Despair, Years (Months)"
+msgstr "График отчаяния, годы (месяцы)"
+
+msgid "(SLOCOMO model, Months = 2.5 * (person-months**0.38))"
+msgstr "(Модель SLOCOMO, месяцы = 2.5 * (человеко-месяцы**0.38))"
+
+msgid "Estimated Average Number of Therapists (Effort/Schedule)"
+msgstr "Оценочное среднее число терапевтов (Усилие/График)"
+
+msgid "Total Estimated Cost to Comprehend"
+msgstr "Полная оценочная стоимость осознания"
+
+msgid "Context Windows Consumed"
+msgstr "Поглощено контекстных окон"
+
+msgid "GPU-hours of Regret"
+msgstr "GPU-часы сожаления"
+
+msgid "Coffee Required"
+msgstr "Требуется кофе"
+
+msgid "Therapy Recommended"
+msgstr "Рекомендована терапия"
+
+msgid "VERDICT:"
+msgstr "ВЕРДИКТ:"
+
+msgid "DETAILS (top evidence, most severe first):"
+msgstr "ДЕТАЛИ (главные улики, серьёзные первыми):"
+
+msgid "Almost human. Suspiciously clean. Where are you hiding the slop?"
+msgstr "Почти человек. Подозрительно чисто. Где вы прячете слоп?"
+
+msgid "A light neuro-haze: the slop has arrived, but so far it does the dishes"
+msgstr "Лёгкое нейро-облако: слоп уже завезли, но пока моет посуду"
+
+msgid "The slop has settled in for good. More documentation than meaning"
+msgstr "Слоп прочно прописался. Документации больше, чем смысла"
+
+msgid "Repository on LLM self-service. Humans visit on weekends"
+msgstr "Репозиторий на самообслуживании LLM. Люди здесь по выходным"
+
+msgid "Agent occupation. Resistance is futile"
+msgstr "Агентская оккупация. Сопротивление бесполезно"
+
+msgid "You ran slopcount inside slop. Recursion"
+msgstr "Вы запустили slopcount внутри слопа. Рекурсия"
+
+msgid "slopcount: git history unavailable; skipping archaeology"
+msgstr "slopcount: git-история недоступна; археологию пропускаем"
+
+msgid "slopcount: path not found: {path}"
+msgstr "slopcount: путь не найден: {path}"
+
+msgid "slopcount: rules file not found, skipped: {p}"
+msgstr "slopcount: файл правил не найден, пропущен: {p}"
+
+msgid "slopcount: multiple paths given, scanning only the first: {path}"
+msgstr "slopcount: указано несколько путей, сканируем только первый: {path}"
+
+msgid "%d cup"
+msgid_plural "%d cups"
+msgstr[0] "%d чашка"
+msgstr[1] "%d чашки"
+msgstr[2] "%d чашек"
+
+msgid "%d session"
+msgid_plural "%d sessions"
+msgstr[0] "%d сессия"
+msgstr[1] "%d сессии"
+msgstr[2] "%d сессий"
