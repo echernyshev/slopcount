@@ -946,7 +946,7 @@ git commit -m "feat: TOML phrase rule catalogs and loader"
 **Files:**
 - Create: `src/slopcount/detectors/__init__.py` (пустой), `src/slopcount/detectors/phrase.py`, `tests/test_phrase.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_phrase.py`:
+- [x] **Step 1: Failing-тест** `tests/test_phrase.py`:
 
 ```python
 from slopcount.detectors.phrase import PhraseDetector
@@ -979,8 +979,8 @@ def test_no_hits_in_code_lines_without_comments():
     assert det.detect(sf, "msg = 'Great question!'\n") == []
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_phrase.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/detectors/phrase.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_phrase.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/detectors/phrase.py`:
 
 ```python
 from __future__ import annotations
@@ -1015,8 +1015,8 @@ class PhraseDetector:
         return out
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_phrase.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_phrase.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/detectors tests/test_phrase.py
