@@ -18,3 +18,9 @@ def test_texts_are_english_msgids():
 
 def test_progress_bar():
     assert progress_bar(50.0, width=4) == "[██░░] 50.0%"
+
+
+def test_progress_bar_edges():
+    assert progress_bar(float("inf")) == "[░░░░░░░░░░░░░░░░░░░░] inf%"
+    assert progress_bar(150.0, width=4) == "[████] 150.0%"
+    assert verdict_for(100).code == "AGENT_OCCUPATION"
