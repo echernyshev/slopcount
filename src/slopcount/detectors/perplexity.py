@@ -7,8 +7,13 @@ from slopcount.evidence import Category, Evidence
 from slopcount.scanner import ScannedFile
 
 MODEL_NAME = "gpt2"
-MAX_PPL = 35.0     # ниже — «слишком гладкая» проза
-MAX_BURST = 0.3    # коэффициент вариации перплексии ниже — монотонный слоп
+# Калибровка на GPTZero-стиле замера (предложения в контексте файла, медиана
+# по предложениям; первое предложение отброшено — нет левого контекста):
+# LLM-проза → медиана 15-30; человеческая → 64-151. Burstiness на gpt2
+# классы НЕ разделяет (0.6-0.9 у обоих) — убран из правила. gpt2 — слабый
+# судья (слоп-слова для него редки), поэтому сигнал точный, но редкий.
+# Более сильная/мультиязычная модель: SLOPCOUNT_PPLX_MODEL=Qwen/Qwen2.5-0.5B.
+MAX_MEDIAN_PPL = 40.0   # медиана ниже — «слишком гладкая» проза
 _OVERLONG_MSG = "Token indices sequence length"
 
 
@@ -49,53 +54,73 @@ class PerplexityDetector:
 
     category = Category.PROSE
 
-    def __init__(self, model_name: str = MODEL_NAME):
+    def __init__(self, model_name: str | None = None):
+        import os
+
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
+        model_name = model_name or os.environ.get(
+            "SLOPCOUNT_PPLX_MODEL", MODEL_NAME)
         self._torch = torch
         self._tok = AutoTokenizer.from_pretrained(model_name)
         self._model = AutoModelForCausalLM.from_pretrained(model_name)
         self._model.eval()
-        self._max_ppl = MAX_PPL
-        self._max_burst = MAX_BURST
+        self._max_ppl = MAX_MEDIAN_PPL
         _silence_overlong_tokenizer_warning()
 
-    def _ppls(self, sentences: list[str]) -> list[float]:
-        """Натуральные лог-перплексии (mean NLL) по предложениям.
-        Предложения из одного токена пропускаем: предсказывать нечего.
-        Чанки длиннее контекстного окна модели (gpt2: 1024 токена) тоже
-        пропускаем — иначе IndexError в position embeddings."""
+    def _ppls(self, text: str) -> list[float]:
+        """Перплексии предложений В КОНТЕКСТЕ файла (GPTZero-стиль):
+        один проход по всему тексту, пер-токенные NLL, группировка по
+        предложениям через offset mapping. Изоляция предложений не работает:
+        «холодный старт» каждого (NLL≈10 за первый токен) раздувает перплексию
+        в ~10 раз и инвертирует сигнал.
+
+        Файлы длиннее окна модели измеряются по префиксу (первые max_len
+        токенов) — предложения за окном отбрасываются автоматически.
+        Требует fast-токенизатор (return_offsets_mapping); gpt2 и современные
+        модели ему удовлетворяют."""
+        flat = text.replace("\n", " ")
         max_len = int(getattr(self._tok, "model_max_length", 1024) or 1024)
-        nlls: list[float] = []
-        for s in sentences:
-            ids = self._tok(s, return_tensors="pt").input_ids
-            if ids.shape[1] < 2:
+        enc = self._tok(flat, return_offsets_mapping=True)
+        ids_list = list(enc.input_ids)[:max_len]
+        offs = list(enc.offset_mapping)[:max_len]
+        if len(ids_list) < 3:
+            return []
+        ids = self._torch.tensor([ids_list])
+        with self._torch.no_grad():
+            logits = self._model(ids).logits
+        logp = self._torch.log_softmax(logits[:, :-1], dim=-1)
+        nll = (-self._torch.gather(logp, 2, ids[:, 1:].unsqueeze(-1))
+               .squeeze(-1)[0]).tolist()
+
+        ppls: list[float] = []
+        for s in (x.strip() for x in flat.split(". ") if len(x.strip()) > 30):
+            a = flat.find(s)
+            b = a + len(s)
+            toks = [i for i, (s0, e0) in enumerate(offs)
+                    if s0 >= a and e0 <= b and i + 1 < len(ids_list)]
+            if len(toks) < 2:
                 continue
-            if ids.shape[1] > max_len:
-                continue
-            with self._torch.no_grad():
-                logits = self._model(ids).logits
-            logp = self._torch.log_softmax(logits[:, :-1], dim=-1)
-            tgt = ids[:, 1:]
-            nll = -self._torch.gather(logp, 2, tgt.unsqueeze(-1)).mean().item()
-            nlls.append(nll)
-        return nlls
+            vals = [nll[i] for i in toks[1:]]   # первый токен — без контекста
+            if vals:
+                ppls.append(math.exp(sum(vals) / len(vals)))
+        return ppls
 
     def detect(self, sf: ScannedFile, text: str) -> list[Evidence]:
-        sentences = [s.strip() for s in text.replace("\n", " ").split(". ")
-                     if len(s.strip()) > 30]
-        if len(sentences) < 3:   # burstiness не имеет смысла на 1-2 точках
+        ppls = self._ppls(text)
+        # первое предложение — без левого контекста, всегда выброс: в статистику
+        # не идёт (оно остаётся контекстом для остальных)
+        ppls = ppls[1:]
+        if len(ppls) < 3:
             return []
-        nlls = self._ppls(sentences)
-        if not nlls:
-            return []
-        ppls = [math.exp(n) for n in nlls]
-        mean = sum(ppls) / len(ppls)
-        var = sum((p - mean) ** 2 for p in ppls) / len(ppls)
-        burst = math.sqrt(var) / mean if mean else 0.0
-        if mean >= self._max_ppl or burst >= self._max_burst:
+        ppls_sorted = sorted(ppls)
+        median = (ppls_sorted[len(ppls) // 2]
+                  if len(ppls) % 2
+                  else (ppls_sorted[len(ppls) // 2 - 1]
+                        + ppls_sorted[len(ppls) // 2]) / 2)
+        if median >= self._max_ppl:
             return []
         return [Evidence(sf.path, 0, self.category, 2,
                          f"suspiciously smooth prose "
-                         f"(ppl≈{mean:.0f}, burst≈{burst:.2f})")]
+                         f"(median ppl≈{median:.0f} over {len(ppls)} sentences)")]

@@ -17,17 +17,22 @@ class FakeModel:
         return L()
 
 
-# Три предложения длиннее 30 символов: иначе guard «< 3 предложений» вернёт []
+# Четыре предложения длиннее 30 символов: детектор отбрасывает первое
+# (нет контекста) и требует ≥3 оставшихся точек
 SMOOTH = ("One perfectly smooth generated sentence right here. "
           "Another perfectly smooth generated sentence follows it. "
-          "A third perfectly smooth generated sentence closes the text.")
+          "A third perfectly smooth generated sentence arrives now. "
+          "A fourth perfectly smooth generated sentence closes the text.")
 
 
 def _mock_detector(ppl: float) -> PerplexityDetector:
     det = PerplexityDetector.__new__(PerplexityDetector)  # без __init__/transformers
     det._tok, det._model, det._max_ppl, det._max_burst = FakeTok(), FakeModel(), 35.0, 0.3
     # _ppls возвращает натуральные лог-перплексии (mean NLL) по предложениям
-    det._ppls = lambda s: [math.log(ppl)] * len(s)
+    # _ppls(text) → перплексии предложений; [0] отбрасывается детектором
+    det._ppls = lambda text: [999.0] + [ppl] * len(
+        [x for x in text.replace(chr(10), ' ').split('. ')
+         if len(x.strip()) > 30])
     return det
 
 
@@ -36,7 +41,7 @@ def test_available_false_without_extras():
 
 
 def test_smooth_text_flagged_with_fake_model():
-    det = _mock_detector(20.0)           # ppl 20 < 35, burst 0 < 0.3 → слоп
+    det = _mock_detector(20.0)           # медиана 20 < 40 → слоп
     sf = ScannedFile("doc.md", None, "markdown", 0)
     evs = det.detect(sf, SMOOTH)
     assert evs and all(e.category is Category.PROSE for e in evs)
@@ -44,7 +49,7 @@ def test_smooth_text_flagged_with_fake_model():
 
 
 def test_rough_text_not_flagged_with_fake_model():
-    det = _mock_detector(50.0)           # ppl 50 ≥ 35 → «человеческий» текст
+    det = _mock_detector(50.0)           # медиана 50 ≥ 40 → «человеческий» текст
     sf = ScannedFile("doc.md", None, "markdown", 0)
     assert det.detect(sf, SMOOTH) == []
 
@@ -55,31 +60,43 @@ def test_too_few_long_sentences_skipped():
     assert det.detect(sf, "Only one long enough sentence here to evaluate now.") == []
 
 
-def test_overlong_chunks_skipped():
-    """Чанки длиннее контекстного окна модели (gpt2: 1024 токена) не должны
-    доходить до модели — иначе IndexError в position embeddings (wpe)."""
-    from types import SimpleNamespace
+def test_model_never_sees_overlong_input():
+    """Однопроходный замер режет вход до окна модели: модель не должна
+    получить больше model_max_length токенов (иначе IndexError в wpe)."""
+    import pytest
+    torch = pytest.importorskip("torch")
 
-    class SmallWindowTok:
+    from slopcount.detectors.perplexity import PerplexityDetector
+
+    seen = []
+
+    class FakeTok:
         model_max_length = 10
 
-        def __call__(self, text, return_tensors=None):
-            # ~1 токен на 2 символа: предложения фикстуры (~50 симв.) → ~25 токенов > 10
-            return SimpleNamespace(input_ids=SimpleNamespace(
-                shape=(1, max(2, len(text) // 2))))
+        def __call__(self, text, return_offsets_mapping=False):
+            n = max(30, len(text) // 2)          # длинный вход
+            ids = [1] * n
+            offs = [(i, i + 1) for i in range(n)]
+            from types import SimpleNamespace
+            return SimpleNamespace(input_ids=ids, offset_mapping=offs)
 
-    class SentinelModel:
-        def __call__(self, input_ids=None):
-            raise AssertionError("model called with an overlong input")
+    class FakeModel:
+        def __call__(self, ids):
+            seen.append(ids.shape[1])
+            return SimpleNamespace(logits=torch.zeros(1, ids.shape[1], 8))
 
+    from types import SimpleNamespace
     import contextlib
 
     det = PerplexityDetector.__new__(PerplexityDetector)
-    det._tok, det._model = SmallWindowTok(), SentinelModel()
-    det._max_ppl, det._max_burst = 35.0, 0.3
-    det._torch = SimpleNamespace(no_grad=contextlib.nullcontext)
-    evs = det.detect(ScannedFile("doc.md", None, "markdown", 0), SMOOTH)
-    assert evs == []  # все чанки длиннее окна → ничего не измеряем, но и не падаем
+    det._tok, det._model = FakeTok(), FakeModel()
+    det._max_ppl = 40.0
+    from types import SimpleNamespace as SN
+    det._torch = SN(
+        no_grad=contextlib.nullcontext, tensor=torch.tensor,
+        log_softmax=torch.log_softmax, gather=torch.gather)
+    det.detect(ScannedFile("doc.md", None, "markdown", 0), SMOOTH)
+    assert seen and max(seen) <= 10          # модель видела только срез ≤ окна
 
 
 def test_overlong_warning_filter(monkeypatch, caplog):
