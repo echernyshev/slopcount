@@ -31,6 +31,6 @@ class PhraseDetector:
         for line_no, line in zones:
             for r in self.rules:
                 if r.pattern.search(line):
-                    out.append(Evidence(sf.path, line_no, Category.PROSE,
+                    out.append(Evidence(sf.path, line_no, self.category,
                                         r.weight, r.description))
         return out
