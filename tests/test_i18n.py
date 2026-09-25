@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 import pytest
 
 from slopcount.i18n import _, detect_lang, fmt_float, fmt_int, ngettext, setup
@@ -38,6 +41,21 @@ def test_russian_plurals():
     assert ngettext("%d cup", "%d cups", 3) % 3 == "3 чашки"
     assert ngettext("%d cup", "%d cups", 5) % 5 == "5 чашек"
     assert ngettext("%d cup", "%d cups", 21) % 21 == "21 чашка"
+
+
+def test_po_mo_consistency():
+    import shutil
+    import subprocess
+    from importlib import resources
+    from pathlib import Path
+    if shutil.which("msgfmt") is None:
+        pytest.skip("msgfmt not available")
+    base = Path(os.fspath(resources.files("slopcount") / "locale"))
+    po = base / "ru" / "LC_MESSAGES" / "slopcount.po"
+    mo = base / "ru" / "LC_MESSAGES" / "slopcount.mo"
+    out = Path(tempfile.mkdtemp()) / "check.mo"
+    subprocess.run(["msgfmt", "--check", "-o", str(out), str(po)], check=True)
+    assert out.read_bytes() == mo.read_bytes(), ".po changed without recompiling .mo"
 
 
 @pytest.mark.parametrize(("env", "expected"), [

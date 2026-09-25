@@ -14,7 +14,6 @@ _ROW_LABELS = {
 
 
 def render_text(report: Report) -> str:
-    _cog = {"low": _("low"), "medium": _("medium"), "high": _("high")}
     out = []
     out.append(_("Totals grouped by slop origin (dominant slop source first):"))
     out.append("-" * 79)
@@ -31,7 +30,7 @@ def render_text(report: Report) -> str:
             name = name + f" ({report.history_commits})"
         pct = (t.slop_lines / report.slop * 100) if report.slop else 0.0
         out.append(f"{name:<28}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
-                   f"{fmt_float(pct, 1):>10}  {_cog[t.cognitivity]:<10}")
+                   f"{fmt_float(pct, 1):>10}  {_(t.cognitivity):<10}")
     agency = report.agency
     name = _(_ROW_LABELS[Category.AGENCY])
     out.append(f"{name:<28}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}"

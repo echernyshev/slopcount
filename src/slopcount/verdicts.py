@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from slopcount.i18n import fmt_float
+
 
 @dataclass(frozen=True)
 class Verdict:
@@ -36,4 +38,4 @@ def verdict_for(slop_ratio_pct: float) -> Verdict:
 def progress_bar(pct: float, width: int = 20) -> str:
     filled = 0 if pct != pct or pct == float("inf") else round(pct / 100 * width)
     filled = max(0, min(width, filled))
-    return "[" + "█" * filled + "░" * (width - filled) + f"] {pct:.1f}%"
+    return "[" + "█" * filled + "░" * (width - filled) + f"] {fmt_float(pct, 1)}%"

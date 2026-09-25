@@ -1,3 +1,4 @@
+from slopcount.i18n import setup
 from slopcount.verdicts import progress_bar, verdict_for
 
 
@@ -17,10 +18,12 @@ def test_texts_are_english_msgids():
 
 
 def test_progress_bar():
+    setup("en")   # в прогресс-баре локализованный процент — фиксируем en
     assert progress_bar(50.0, width=4) == "[██░░] 50.0%"
 
 
 def test_progress_bar_edges():
+    setup("en")
     assert progress_bar(float("inf")) == "[░░░░░░░░░░░░░░░░░░░░] inf%"
     assert progress_bar(150.0, width=4) == "[████] 150.0%"
     assert verdict_for(100).code == "AGENT_OCCUPATION"
