@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import fnmatch
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from importlib import resources
 from pathlib import Path
@@ -18,6 +19,7 @@ class _Header:
 
 
 def _load():
+    """Внутренний каталог; битый TOML падает сразу (fail fast, ассет в пакете)."""
     import tomllib
     base = resources.files("slopcount").joinpath("rules/env_markers.toml")
     data = tomllib.loads(Path(str(base)).read_text(encoding="utf-8"))
@@ -33,7 +35,8 @@ class EnvMarkerDetector:
     def __init__(self):
         self.paths, self.headers = _load()
 
-    def detect(self, root: Path, scanned: list[ScannedFile], reader) -> list[Evidence]:
+    def detect(self, root: Path, scanned: list[ScannedFile],
+               reader: Callable[[Path], str | None]) -> list[Evidence]:
         evs: list[Evidence] = []
         names = [sf.path for sf in scanned] + _all_entries(root)
         for pat, weight, desc in self.paths:
