@@ -2843,12 +2843,9 @@ msgfmt --check -o src/slopcount/locale/ru/LC_MESSAGES/slopcount.mo \
   src/slopcount/locale/ru/LC_MESSAGES/slopcount.po
 ```
 
-В `pyproject.toml` добавить:
-
-```toml
-[tool.hatch.build.targets.wheel.force-include]
-"src/slopcount/locale" = "slopcount/locale"
-```
+В `pyproject.toml` ничего добавлять не нужно: `packages = ["src/slopcount"]`
+уже пакует `locale/` в wheel (проверено сборкой). force-include НЕ добавлять —
+он дублирует дерево и ломает сборку (ValueError: second file at same path).
 
 (hatchling и так пакует всё под `src/slopcount`; строка — страховка.)
 
