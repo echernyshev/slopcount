@@ -90,3 +90,11 @@ def test_recursion_verdict_on_pure_slop(tmp_path):
     (tmp_path / "ONLY_SLOP.md").write_text("Great question! " * 200)
     code, out = run_cli([str(tmp_path), "--lang", "en"])
     assert "Recursion" in out
+
+
+def test_slocomo_block_present():
+    code, out = run_cli([str(SLOP), "--lang", "en"])
+    assert "Cognitive Awareness Effort" in out
+    assert "Total Estimated Cost to Comprehend" in out
+    assert "GPU-hours of Regret" in out
+    assert "(SLOCOMO model, Person-Months = 2.4 * (KSLOP**1.05))" in out

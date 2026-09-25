@@ -42,6 +42,35 @@ def render_text(report: Report) -> str:
     return "\n".join(out)
 
 
+def render_slocomo(report: Report) -> str:
+    r = report.slocomo
+    if r is None:
+        return ""
+    mode = " (approximate)" if r.approximate else ""
+    lines = [
+        "-" * 79,
+        f"{_('Cognitive Awareness Effort, Person-Years (Person-Months)'):<46}"
+        f" = {fmt_float(r.person_years)} ({fmt_float(r.person_months)}){mode}",
+        _("(SLOCOMO model, Person-Months = 2.4 * (KSLOP**1.05))"),
+        f"{_('Schedule of Despair, Years (Months)'):<46}"
+        f" = {fmt_float(r.schedule_months / 12)} ({fmt_float(r.schedule_months)})",
+        _("(SLOCOMO model, Months = 2.5 * (person-months**0.38))"),
+        f"{_('Estimated Average Number of Therapists (Effort/Schedule)'):<46}"
+        f" = {fmt_float(r.therapists)}",
+        f"{_('Total Estimated Cost to Comprehend'):<46} = $ {fmt_float(r.cost)}",
+        f"{_('Context Windows Consumed'):<46}"
+        f" = {fmt_float(r.context_windows_200k)} × 200K / {fmt_float(r.context_windows_1m)} × 1M",
+        f"{_('GPU-hours of Regret'):<46} = {fmt_float(r.gpu_hours)}",
+        f"{_('Coffee Required'):<46}"
+        f" = {fmt_int(r.coffee_cups)} ($ {fmt_float(r.coffee_cost)})",
+    ]
+    if r.therapy_sessions:
+        lines.append(
+            f"{_('Therapy Recommended'):<46}"
+            f" = {fmt_int(r.therapy_sessions)} ($ {fmt_float(r.therapy_cost)})")
+    return "\n".join(lines)
+
+
 def render_verdict(report: Report) -> str:
     v = verdict_for(report.slop_ratio)
     return f"{_('VERDICT:')} {progress_bar(report.slop_ratio)}  {_(v.text)}"

@@ -9,6 +9,8 @@ from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidenc
 from slopcount.detectors.env_markers import EnvMarkerDetector
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
+from slopcount.metrics.cognitive import (approx_cognitive_complexity,
+                                         halstead_seconds)
 from slopcount.metrics.sloc import count_sloc
 from slopcount.rules import load_rules
 from slopcount.scanner import ScannedFile, read_text, scan
@@ -49,6 +51,9 @@ def run(opts: Options) -> Report:
     infected: list[tuple[str, int]] = []
     sloc = 0
     skip = 0
+    prose_words = 0
+    cog_points = 0
+    hal_secs = 0.0
     for sf in files:
         if sf.kind not in ("code", "markdown", "prose"):
             continue
@@ -56,14 +61,26 @@ def run(opts: Options) -> Report:
         if text is None:
             skip += 1
             continue
+        file_evidences: list[Evidence] = []
         if sf.kind == "code":
             sloc += count_sloc(text, sf.language or "")
-            evidences.extend(style_detector.detect(sf, text))
+            style_evs = style_detector.detect(sf, text)
+            evidences.extend(style_evs)
+            file_evidences.extend(style_evs)
+            if style_evs:   # SLOCOMO: вес слоп-кода
+                cog_points += approx_cognitive_complexity(text, sf.language or "")
+                hal_secs += halstead_seconds(text)
         if sf.kind == "markdown":
             bloat = docs_bloat.detect(sf, text)
             evidences.extend(bloat.evidences)
+            file_evidences.extend(bloat.evidences)
             infected.extend(bloat.infected)
-        evidences.extend(phrase.detect(sf, text))
+            if bloat.infected:
+                prose_words += int(len(text.split()) * 0.8)
+        phrase_evs = phrase.detect(sf, text)
+        evidences.extend(phrase_evs)
+        file_evidences.extend(phrase_evs)
+        prose_words += flagged_words(text, file_evidences)
     rb = repo_bloat_evidence(files, sloc)
     if rb:
         evidences.append(rb)
@@ -78,6 +95,12 @@ def run(opts: Options) -> Report:
         except GitUnavailable:
             print("slopcount: git history unavailable; skipping archaeology",
                   file=sys.stderr)
-    return aggregate(evidences, sloc=sloc, infected=infected,
-                     skip_count=skip, root=str(root),
-                     history_commits=history_commits)
+    report = aggregate(evidences, sloc=sloc, infected=infected,
+                       skip_count=skip, root=str(root),
+                       history_commits=history_commits)
+    # Ленивый импорт: модуль slocomo импортирует Options из этого модуля
+    from slopcount.metrics.slocomo import compute as slocomo_compute
+    report.slocomo = slocomo_compute(
+        slop=report.slop, prose_words=prose_words, cognitive_points=cog_points,
+        halstead_secs=hal_secs, opts=opts)
+    return report
