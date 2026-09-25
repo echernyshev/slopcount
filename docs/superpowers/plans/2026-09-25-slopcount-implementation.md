@@ -2177,7 +2177,7 @@ git commit -m "test: pin down full SLOP formula and recursion verdict"
 **Files:**
 - Create: `src/slopcount/metrics/cognitive.py`, `tests/test_cognitive.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_cognitive.py`:
+- [x] **Step 1: Failing-тест** `tests/test_cognitive.py`:
 
 ```python
 from slopcount.metrics.cognitive import approx_cognitive_complexity, halstead_seconds
@@ -2202,8 +2202,8 @@ def test_halstead_seconds_positive_and_monotone():
     assert small > 0 and big > small
 ```
 
-- [ ] **Step 2: Run** → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/metrics/cognitive.py`:
+- [x] **Step 2: Run** → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/metrics/cognitive.py`:
 
 ```python
 from __future__ import annotations
@@ -2280,8 +2280,8 @@ def halstead_seconds(text: str) -> float:
     return V * D / 18
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_cognitive.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_cognitive.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/metrics/cognitive.py tests/test_cognitive.py
