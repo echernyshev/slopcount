@@ -84,3 +84,9 @@ def test_history_flag_on_non_repo_skips_archaeology(tmp_path):
     assert code == 0
     assert re.search(r"Git history\s+\d", out)     # строка есть, без (N)
     assert "Git history (" not in out
+
+
+def test_recursion_verdict_on_pure_slop(tmp_path):
+    (tmp_path / "ONLY_SLOP.md").write_text("Great question! " * 200)
+    code, out = run_cli([str(tmp_path), "--lang", "en"])
+    assert "Recursion" in out

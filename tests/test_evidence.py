@@ -38,3 +38,17 @@ def test_zero_sloc_edge():
     assert aggregate([ev], sloc=0).slop_ratio == float("inf")
     assert aggregate([], sloc=0).slop_ratio == 0.0
     assert CategoryTotals(files=1, slop_lines=0, weight=7).cognitivity == "low"
+
+
+def test_aggregate_full_slop_formula():
+    evs = [
+        _ev("a.py", 1, Category.PROSE, 5),
+        _ev("a.py", 1, Category.STYLE, 2),      # разные категории на одной строке
+        _ev("b.md", 4, Category.DOCS, 2),
+        _ev("git:ab12cd34", 2, Category.HISTORY, 5),
+        _ev(".claude", 0, Category.AGENCY, 3),  # не входит в SLOP
+    ]
+    report = aggregate(evs, sloc=50, infected=[("big.md", 100)])
+    # уникальных строк с уликами: (a.py,1), (b.md,4), (git:...,2) = 3; md: round(100*.8)=80
+    assert report.slop == 83
+    assert abs(report.slop_ratio - 166.0) < 1e-9
