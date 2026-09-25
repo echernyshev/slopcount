@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 
 from slopcount.evidence import Category, Evidence
@@ -8,6 +9,27 @@ from slopcount.scanner import ScannedFile
 MODEL_NAME = "gpt2"
 MAX_PPL = 35.0     # ниже — «слишком гладкая» проза
 MAX_BURST = 0.3    # коэффициент вариации перплексии ниже — монотонный слоп
+_OVERLONG_MSG = "Token indices sequence length"
+
+
+def _silence_overlong_tokenizer_warning() -> None:
+    """Токенизатор transformers предупреждает о последовательностях длиннее
+    model_max_length; такие чанки мы осознанно пропускаем сами — предупреждение
+    только пугает. Хирургический фильтр на конкретный логгер: глушится только
+    это сообщение, остальные предупреждения и ошибки проходят."""
+    try:
+        from transformers.utils import logging as hf_logging
+    except ImportError:
+        return
+    lg = hf_logging.get_logger("transformers.tokenization_utils_base")
+    if any(getattr(f, "_slopcount_overlong", False) for f in lg.filters):
+        return
+
+    def _drop_overlong(record: logging.LogRecord) -> bool:
+        return _OVERLONG_MSG not in record.getMessage()
+
+    _drop_overlong._slopcount_overlong = True  # type: ignore[attr-defined]
+    lg.addFilter(_drop_overlong)
 
 
 def available() -> bool:
@@ -37,6 +59,7 @@ class PerplexityDetector:
         self._model.eval()
         self._max_ppl = MAX_PPL
         self._max_burst = MAX_BURST
+        _silence_overlong_tokenizer_warning()
 
     def _ppls(self, sentences: list[str]) -> list[float]:
         """Натуральные лог-перплексии (mean NLL) по предложениям.

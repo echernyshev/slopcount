@@ -80,3 +80,32 @@ def test_overlong_chunks_skipped():
     det._torch = SimpleNamespace(no_grad=contextlib.nullcontext)
     evs = det.detect(ScannedFile("doc.md", None, "markdown", 0), SMOOTH)
     assert evs == []  # все чанки длиннее окна → ничего не измеряем, но и не падаем
+
+
+def test_overlong_warning_filter(monkeypatch, caplog):
+    """Фильтр глушит ТОЛЬКО предупреждение о слишком длинных последовательностях;
+    остальные предупреждения transformers проходят."""
+    import logging as stdlib_logging
+
+    import pytest as _pytest
+    _pytest.importorskip("transformers")
+
+    from slopcount.detectors import perplexity
+
+    test_logger = stdlib_logging.getLogger("slopcount.pplx.test")
+    for f in list(test_logger.filters):
+        test_logger.removeFilter(f)
+
+    from transformers.utils import logging as hf_logging
+    monkeypatch.setattr(hf_logging, "get_logger", lambda name: test_logger)
+
+    perplexity._silence_overlong_tokenizer_warning()
+
+    with caplog.at_level(stdlib_logging.WARNING, logger="slopcount.pplx.test"):
+        test_logger.warning(
+            "Token indices sequence length is longer than the maximum (1344 > 1024)")
+        test_logger.warning("Some other legit warning")
+
+    messages = [r.message for r in caplog.records]
+    assert not any("Token indices sequence length" in m for m in messages)
+    assert any("Some other legit warning" in m for m in messages)
