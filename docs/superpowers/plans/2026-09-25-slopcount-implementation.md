@@ -1621,7 +1621,7 @@ git commit -m "feat: docs bloat detector with md infection tracking"
 - Create: `src/slopcount/detectors/code_style.py`, `tests/test_code_style.py`
 - Modify: `src/slopcount/app.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_code_style.py`:
+- [x] **Step 1: Failing-тест** `tests/test_code_style.py`:
 
 ```python
 from slopcount.detectors.code_style import CodeStyleDetector
@@ -1684,8 +1684,8 @@ def test_monotone_comments_flagged():
     assert any("monotone comment length" in e.description for e in evs)
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_code_style.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/detectors/code_style.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_code_style.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/detectors/code_style.py`:
 
 ```python
 from __future__ import annotations
@@ -1786,8 +1786,8 @@ class CodeStyleDetector:
         return []
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_code_style.py -v` → PASS; вклинить в `app.run` по аналогии с Task 11 (для `sf.kind == "code"`: `evidences.extend(style_detector.detect(sf, text))`); прогнать `python -m pytest -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_code_style.py -v` → PASS; вклинить в `app.run` по аналогии с Task 11 (для `sf.kind == "code"`: `evidences.extend(style_detector.detect(sf, text))`); прогнать `python -m pytest -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/detectors/code_style.py src/slopcount/app.py tests
