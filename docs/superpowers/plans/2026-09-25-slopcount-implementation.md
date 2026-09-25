@@ -3214,7 +3214,7 @@ git commit -m "test: human-code purity fixture and perf smoke"
 **Files:**
 - Modify: `README.md`, `pyproject.toml`
 
-- [ ] **Step 1: README.md** (полная замена):
+- [x] **Step 1: README.md** (полная замена):
 
 ```markdown
 # slopcount
@@ -3271,7 +3271,7 @@ git commit -m "test: human-code purity fixture and perf smoke"
 MIT
 ```
 
-- [ ] **Step 2: pyproject-полировка** — добавить в `[project]`:
+- [x] **Step 2: pyproject-полировка** — добавить в `[project]`:
 
 ```toml
 keywords = ["sloc", "sloccount", "ai", "llm", "slop", "parody", "cognitive-complexity"]
@@ -3279,11 +3279,11 @@ keywords = ["sloc", "sloccount", "ai", "llm", "slop", "parody", "cognitive-compl
 Homepage = "https://github.com/echernyshev/slopcount"
 ```
 
-- [ ] **Step 3: Финальная проверка**
+- [x] **Step 3: Финальная проверка**
 
 Run: `python -m pytest -v` → всё PASS. Run: `slopcount . --lang ru` (на самом репо) → выводится отчёт; `slopcount . --json | python -m json.tool` → валидный JSON.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add README.md pyproject.toml
