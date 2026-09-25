@@ -30,5 +30,8 @@ def test_exit_zero_and_version_still_works():
 
 
 def test_docs_category_in_output():
+    import re
     code, out = run_cli([str(SLOP), "--lang", "en"])
-    assert "Markdown specs" in out
+    m = re.search(r"Markdown specs\s+\d+\s+(\d+)", out)
+    assert m and int(m.group(1)) == 2          # DOCS slop lines from fixture
+    assert "= 11" in out                       # total SLOP incl. 6 infected lines

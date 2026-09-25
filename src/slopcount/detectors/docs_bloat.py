@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from slopcount.evidence import Category, Evidence
 from slopcount.scanner import ScannedFile
 
-_EMOJI_HEADER = re.compile(r"^#{1,6}\s.*[\U0001F300-\U0001FAFF☀-➿⬀-⯿]")
+_EMOJI_HEADER = re.compile(r"^#{1,6}\s.*[\U0001F300-\U0001FAFF☀-⟿⬀-⯿]")
 
 
 @dataclass(frozen=True)
@@ -43,6 +43,7 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
     """Spec-to-Code Ratio из спеки §4.2: >100 КБ markdown на KLOC — тревога."""
     docs_bytes = sum(f.size for f in files if f.kind == "markdown")
     if sloc == 0:
+        # docs-only repo: ratio undefined, signal comes from infection instead
         return None
     kb_per_kloc = docs_bytes / 1024 / (sloc / 1000)
     if kb_per_kloc > 100:
