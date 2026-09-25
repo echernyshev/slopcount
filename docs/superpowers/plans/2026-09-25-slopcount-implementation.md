@@ -2651,7 +2651,7 @@ git commit -m "feat: JSON and CSV renderers with stable CI keys"
 **Files:**
 - Modify: `src/slopcount/cli.py`, `tests/test_cli.py`
 
-- [ ] **Step 1: Failing-тесты**
+- [x] **Step 1: Failing-тесты**
 
 ```python
 from tests.test_e2e import SLOP, run_cli
@@ -2672,7 +2672,7 @@ def test_runtime_error_exit_2(tmp_path):
     assert code == 2
 ```
 
-- [ ] **Step 2: Run** → FAIL
+- [x] **Step 2: Run** → FAIL
 - **Step 3: Реализация** — обернуть `main` в обработку:
 
 ```python
@@ -2691,7 +2691,7 @@ def main(argv=None) -> int:
     return 0
 ```
 
-- [ ] **Step 4: Run all** → PASS
+- [x] **Step 4: Run all** → PASS
 - **Step 5: Commit**
 
 ```bash
