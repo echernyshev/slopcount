@@ -2897,7 +2897,7 @@ git commit -m "feat: Russian locale with plural forms and localized render"
 - Create: `src/slopcount/detectors/perplexity.py`, `src/slopcount/download_model.py`, `tests/test_perplexity.py`
 - Modify: `src/slopcount/app.py`, `src/slopcount/cli.py`
 
-- [ ] **Step 1: Failing-тест** (мок модели, transformers не нужен):
+- [x] **Step 1: Failing-тест** (мок модели, transformers не нужен):
 
 ```python
 import math
@@ -2935,7 +2935,7 @@ def test_smooth_text_flagged_with_fake_model():
     assert all(e.description.startswith("suspiciously smooth prose") for e in evs)
 ```
 
-- [ ] **Step 2: Run** → FAIL
+- [x] **Step 2: Run** → FAIL
 - **Step 3: Реализация** `src/slopcount/detectors/perplexity.py`:
 
 ```python
@@ -3026,7 +3026,7 @@ if __name__ == "__main__":
 
 и в цикле `evidences.extend(pplx.detect(sf, text))` для markdown/prose. В `cli.py` ловить `SystemExit` от `run` → `return 2`.
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_perplexity.py -v` → PASS (тест не требует extras)
+- [x] **Step 4: Run** `python -m pytest tests/test_perplexity.py -v` → PASS (тест не требует extras)
 - **Step 5: Commit**
 
 ```bash
