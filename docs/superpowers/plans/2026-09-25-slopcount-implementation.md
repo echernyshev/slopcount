@@ -3117,7 +3117,7 @@ git commit -m "feat: exact treesitter cognitive complexity mode"
 - Create: `tests/fixtures/human_project/src/args.c`, `tests/fixtures/human_project/src/util.py`, `tests/fixtures/human_project/README.md`
 - Modify: `tests/test_e2e.py`
 
-- [ ] **Step 1: «Человеческий» fixture**
+- [x] **Step 1: «Человеческий» fixture**
 
 `tests/fixtures/human_project/src/args.c` (стиль: terse-комментарии, никакой прозы):
 
@@ -3156,7 +3156,7 @@ def clamp(v, lo, hi):
 small helpers, no warranty
 ```
 
-- [ ] **Step 1b: Прогресс на stderr при tty (спека §8)** — в цикл `app.run`
+- [x] **Step 1b: Прогресс на stderr при tty (спека §8)** — в цикл `app.run`
   добавить (после `for sf in scan(root)`; счётчик `n` инкрементируется на
   каждый обработанный файл):
 
@@ -3169,7 +3169,7 @@ small helpers, no warranty
 и в конце цикла один `print(file=sys.stderr)` для перевода строки. В pytest
 stderr не tty — вывода нет, детерминизм e2e не страдает.
 
-- [ ] **Step 2: Failing-тесты** — в `tests/test_e2e.py`:
+- [x] **Step 2: Failing-тесты** — в `tests/test_e2e.py`:
 
 ```python
 import time
@@ -3196,10 +3196,10 @@ def test_perf_smoke_2k_files(tmp_path):
     assert code == 0 and time.monotonic() - t0 < 15
 ```
 
-- [ ] **Step 3: Run** `python -m pytest tests/test_e2e.py -v`
+- [x] **Step 3: Run** `python -m pytest tests/test_e2e.py -v`
 Expected: PASS. Если чистота сломана (>10%) — это регресс детекторов: чинить детекторы, а не порог.
 
-- [ ] **Step 4: Run all** `python -m pytest -v` → PASS
+- [x] **Step 4: Run all** `python -m pytest -v` → PASS
 - **Step 5: Commit**
 
 ```bash
