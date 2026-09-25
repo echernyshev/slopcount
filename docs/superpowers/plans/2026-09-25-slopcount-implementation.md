@@ -770,7 +770,7 @@ git commit -m "feat: honest physical SLOC counter"
 **Files:**
 - Create: `src/slopcount/rules.py`, `src/slopcount/rules/phrases_en.toml`, `src/slopcount/rules/phrases_ru.toml`, `tests/test_rules.py`
 
-- [ ] **Step 1: Каталоги** `src/slopcount/rules/phrases_en.toml`:
+- [x] **Step 1: Каталоги** `src/slopcount/rules/phrases_en.toml`:
 
 ```toml
 [[rule]]
@@ -868,7 +868,7 @@ weight = 2
 description = "Comprehensive solution boilerplate (ru)"
 ```
 
-- [ ] **Step 2: Failing-тест** `tests/test_rules.py`:
+- [x] **Step 2: Failing-тест** `tests/test_rules.py`:
 
 ```python
 from pathlib import Path
@@ -890,8 +890,8 @@ def test_case_insensitive_and_user_extra(tmp_path):
     assert any(r.weight == 4 for r in rules if r.pattern.search("Ну давай уже"))
 ```
 
-- [ ] **Step 3: Run** `python -m pytest tests/test_rules.py -v` → FAIL
-- [ ] **Step 4: Реализация** `src/slopcount/rules.py`:
+- [x] **Step 3: Run** `python -m pytest tests/test_rules.py -v` → FAIL
+- [x] **Step 4: Реализация** `src/slopcount/rules.py`:
 
 ```python
 from __future__ import annotations
@@ -932,7 +932,7 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     return rules
 ```
 
-- [ ] **Step 5: Run** `python -m pytest tests/test_rules.py -v` → PASS; commit:
+- [x] **Step 5: Run** `python -m pytest tests/test_rules.py -v` → PASS; commit:
 
 ```bash
 git add src/slopcount/rules.py src/slopcount/rules tests/test_rules.py
