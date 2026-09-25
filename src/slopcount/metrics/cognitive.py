@@ -22,7 +22,8 @@ def approx_cognitive_complexity(text: str, language: str) -> int:
     стоит 1+nesting), else/catch/except — плоско +1. Вложенность оценивается
     по отступам (только пробелы; табы не распознаются — приближение), язык
     не влияет на расчёт. Помечается в выводе как 'approximate' (точный
-    режим — treesitter, Task 23)."""
+    режим — treesitter, Task 23). Ключевые слова в комментариях и строках
+    тоже считаются — цена приближения без лексера."""
     lines = text.split("\n")
     unit = _indent_unit(lines)
     score = 0

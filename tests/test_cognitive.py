@@ -18,3 +18,11 @@ def test_halstead_seconds_positive_and_monotone():
     small = halstead_seconds("x = 1\n")
     big = halstead_seconds("x = 1\ny = x + 2 * 3 - x / (1 + 2)\n")
     assert small > 0 and big > small
+
+
+def test_approximation_pins():
+    assert approx_cognitive_complexity("if a:\n    pass\nelse:\n    pass\n", "python") == 2
+    assert approx_cognitive_complexity("x = a and b\n", "python") == 1
+    assert approx_cognitive_complexity("int main() {}\n", "c") == 0
+    assert halstead_seconds("just words here\n") == 0.0
+    assert halstead_seconds("") == 0.0
