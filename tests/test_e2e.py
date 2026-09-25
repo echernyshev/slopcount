@@ -1,4 +1,6 @@
 import io
+import os
+import subprocess
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -6,6 +8,10 @@ from slopcount.cli import main
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SLOP = FIXTURES / "slop_project"
+
+GIT_ENV = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+           "GIT_CONFIG_NOSYSTEM": "1",
+           "GIT_CONFIG_GLOBAL": os.devnull}
 
 
 def run_cli(argv):
@@ -54,15 +60,13 @@ def test_agency_row_in_output():
 
 
 def test_history_flag_on_git_repo(tmp_path):
-    import os
     import re
-    import subprocess
-    env = {**os.environ,
+    env = {**GIT_ENV,
            "GIT_AUTHOR_DATE": "2026-06-01T12:00:00",
            "GIT_COMMITTER_DATE": "2026-06-01T12:00:00"}
-    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True, env=GIT_ENV)
     (tmp_path / "x.md").write_text("# 🚀 doc\n")
-    subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True, env=GIT_ENV)
     subprocess.run(["git", "-C", str(tmp_path), "-c", "user.name=T", "-c",
                     "user.email=t@t", "commit", "-q", "-m", "feat: x"],
                    check=True, env=env)

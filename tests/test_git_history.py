@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 
@@ -9,11 +10,15 @@ from slopcount.evidence import Category
 
 def git(tmp_path, *args, date="2026-01-01T04:00:00"):
     subprocess.run(["git", "-C", str(tmp_path), *args], check=True,
-                   capture_output=True, env={"GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
-                   "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t",
-                   "GIT_AUTHOR_DATE": date,
-                   "GIT_COMMITTER_DATE": date,
-                   "PATH": "/usr/bin:/bin:/usr/local/bin", "HOME": str(tmp_path)})
+                   capture_output=True, env={
+        "GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
+        "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t",
+        "GIT_AUTHOR_DATE": date,
+        "GIT_COMMITTER_DATE": date,
+        "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+        "HOME": str(tmp_path),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull})
 
 
 @pytest.fixture
@@ -102,3 +107,31 @@ def test_timeout_raises_git_unavailable(repo, monkeypatch):
         "slopcount.detectors.git_history.subprocess.run", boom)
     with pytest.raises(GitUnavailable):
         detect(repo, 500)
+
+
+def test_generated_with_trailer(repo):
+    # доп-коммит с трейлером в теле
+    git(repo, "commit", "-q", "--allow-empty", "-m",
+        "chore: regen\n\nGenerated with Claude Code\n")
+    evs, n = detect(repo, 500)
+    assert n == 2
+    assert any("'Generated with' trailer" in e.description and e.weight == 5 for e in evs)
+
+
+def test_aider_prefix(tmp_path):
+    git(tmp_path, "init", "-q")
+    (tmp_path / "a.txt").write_text("x\n")
+    git(tmp_path, "add", ".")
+    git(tmp_path, "commit", "-q", "-m", "aider: added the file")
+    evs, n = detect(tmp_path, 500)
+    assert any(e.description == "aider prefix" and e.weight == 3 for e in evs)
+
+
+def test_emoji_subject_and_message_not_numstat(tmp_path):
+    git(tmp_path, "init", "-q")
+    (tmp_path / "a.txt").write_text("x\n")
+    git(tmp_path, "add", ".")
+    git(tmp_path, "commit", "-q", "-m", "🎉 shipped it\n\nfake quote:\n9999\t9999\tnope.txt\n")
+    evs, n = detect(tmp_path, 500)
+    assert any("emoji in commit subject" in e.description and e.weight == 2 for e in evs)
+    assert not any("machine velocity" in e.description for e in evs)  # Fix 1 pin

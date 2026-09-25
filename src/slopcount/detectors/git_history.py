@@ -1,3 +1,6 @@
+"""git-археология слопа. Функция, а не класс: stateless, возвращает
+(улики, счётчик коммитов); вызывается только при --history."""
+
 from __future__ import annotations
 
 import re
@@ -11,7 +14,7 @@ from slopcount.evidence import Category, Evidence
 _REC = re.compile(r"^(\d+)\t(\d+)\t(.+)$")
 _COAUTHOR = re.compile(r"Co-Authored-By:.*(?:Claude|Copilot|GPT|Gemini|aider)", re.I)
 _GENERATED = re.compile(r"^Generated with (?:Claude Code|Cursor|Copilot|Gemini)", re.I | re.M)
-_AIDER = re.compile(r"^(aider|🤖):?", re.I)
+_AIDER = re.compile(r"^(?:aider\b|🤖):?", re.I)
 _CONVENTIONAL = re.compile(
     r"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+")
 
@@ -64,8 +67,16 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
         if hour is not None and hour <= 5:
             evidences.append(Evidence(ref, 1, Category.HISTORY, 1,
                                       f"night commit ({hour:02d}:00)"))
-        changed = sum(int(m.group(1) or 0) + int(m.group(2) or 0)
-                      for line in lines if (m := _REC.match(line.strip())))
+        # numstat — строгий хвост записи: с конца до первой не-numstat строки,
+        # чтобы цитаты вида "12\t34\tpath" в тексте коммита не считались
+        numstat_lines: list[str] = []
+        for line in reversed(lines):
+            if _REC.match(line.strip()):
+                numstat_lines.append(line.strip())
+            else:
+                break
+        changed = sum(int(_REC.match(l).group(1)) + int(_REC.match(l).group(2))
+                      for l in numstat_lines)
         if changed > 2000:
             evidences.append(Evidence(ref, 0, Category.HISTORY, 3,
                                       f"machine velocity ({changed} lines)"))
