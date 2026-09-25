@@ -2235,7 +2235,7 @@ def approx_cognitive_complexity(text: str, language: str) -> int:
         if not line.strip():
             continue
         nesting = (len(line) - len(line.lstrip(" "))) // unit
-        score += len(_NESTING.findall(line)) * max(1, nesting)
+        score += len(_NESTING.findall(line)) * (1 + nesting)
         score += len(_FLAT.findall(line))
     return score
 
