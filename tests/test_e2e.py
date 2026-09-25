@@ -1,6 +1,7 @@
 import io
 import os
 import subprocess
+import time
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from slopcount.detectors.perplexity import available
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SLOP = FIXTURES / "slop_project"
+HUMAN = FIXTURES / "human_project"
 
 GIT_ENV = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"),
            "GIT_CONFIG_NOSYSTEM": "1",
@@ -147,3 +149,22 @@ def test_perplexity_without_extras_exit_2():
         pytest.skip("extras installed")
     code, out = run_cli([str(SLOP), "--perplexity", "--lang", "en"])
     assert code == 2
+
+
+def test_human_fixture_stays_clean():
+    code, out = run_cli([str(HUMAN), "--lang", "en"])
+    assert "Slop Ratio (SLOP/SLOC)" in out
+    # фиксируем: человеческий код не параноится — ratio < 10%
+    import re
+    m = re.search(r"Slop Ratio \(SLOP/SLOC\)\s*=\s*([\d.]+)%", out)
+    assert m and float(m.group(1)) < 10.0
+
+
+def test_perf_smoke_2k_files(tmp_path):
+    deep = tmp_path / "pkg"
+    deep.mkdir()
+    for i in range(2000):
+        (deep / f"m{i}.py").write_text(f"def f{i}():\n    return {i}\n")
+    t0 = time.monotonic()
+    code, _ = run_cli([str(tmp_path), "--lang", "en"])
+    assert code == 0 and time.monotonic() - t0 < 15

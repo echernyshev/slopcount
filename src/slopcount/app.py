@@ -69,6 +69,7 @@ def run(opts: Options) -> Report:
     cog_points = 0
     hal_secs = 0.0
     used_approx = False     # был ли хоть один файл посчитан приближённо
+    n = 0
     for sf in files:
         if sf.kind not in ("code", "markdown", "prose"):
             continue
@@ -76,6 +77,10 @@ def run(opts: Options) -> Report:
         if text is None:
             skip += 1
             continue
+        n += 1
+        if sys.stderr.isatty() and n % 200 == 0:
+            print(f"\rscanned {n}/{len(files)} files...", end="",
+                  file=sys.stderr)
         file_evidences: list[Evidence] = []
         if sf.kind == "code":
             sloc += count_sloc(text, sf.language or "")
@@ -105,6 +110,8 @@ def run(opts: Options) -> Report:
         if pplx is not None and sf.kind in ("markdown", "prose"):
             evidences.extend(pplx.detect(sf, text))
         prose_words += flagged_words(text, file_evidences)
+    if sys.stderr.isatty() and n:
+        print(file=sys.stderr)          # завершаем строку прогресса
     rb = repo_bloat_evidence(files, sloc)
     if rb:
         evidences.append(rb)
