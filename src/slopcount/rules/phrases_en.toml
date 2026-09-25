@@ -4,7 +4,7 @@ weight = 5
 description = "Classic LLM enthusiasm"
 
 [[rule]]
-pattern = 'Certainly!'
+pattern = '\bCertainly!'
 weight = 5
 description = "Eager assistant energy"
 
@@ -24,7 +24,7 @@ weight = 3
 description = "Comprehensive-guide opener"
 
 [[rule]]
-pattern = "let'?s delve (?:deeper )?into"
+pattern = "let'?s delve (?:deep(?:er)? )?into"
 weight = 2
 description = "Delving, as promised"
 

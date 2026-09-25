@@ -18,10 +18,11 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
 
     Each catalog is a sequence of ``[[rule]]`` tables with ``pattern``
     (a regex, compiled case-insensitively), ``weight`` (int, default 1)
-    and ``description`` (str, default ""). Missing files are skipped
-    silently; a malformed regex raises :class:`re.error` from compile.
+    and ``description`` (str, default ""). Missing files warn on stderr
+    and are skipped; a malformed regex raises :class:`re.error` from compile.
     """
     import os
+    import sys
     import tomllib
 
     rules: list[PhraseRule] = []
@@ -30,6 +31,7 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     paths = [Path(os.fspath(base / n)) for n in names] + list(extra_paths or [])
     for p in paths:
         if not p.is_file():
+            print(f"slopcount: rules file not found, skipped: {p}", file=sys.stderr)
             continue
         data = tomllib.loads(p.read_text(encoding="utf-8"))
         for r in data.get("rule", []):
