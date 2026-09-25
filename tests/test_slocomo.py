@@ -29,3 +29,12 @@ def test_no_therapy_flag():
     res = compute(slop=1000, prose_words=100, cognitive_points=0,
                   halstead_secs=0.0, opts=Options(no_therapy=True))
     assert res.therapy_sessions == 0 and res.therapy_cost == 0.0
+
+
+def test_one_million_window_and_halstead_term():
+    res = compute(slop=1000, prose_words=20_000, cognitive_points=0,
+                  halstead_secs=0.0, opts=Options())
+    assert abs(res.context_windows_1m - 20_000 * 1.3 / 1_000_000) < 1e-9
+    res2 = compute(slop=1, prose_words=0, cognitive_points=0,
+                   halstead_secs=3600.0, opts=Options())
+    assert abs(res2.reading_hours - 1.0) < 1e-9

@@ -98,3 +98,9 @@ def test_slocomo_block_present():
     assert "Total Estimated Cost to Comprehend" in out
     assert "GPU-hours of Regret" in out
     assert "(SLOCOMO model, Person-Months = 2.4 * (KSLOP**1.05))" in out
+
+
+def test_no_therapy_hides_line():
+    code, out = run_cli([str(SLOP), "--no-therapy", "--lang", "en"])
+    assert "Therapy Recommended" not in out
+    assert "Coffee Required" in out
