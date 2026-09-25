@@ -1,0 +1,25 @@
+Totals grouped by slop origin (dominant slop source first):
+-------------------------------------------------------------------------------
+Origin                           files    slop lines    slop %  cognitivity
+-------------------------------------------------------------------------------
+Prose (comments/docstrings)          2             3      23.1  high      
+Markdown specs                       1             2      15.4  medium    
+Code style                           1             2      15.4  medium    
+Git history                          0             0       0.0  low       
+Environment markers                  1             —         —  —         
+-------------------------------------------------------------------------------
+Total Physical Source Lines of Code (SLOC)              = 8
+Total Suspicious Lines Of Prose (SLOP)                  = 13
+Slop Ratio (SLOP/SLOC)                                  = 162.5%
+-------------------------------------------------------------------------------
+Cognitive Awareness Effort, Person-Years (Person-Months)  = 0.00 (0.03) (approximate)
+(SLOCOMO model, Person-Months = 2.4 * (KSLOP**1.05))
+Schedule of Despair, Years (Months)                       = 0.05 (0.62)
+(SLOCOMO model, Months = 2.5 * (person-months**0.38))
+Estimated Average Number of Therapists (Effort/Schedule)  = 0.04
+Total Estimated Cost to Comprehend                        = $ 282.67
+Context Windows Consumed                                  = 0.00 × 200K / 0.00 × 1M
+GPU-hours of Regret                                       = 0.00
+Coffee Required                                           = 1 ($ 4.00)
+Therapy Recommended                                       = 1 ($ 150.00)
+VERDICT: [████████████████████] 162.5%  You ran slopcount inside slop. Recursion

@@ -5,6 +5,8 @@ from pathlib import Path
 
 from slopcount import __version__, i18n
 from slopcount.app import Options, run
+from slopcount.render.csv_out import render_csv
+from slopcount.render.json_out import render_json
 from slopcount.render.text import render_details, render_slocomo, render_text, render_verdict
 
 
@@ -45,13 +47,18 @@ def main(argv=None) -> int:
         no_therapy=args.no_therapy, fail_above=args.fail_above,
         verdict_only=args.verdict_only, wide=args.wide)
     report = run(opts)
-    print(render_text(report))
-    slocomo = render_slocomo(report)
-    if slocomo:
-        print(slocomo)
-    print(render_verdict(report))
-    if args.details:
-        print(render_details(report))
+    if args.json_out:
+        print(render_json(report))
+    elif args.csv_out:
+        print(render_csv(report), end="")
+    elif args.verdict_only:
+        print(render_verdict(report))
+    else:
+        print(render_text(report))
+        print(render_slocomo(report))
+        print(render_verdict(report))
+        if args.details:
+            print(render_details(report))
     return 0
 
 
