@@ -2707,7 +2707,7 @@ git commit -m "feat: CI mode -- fail-above exit codes and verdict-only"
 - Create: `src/slopcount/locale/ru/LC_MESSAGES/slopcount.po` (+ скомпилированный `.mo`)
 - Modify: `pyproject.toml` (включить `.mo`/`.po` в пакет), `tests/test_i18n.py`
 
-- [ ] **Step 1: Каталог** `src/slopcount/locale/ru/LC_MESSAGES/slopcount.po`:
+- [x] **Step 1: Каталог** `src/slopcount/locale/ru/LC_MESSAGES/slopcount.po`:
 
 ```po
 msgid ""
@@ -2835,7 +2835,7 @@ msgid "slopcount: path not found: {path}"
 msgstr "slopcount: путь не найден: {path}"
 ```
 
-- [ ] **Step 2: Компиляция и упаковка**
+- [x] **Step 2: Компиляция и упаковка**
 
 ```bash
 mkdir -p src/slopcount/locale/ru/LC_MESSAGES
@@ -2849,7 +2849,7 @@ msgfmt --check -o src/slopcount/locale/ru/LC_MESSAGES/slopcount.mo \
 
 (hatchling и так пакует всё под `src/slopcount`; строка — страховка.)
 
-- [ ] **Step 3: Failing-тесты** — добавить в `tests/test_i18n.py`:
+- [x] **Step 3: Failing-тесты** — добавить в `tests/test_i18n.py`:
 
 ```python
 import shutil
@@ -2874,7 +2874,7 @@ def test_russian_plurals():
     assert ngettext("%d cup", "%d cups", 21) % 21 == "21 чашка"
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_i18n.py -v` → PASS; e2e на ru:
+- [x] **Step 4: Run** `python -m pytest tests/test_i18n.py -v` → PASS; e2e на ru:
 
 ```python
 def test_ru_output():
@@ -2882,7 +2882,7 @@ def test_ru_output():
     assert "ВЕРДИКТ:" in out and "Доля слопа" in out
 ```
 
-- [ ] **Step 5: Run all** `python -m pytest -v` → PASS; commit:
+- [x] **Step 5: Run all** `python -m pytest -v` → PASS; commit:
 
 ```bash
 git add src/slopcount/locale pyproject.toml tests
