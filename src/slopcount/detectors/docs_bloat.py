@@ -3,10 +3,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from slopcount.detectors import EMOJI_RE
 from slopcount.evidence import Category, Evidence
 from slopcount.scanner import ScannedFile
 
-_EMOJI_HEADER = re.compile(r"^#{1,6}\s.*[\U0001F300-\U0001FAFF☀-⟿⬀-⯿]")
+_EMOJI_HEADER = re.compile(r"^#{1,6}\s.*" + EMOJI_RE.pattern)
 
 
 @dataclass(frozen=True)

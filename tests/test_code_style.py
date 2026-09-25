@@ -57,3 +57,12 @@ def test_monotone_comments_flagged():
     comments = "\n".join("# performs the computation step now" for _ in range(12))
     evs = det.detect(SF, comments + "\n" + body)
     assert any("monotone comment length" in e.description for e in evs)
+
+
+def test_negative_boundaries():
+    det = CodeStyleDetector()
+    four = "\n".join(f"try:\n    f{d}()\nexcept Exception:\n    pass" for d in range(4))
+    assert not [e for e in det.detect(SF, four + "\nx = 1\n" * 20) if "density" in e.description]
+    nine = "\n".join("# performs the computation step now" for _ in range(9))
+    assert not [e for e in det.detect(SF, nine + "\nx = 1\n") if "monotone" in e.description]
+    assert det.detect(SF, "catch (event) {}\n") == []

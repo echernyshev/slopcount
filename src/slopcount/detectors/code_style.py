@@ -3,15 +3,15 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 
+from slopcount.detectors import EMOJI_RE
 from slopcount.evidence import Category, Evidence
 from slopcount.extractors import extract_comments
 from slopcount.scanner import ScannedFile
 
-_EMOJI = re.compile(r"[\U0001F300-\U0001FAFF☀-⟿⬀-⯿]")
 _TRIVIAL_DOC = re.compile(
     r"^(Adds?|Returns?|Gets?|Sets?|Creates?|Initiali[sz]es?|Updates?|Checks?)\b", re.I)
 _CATCH_ALL = re.compile(
-    r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)")
+    r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)\b")
 
 
 class CodeStyleDetector:
@@ -36,7 +36,7 @@ class CodeStyleDetector:
             if n <= 2 and _TRIVIAL_DOC.match(first):
                 evs.append(Evidence(sf.path, b.start_line, self.category, 2,
                                     "trivial docstring on obvious function"))
-            if code_lines and n / max(code_lines, 1) > 0.5 and n >= 5:
+            if code_lines and n / code_lines > 0.5 and n >= 5:
                 evs.append(Evidence(sf.path, b.start_line, self.category, 2,
                                     f"docstring longer than body ({n} lines)"))
         return evs
@@ -58,7 +58,7 @@ class CodeStyleDetector:
         evs = []
         for b in extract_comments(text, sf.language or ""):
             for k, line in enumerate(b.lines):
-                if _EMOJI.search(line):
+                if EMOJI_RE.search(line):
                     evs.append(Evidence(sf.path, b.start_line + k, self.category, 2,
                                         "emoji in code comment"))
         return evs
