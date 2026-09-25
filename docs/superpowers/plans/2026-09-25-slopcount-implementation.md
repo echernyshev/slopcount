@@ -2296,7 +2296,7 @@ git commit -m "feat: approximate cognitive complexity and Halstead seconds"
 - Create: `src/slopcount/metrics/slocomo.py`, `tests/test_slocomo.py`
 - Modify: `src/slopcount/app.py`, `src/slopcount/render/text.py`, `src/slopcount/evidence.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_slocomo.py`:
+- [x] **Step 1: Failing-тест** `tests/test_slocomo.py`:
 
 ```python
 from slopcount.app import Options
@@ -2333,8 +2333,8 @@ def test_no_therapy_flag():
 
 Числа в тестах могут «поплыть» при реализации — исполнитель сверяет с формулами ниже и правит ожидания так, чтобы формулы оставались верными (тест фиксирует формулу, а не магию).
 
-- [ ] **Step 2: Run** → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/metrics/slocomo.py`:
+- [x] **Step 2: Run** → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/metrics/slocomo.py`:
 
 ```python
 from __future__ import annotations
@@ -2394,9 +2394,9 @@ def compute(*, slop: int, prose_words: int, cognitive_points: int,
         approximate=approximate)
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_slocomo.py -v` → PASS (при необходимости уточнить ожидания кофе/терапии по формуле — формулы неприкосновенны)
+- [x] **Step 4: Run** `python -m pytest tests/test_slocomo.py -v` → PASS (при необходимости уточнить ожидания кофе/терапии по формуле — формулы неприкосновенны)
 
-- [ ] **Step 5: Подключить к конвейеру**
+- [x] **Step 5: Подключить к конвейеру**
 
 В `app.run` накапливать входы: для файлов с ≥1 STYLE-уликой добавлять `approx_cognitive_complexity(text, lang)` и `halstead_seconds(text)`; `prose_words` — `flagged_words(...)` (уже есть) + для заражённых md `int(total_words * 0.8)`. В конце:
 
@@ -2449,7 +2449,7 @@ def test_slocomo_block_present():
     assert "GPU-hours of Regret" in out
 ```
 
-- [ ] **Step 6: Run all** → PASS; commit:
+- [x] **Step 6: Run all** → PASS; commit:
 
 ```bash
 git add src/slopcount/metrics/slocomo.py src/slopcount/app.py src/slopcount/render/text.py tests
