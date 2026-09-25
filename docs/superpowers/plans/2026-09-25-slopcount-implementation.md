@@ -1227,7 +1227,7 @@ git commit -m "feat: gettext i18n scaffolding with deterministic number formatti
 - Modify: `src/slopcount/cli.py` (полная замена), `tests/test_cli.py` (дополнить)
 - Test: `tests/test_e2e.py`
 
-- [ ] **Step 1: Fixture «слопный» проект**
+- [x] **Step 1: Fixture «слопный» проект**
 
 `tests/fixtures/slop_project/README.md`:
 
@@ -1252,7 +1252,7 @@ def greet(name):
     return f"Hello, {name}!"
 ```
 
-- [ ] **Step 2: Failing e2e-тест** `tests/test_e2e.py`:
+- [x] **Step 2: Failing e2e-тест** `tests/test_e2e.py`:
 
 ```python
 import io
@@ -1287,9 +1287,9 @@ def test_exit_zero_and_version_still_works():
     assert run_cli(["--version"])[0] == 0
 ```
 
-- [ ] **Step 3: Run** `python -m pytest tests/test_e2e.py -v` → FAIL (cli не знает путей)
+- [x] **Step 3: Run** `python -m pytest tests/test_e2e.py -v` → FAIL (cli не знает путей)
 
-- [ ] **Step 4: Реализация**
+- [x] **Step 4: Реализация**
 
 `src/slopcount/app.py`:
 
@@ -1462,8 +1462,8 @@ def main(argv=None) -> int:
     return 0
 ```
 
-- [ ] **Step 5: Run** `python -m pytest tests/test_e2e.py tests/test_cli.py -v` → PASS
-- [ ] **Step 6: Ручная проверка и коммит**
+- [x] **Step 5: Run** `python -m pytest tests/test_e2e.py tests/test_cli.py -v` → PASS
+- [x] **Step 6: Ручная проверка и коммит**
 
 Run: `python -m slopcount.cli tests/fixtures/slop_project --lang en` (или `slopcount tests/...`)
 Expected: таблица с SLOC/SLOP/VERDICT.
