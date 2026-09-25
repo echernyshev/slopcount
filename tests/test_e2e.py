@@ -51,3 +51,32 @@ def test_agency_row_in_output():
     code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Environment markers\s+(\d+)", out)
     assert m and int(m.group(1)) == 1          # AGENCY: fixture CLAUDE.md marker
+
+
+def test_history_flag_on_git_repo(tmp_path):
+    import os
+    import re
+    import subprocess
+    env = {**os.environ,
+           "GIT_AUTHOR_DATE": "2026-06-01T12:00:00",
+           "GIT_COMMITTER_DATE": "2026-06-01T12:00:00"}
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / "x.md").write_text("# 🚀 doc\n")
+    subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(tmp_path), "-c", "user.name=T", "-c",
+                    "user.email=t@t", "commit", "-q", "-m", "feat: x"],
+                   check=True, env=env)
+    code, out = run_cli([str(tmp_path), "--history", "10", "--lang", "en"])
+    assert code == 0
+    # 1 коммит, полдень → ни одной history-улики; счётчик коммитов в строке
+    assert re.search(r"Git history \(1\)\s+0\s+0", out)
+    assert re.search(r"Total Suspicious Lines Of Prose \(SLOP\)\s+= \d+", out)
+
+
+def test_history_flag_on_non_repo_skips_archaeology(tmp_path):
+    import re
+    (tmp_path / "m.py").write_text("x = 1\n")
+    code, out = run_cli([str(tmp_path), "--history", "5", "--lang", "en"])
+    assert code == 0
+    assert re.search(r"Git history\s+\d", out)     # строка есть, без (N)
+    assert "Git history (" not in out

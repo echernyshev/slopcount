@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -67,5 +68,16 @@ def run(opts: Options) -> Report:
     if rb:
         evidences.append(rb)
     evidences.extend(EnvMarkerDetector().detect(root, files, read_text))
+    history_commits: int | None = None
+    if opts.history:
+        from slopcount.detectors.git_history import GitUnavailable, detect as git_detect
+        try:
+            hist_evs, commits = git_detect(root, opts.history)
+            evidences.extend(hist_evs)
+            history_commits = commits
+        except GitUnavailable:
+            print("slopcount: git history unavailable; skipping archaeology",
+                  file=sys.stderr)
     return aggregate(evidences, sloc=sloc, infected=infected,
-                     skip_count=skip, root=str(root))
+                     skip_count=skip, root=str(root),
+                     history_commits=history_commits)
