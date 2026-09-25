@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 from slopcount import __version__, i18n
@@ -46,6 +47,9 @@ def main(argv=None) -> int:
         overhead=args.overhead, coffee_price=args.coffee_price,
         no_therapy=args.no_therapy, fail_above=args.fail_above,
         verdict_only=args.verdict_only, wide=args.wide)
+    if not Path(opts.paths[0]).exists():
+        print(f"slopcount: path not found: {opts.paths[0]}", file=sys.stderr)
+        return 2
     report = run(opts)
     if args.json_out:
         print(render_json(report))
@@ -59,6 +63,8 @@ def main(argv=None) -> int:
         print(render_verdict(report))
         if args.details:
             print(render_details(report))
+    if opts.fail_above is not None and report.slop_ratio > opts.fail_above:
+        return 1
     return 0
 
 

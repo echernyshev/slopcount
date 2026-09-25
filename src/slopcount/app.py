@@ -44,6 +44,9 @@ def flagged_words(text: str, evidences: list[Evidence]) -> int:
 def run(opts: Options) -> Report:
     root = Path(opts.paths[0])
     files: list[ScannedFile] = scan(root)
+    if len(opts.paths) > 1:
+        print(f"slopcount: multiple paths given, scanning only the first: {opts.paths[0]}",
+              file=sys.stderr)
     phrase = PhraseDetector(load_rules(opts.rules))
     docs_bloat = DocsBloatDetector()
     style_detector = CodeStyleDetector()

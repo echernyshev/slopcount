@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 
 from slopcount.evidence import Category, Report
 from slopcount.verdicts import verdict_for
@@ -16,12 +17,13 @@ def render_json(report: Report) -> str:
             "therapists": round(report.slocomo.therapists, 3),
             "cost": round(report.slocomo.cost, 2),
             "context_windows_200k": round(report.slocomo.context_windows_200k, 4),
+            "context_windows_1m": round(report.slocomo.context_windows_1m, 4),
             "gpu_hours": round(report.slocomo.gpu_hours, 4),
             "coffee_cups": report.slocomo.coffee_cups,
             "approximate": report.slocomo.approximate,
         }
     v = verdict_for(report.slop_ratio)
-    ratio = round(report.slop_ratio, 2) if report.slop_ratio != float("inf") else None
+    ratio = round(report.slop_ratio, 2) if not math.isinf(report.slop_ratio) else None
     return json.dumps({
         "sloc": report.sloc,
         "slop": report.slop,
