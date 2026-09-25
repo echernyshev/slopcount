@@ -1481,7 +1481,7 @@ git commit -m "feat: MVP pipeline — scan, phrase detection, SLOC, text render,
 - Create: `src/slopcount/detectors/docs_bloat.py`, `tests/test_docs_bloat.py`
 - Modify: `src/slopcount/app.py` (вклинить детектор)
 
-- [ ] **Step 1: Failing-тест** `tests/test_docs_bloat.py`:
+- [x] **Step 1: Failing-тест** `tests/test_docs_bloat.py`:
 
 ```python
 from slopcount.detectors.docs_bloat import DocsBloatDetector
@@ -1524,8 +1524,8 @@ def test_repo_bloat_evidence():
     assert repo_bloat_evidence(files, sloc=10_000) is None  # 30 КБ/КЛОК — норм
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_docs_bloat.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/detectors/docs_bloat.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_docs_bloat.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/detectors/docs_bloat.py`:
 
 ```python
 from __future__ import annotations
@@ -1580,9 +1580,9 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
     return None
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_docs_bloat.py -v` → PASS
+- [x] **Step 4: Run** `python -m pytest tests/test_docs_bloat.py -v` → PASS
 
-- [ ] **Step 5: Вклинить в app.run** — заменить цикл обработки markdown:
+- [x] **Step 5: Вклинить в app.run** — заменить цикл обработки markdown:
 
 ```python
         if sf.kind == "markdown":
@@ -1606,7 +1606,7 @@ def test_docs_category_in_output():
 
 ПРАВИЛО для Tasks 12–14: e2e-тесты вьюинга детекторов утверждают числа фикстуры, а не безусловно печатаемые ярлыки.
 
-- [ ] **Step 6: Run all** `python -m pytest -v` → PASS; commit:
+- [x] **Step 6: Run all** `python -m pytest -v` → PASS; commit:
 
 ```bash
 git add src/slopcount/detectors/docs_bloat.py src/slopcount/app.py tests
