@@ -3041,7 +3041,7 @@ git commit -m "feat: optional perplexity detector behind [perplexity] extras"
 **Files:**
 - Modify: `src/slopcount/metrics/cognitive.py`, `tests/test_cognitive.py`, `src/slopcount/app.py`
 
-- [ ] **Step 1: Failing-тест** (пропускается без extras):
+- [x] **Step 1: Failing-тест** (пропускается без extras):
 
 ```python
 import pytest
@@ -3055,7 +3055,7 @@ def test_exact_mode_lowers_approximation_flag():
     assert exact_available() in (True, False)
 ```
 
-- [ ] **Step 2: Run** → SKIP (без extras) / FAIL
+- [x] **Step 2: Run** → SKIP (без extras) / FAIL
 - **Step 3: Реализация** — добавить в `cognitive.py`:
 
 ```python
@@ -3101,7 +3101,7 @@ def cognitive_complexity_tspython(text: str) -> int:
 
 В `app.py` при сборе `cog_points`: если `exact_available()` и язык python → `cognitive_complexity_tspython(text)`, иначе `approx_cognitive_complexity(...)`; в `slocomo.compute` передавать `approximate=not exact_available()` (только python-файлы точные; смешанный режим — `approximate=True` если хоть один файл посчитан приближённо).
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_cognitive.py -v` → PASS/SKIP
+- [x] **Step 4: Run** `python -m pytest tests/test_cognitive.py -v` → PASS/SKIP
 - **Step 5: Commit**
 
 ```bash
