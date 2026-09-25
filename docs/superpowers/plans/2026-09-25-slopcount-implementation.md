@@ -145,6 +145,7 @@ from slopcount.cli import main
 
 def test_version_flag(capsys):
     from slopcount import __version__
+
     try:
         main(["--version"])
     except SystemExit as e:
@@ -213,7 +214,7 @@ def _ev(file, line, cat, weight):
 def test_aggregate_counts_unique_slop_lines_per_category():
     evs = [
         _ev("a.py", 1, Category.PROSE, 5),
-        _ev("a.py", 1, Category.PROSE, 2),   # та же строка — не удваивает slop_lines
+        _ev("a.py", 1, Category.PROSE, 2),  # та же строка — не удваивает slop_lines
         _ev("a.py", 9, Category.PROSE, 5),
         _ev("b.py", 3, Category.STYLE, 1),
     ]
@@ -261,8 +262,8 @@ class Category(str, Enum):
 
 @dataclass(frozen=True)
 class Evidence:
-    file: str          # путь относительно корня скана или "git:<sha8>" для коммитов
-    line: int          # 1-based; 0 = файл-уровень
+    file: str  # путь относительно корня скана или "git:<sha8>" для коммитов
+    line: int  # 1-based; 0 = файл-уровень
     category: Category
     weight: int
     description: str
@@ -320,9 +321,14 @@ def aggregate(
         files_per_cat[e.category].add(e.file)
         weight_per_cat[e.category] += e.weight
 
-    report = Report(root=root, sloc=sloc, history_commits=history_commits,
-                    skip_count=skip_count, details=list(evidences),
-                    agency=[e for e in evidences if e.category is Category.AGENCY])
+    report = Report(
+        root=root,
+        sloc=sloc,
+        history_commits=history_commits,
+        skip_count=skip_count,
+        details=list(evidences),
+        agency=[e for e in evidences if e.category is Category.AGENCY],
+    )
     report.infected_md_lines = sum(round(n * 0.8) for _, n in infected)
     for cat in Category:
         totals = report.categories[cat]
@@ -418,29 +424,62 @@ from dataclasses import dataclass
 from pathlib import Path
 
 SKIP_DIRS = {
-    ".git", ".hg", ".svn", "node_modules", ".venv", "venv", "env",
-    "__pycache__", "dist", "build", "target", ".tox", ".mypy_cache",
-    ".pytest_cache", ".ruff_cache", ".idea", ".vscode", ".eggs", ".serena",
+    ".git",
+    ".hg",
+    ".svn",
+    "node_modules",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "dist",
+    "build",
+    "target",
+    ".tox",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".idea",
+    ".vscode",
+    ".eggs",
+    ".serena",
 }
 
 CODE_EXTS = {
-    ".py": "python", ".js": "javascript", ".mjs": "javascript",
-    ".cjs": "javascript", ".ts": "typescript", ".tsx": "typescript",
-    ".jsx": "javascript", ".go": "go", ".rs": "rust", ".c": "c", ".h": "c",
-    ".cpp": "cpp", ".cc": "cpp", ".hpp": "cpp", ".java": "java",
-    ".rb": "ruby", ".sh": "sh", ".bash": "sh", ".zsh": "sh", ".php": "php",
-    ".cs": "csharp", ".swift": "swift", ".kt": "kotlin", ".kts": "kotlin",
+    ".py": "python",
+    ".js": "javascript",
+    ".mjs": "javascript",
+    ".cjs": "javascript",
+    ".ts": "typescript",
+    ".tsx": "typescript",
+    ".jsx": "javascript",
+    ".go": "go",
+    ".rs": "rust",
+    ".c": "c",
+    ".h": "c",
+    ".cpp": "cpp",
+    ".cc": "cpp",
+    ".hpp": "cpp",
+    ".java": "java",
+    ".rb": "ruby",
+    ".sh": "sh",
+    ".bash": "sh",
+    ".zsh": "sh",
+    ".php": "php",
+    ".cs": "csharp",
+    ".swift": "swift",
+    ".kt": "kotlin",
+    ".kts": "kotlin",
     ".scala": "scala",
 }
-PROSE_EXTS = {".md": "markdown", ".markdown": "markdown", ".rst": "markdown",
-              ".txt": "prose"}
+PROSE_EXTS = {".md": "markdown", ".markdown": "markdown", ".rst": "markdown", ".txt": "prose"}
 
 
 @dataclass(frozen=True)
 class ScannedFile:
-    path: str            # posix-путь относительно корня
+    path: str  # posix-путь относительно корня
     language: str | None
-    kind: str            # "code" | "markdown" | "prose" | "other"
+    kind: str  # "code" | "markdown" | "prose" | "other"
     size: int
 
 
@@ -493,6 +532,7 @@ def scan(root: Path) -> list[ScannedFile]:
 
 def os_walk(root: Path):
     import os
+
     return os.walk(root)
 
 
@@ -553,13 +593,13 @@ def test_python_comments_and_docstrings():
     assert (7, "top-level comment") in inline
 
 
-C_LIKE = '''\
+C_LIKE = """\
 // setup the engine
 int x = 1;
 /* block
    of wisdom */
 int y = 2;  // trailing note
-'''
+"""
 
 
 def test_c_style_comments():
@@ -584,8 +624,20 @@ import re
 from dataclasses import dataclass
 
 HASH_LANGS = {"python", "ruby", "sh"}
-SLASH_LANGS = {"javascript", "typescript", "go", "rust", "c", "cpp",
-               "java", "php", "csharp", "swift", "kotlin", "scala"}
+SLASH_LANGS = {
+    "javascript",
+    "typescript",
+    "go",
+    "rust",
+    "c",
+    "cpp",
+    "java",
+    "php",
+    "csharp",
+    "swift",
+    "kotlin",
+    "scala",
+}
 
 
 @dataclass(frozen=True)
@@ -599,7 +651,7 @@ def _clean(marker_len: int, text: str) -> str:
     s = text.strip()
     for tok in ("///", "//", "#", "/*", "*/", "*"):
         if s.startswith(tok):
-            return s[len(tok):].strip()
+            return s[len(tok) :].strip()
     return s
 
 
@@ -662,7 +714,7 @@ def _python(text: str) -> list[CommentBlock]:
             continue
         m = re.match(r'(?:[rbfu]*)(?:"""|\'\'\')(.*)$', stripped)
         if m:
-            quote = '"""' if stripped.lstrip('"\'').startswith('"""') else "'''"
+            quote = '"""' if stripped.lstrip("\"'").startswith('"""') else "'''"
             quote = quote if quote in stripped else "'''"
             body = [m.group(1)]
             if m.group(1).rstrip().endswith(quote) and len(m.group(1).strip()) >= 3:
@@ -917,6 +969,7 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     names = ["phrases_en.toml", "phrases_ru.toml"]
     base = resources.files("slopcount").joinpath("rules")
     import os
+
     paths = [Path(os.fspath(base / n)) for n in names] + list(extra_paths or [])
     for p in paths:
         if not p.is_file():
@@ -924,11 +977,13 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
             continue
         data = tomllib.loads(p.read_text(encoding="utf-8"))
         for r in data.get("rule", []):
-            rules.append(PhraseRule(
-                pattern=re.compile(r["pattern"], re.IGNORECASE),
-                weight=int(r.get("weight", 1)),
-                description=r.get("description", ""),
-            ))
+            rules.append(
+                PhraseRule(
+                    pattern=re.compile(r["pattern"], re.IGNORECASE),
+                    weight=int(r.get("weight", 1)),
+                    description=r.get("description", ""),
+                )
+            )
     return rules
 ```
 
@@ -958,7 +1013,7 @@ from slopcount.scanner import ScannedFile
 def test_hits_in_python_comments():
     det = PhraseDetector(load_rules())
     sf = ScannedFile("a.py", "python", "code", 10)
-    src = 'def f():\n    # Great question! But certainly! here\n    return 1\n'
+    src = "def f():\n    # Great question! But certainly! here\n    return 1\n"
     evs = det.detect(sf, src)
     assert len(evs) == 2
     assert all(e.category is Category.PROSE for e in evs)
@@ -1010,8 +1065,7 @@ class PhraseDetector:
         for line_no, line in zones:
             for r in self.rules:
                 if r.pattern.search(line):
-                    out.append(Evidence(sf.path, line_no, Category.PROSE,
-                                        r.weight, r.description))
+                    out.append(Evidence(sf.path, line_no, Category.PROSE, r.weight, r.description))
         return out
 ```
 
@@ -1071,16 +1125,24 @@ class Verdict:
 
 
 _SCALE: list[tuple[float, Verdict]] = [
-    (10.0, Verdict("HUMAN",
-        "Almost human. Suspiciously clean. Where are you hiding the slop?")),
-    (25.0, Verdict("NEURO_CLOUD",
-        "A light neuro-haze: the slop has arrived, but so far it does the dishes")),
-    (50.0, Verdict("ESTABLISHED_SLOP",
-        "The slop has settled in for good. More documentation than meaning")),
-    (75.0, Verdict("AGENT_SELF_SERVICE",
-        "Repository on LLM self-service. Humans visit on weekends")),
-    (float("inf"), Verdict("AGENT_OCCUPATION",
-        "Agent occupation. Resistance is futile")),
+    (10.0, Verdict("HUMAN", "Almost human. Suspiciously clean. Where are you hiding the slop?")),
+    (
+        25.0,
+        Verdict(
+            "NEURO_CLOUD", "A light neuro-haze: the slop has arrived, but so far it does the dishes"
+        ),
+    ),
+    (
+        50.0,
+        Verdict(
+            "ESTABLISHED_SLOP", "The slop has settled in for good. More documentation than meaning"
+        ),
+    ),
+    (
+        75.0,
+        Verdict("AGENT_SELF_SERVICE", "Repository on LLM self-service. Humans visit on weekends"),
+    ),
+    (float("inf"), Verdict("AGENT_OCCUPATION", "Agent occupation. Resistance is futile")),
 ]
 _RECURSION = Verdict("RECURSION", "You ran slopcount inside slop. Recursion")
 
@@ -1123,13 +1185,13 @@ from slopcount.i18n import _, fmt_float, fmt_int, ngettext, setup
 
 def test_default_is_english_identity():
     setup(None)
-    assert _("Totals") == "Totals"          # каталога ru не выбрано — msgid
+    assert _("Totals") == "Totals"  # каталога ru не выбрано — msgid
     assert fmt_int(12411) == "12,411"
     assert fmt_float(14.76) == "14.76"
 
 
 def test_lang_argument_forces_language():
-    setup("en")                              # en — всегда msgid
+    setup("en")  # en — всегда msgid
     assert fmt_int(1234567) == "1,234,567"
     setup("ru")
     assert fmt_int(1234567) == "1\u202f234\u202f567"
@@ -1159,7 +1221,7 @@ DOMAIN = "slopcount"
 _translations = gettext.NullTranslations()
 _lang = "en"
 
-_THOUSANDS = {"en": ",", "ru": "\u202f"}   # неразрывный узкий пробел
+_THOUSANDS = {"en": ",", "ru": "\u202f"}  # неразрывный узкий пробел
 _DECIMAL = {"en": ".", "ru": ","}
 
 
@@ -1179,8 +1241,7 @@ def setup(lang: str | None = None) -> None:
     _lang = lang if lang else detect_lang()
     localedir = os.fspath(resources.files(DOMAIN).joinpath("locale"))
     try:
-        _translations = gettext.translation(
-            DOMAIN, localedir=localedir, languages=[_lang])
+        _translations = gettext.translation(DOMAIN, localedir=localedir, languages=[_lang])
     except (FileNotFoundError, OSError):
         _translations = gettext.NullTranslations()
 
@@ -1374,12 +1435,15 @@ def render_text(report: Report) -> str:
     out = []
     out.append(_("Totals grouped by slop origin (dominant slop source first):"))
     out.append("-" * 79)
-    out.append(f"{_('Origin'):<28}{'files':>10}{'slop lines':>14}"
-               f"{'slop %':>10}  {'cognitivity':<10}")
+    out.append(
+        f"{_('Origin'):<28}{'files':>10}{'slop lines':>14}{'slop %':>10}  {'cognitivity':<10}"
+    )
     out.append("-" * 79)
     ordered = sorted(
         [c for c in Category if c is not Category.AGENCY],
-        key=lambda c: report.categories[c].slop_lines, reverse=True)
+        key=lambda c: report.categories[c].slop_lines,
+        reverse=True,
+    )
     label = _ROW_LABELS[Category.HISTORY]
     for cat in ordered:
         t = report.categories[cat]
@@ -1387,12 +1451,15 @@ def render_text(report: Report) -> str:
         if cat is Category.HISTORY and report.history_commits:
             name = name + f" ({report.history_commits})"
         pct = (t.slop_lines / report.slop * 100) if report.slop else 0.0
-        out.append(f"{name:<28}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
-                   f"{fmt_float(pct, 1):>10}  {t.cognitivity:<10}")
+        out.append(
+            f"{name:<28}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
+            f"{fmt_float(pct, 1):>10}  {t.cognitivity:<10}"
+        )
     agency = report.agency
     name = _(_ROW_LABELS[Category.AGENCY])
-    out.append(f"{name:<28}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}"
-               f"{'—':>10}  {'—':<10}")
+    out.append(
+        f"{name:<28}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}{'—':>10}  {'—':<10}"
+    )
     out.append("-" * 79)
     out.append(f"{_('Total Physical Source Lines of Code (SLOC)'):<55} = {fmt_int(report.sloc)}")
     out.append(f"{_('Total Suspicious Lines Of Prose (SLOP)'):<55} = {fmt_int(report.slop)}")
@@ -1402,7 +1469,7 @@ def render_text(report: Report) -> str:
 
 def render_verdict(report: Report) -> str:
     v = verdict_for(report.slop_ratio)
-    return (f"{_('VERDICT:')} {progress_bar(report.slop_ratio)}  {_(v.text)}")
+    return f"{_('VERDICT:')} {progress_bar(report.slop_ratio)}  {_(v.text)}"
 ```
 
 `src/slopcount/cli.py` (полная замена):
@@ -1421,7 +1488,8 @@ from slopcount.render.text import render_text, render_verdict
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="slopcount",
-        description="Count the AI slop in a project and the cost of comprehending it.")
+        description="Count the AI slop in a project and the cost of comprehending it.",
+    )
     p.add_argument("--version", action="version", version=f"slopcount {__version__}")
     p.add_argument("paths", nargs="*", default=["."])
     p.add_argument("--details", action="store_true")
@@ -1443,6 +1511,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def Path_arg(s: str):
     from pathlib import Path
+
     return Path(s)
 
 
@@ -1450,12 +1519,22 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     i18n.setup(args.lang)
     opts = Options(
-        paths=args.paths or ["."], details=args.details, json_out=args.json_out,
-        csv_out=args.csv_out, history=args.history, perplexity=args.perplexity,
-        rules=args.rules, lang=args.lang, personcost=args.personcost,
-        overhead=args.overhead, coffee_price=args.coffee_price,
-        no_therapy=args.no_therapy, fail_above=args.fail_above,
-        verdict_only=args.verdict_only, wide=args.wide)
+        paths=args.paths or ["."],
+        details=args.details,
+        json_out=args.json_out,
+        csv_out=args.csv_out,
+        history=args.history,
+        perplexity=args.perplexity,
+        rules=args.rules,
+        lang=args.lang,
+        personcost=args.personcost,
+        overhead=args.overhead,
+        coffee_price=args.coffee_price,
+        no_therapy=args.no_therapy,
+        fail_above=args.fail_above,
+        verdict_only=args.verdict_only,
+        wide=args.wide,
+    )
     report = run(opts)
     print(render_text(report))
     print(render_verdict(report))
@@ -1490,7 +1569,9 @@ from slopcount.scanner import ScannedFile
 
 
 def make_sf(path, n_lines):
-    return ScannedFile(path, None, "markdown", 0), "\n".join(f"line {i}" for i in range(n_lines)) + "\n"
+    return ScannedFile(path, None, "markdown", 0), "\n".join(
+        f"line {i}" for i in range(n_lines)
+    ) + "\n"
 
 
 def test_spec_giant_flagged():
@@ -1518,6 +1599,7 @@ def test_small_clean_file_not_infected():
 
 def test_repo_bloat_evidence():
     from slopcount.detectors.docs_bloat import repo_bloat_evidence
+
     files = [ScannedFile("big.md", None, "markdown", 300 * 1024)]
     ev = repo_bloat_evidence(files, sloc=1000)
     assert ev and ev.weight == 4 and "docs bloat" in ev.description
@@ -1543,7 +1625,7 @@ _EMOJI = re.compile(r"[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2705\u27
 @dataclass(frozen=True)
 class DocsBloatResult:
     evidences: list[Evidence]
-    infected: list[tuple[str, int]]   # (путь, всего строк файла)
+    infected: list[tuple[str, int]]  # (путь, всего строк файла)
 
 
 class DocsBloatDetector:
@@ -1554,13 +1636,11 @@ class DocsBloatDetector:
         ev: list[Evidence] = []
         weight = 0
         if len(lines) > 500:
-            ev.append(Evidence(sf.path, 0, Category.DOCS, 5,
-                               f"spec giant: {len(lines)} lines"))
+            ev.append(Evidence(sf.path, 0, Category.DOCS, 5, f"spec giant: {len(lines)} lines"))
             weight += 5
         for i, line in enumerate(lines, 1):
             if _EMOJI_HEADER.match(line):
-                ev.append(Evidence(sf.path, i, Category.DOCS, 2,
-                                   "emoji-decorated section header"))
+                ev.append(Evidence(sf.path, i, Category.DOCS, 2, "emoji-decorated section header"))
                 weight += 2
         infected: list[tuple[str, int]] = []
         if lines and weight / len(lines) > 0.1:
@@ -1575,8 +1655,9 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
         return None
     kb_per_kloc = docs_bytes / 1024 / (sloc / 1000)
     if kb_per_kloc > 100:
-        return Evidence("<repo>", 0, Category.DOCS, 4,
-                        f"docs bloat: {kb_per_kloc:.0f} KB of markdown per KLOC")
+        return Evidence(
+            "<repo>", 0, Category.DOCS, 4, f"docs bloat: {kb_per_kloc:.0f} KB of markdown per KLOC"
+        )
     return None
 ```
 
@@ -1598,10 +1679,11 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
 ```python
 def test_docs_category_in_output():
     import re
+
     code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Markdown specs\s+\d+\s+(\d+)", out)
-    assert m and int(m.group(1)) == 2          # DOCS slop lines from fixture
-    assert "= 11" in out                       # total SLOP incl. 6 infected lines
+    assert m and int(m.group(1)) == 2  # DOCS slop lines from fixture
+    assert "= 11" in out  # total SLOP incl. 6 infected lines
 ```
 
 ПРАВИЛО для Tasks 12–14: e2e-тесты вьюинга детекторов утверждают числа фикстуры, а не безусловно печатаемые ярлыки.
@@ -1633,7 +1715,9 @@ SF = ScannedFile("m.py", "python", "code", 0)
 
 def test_trivial_docstring_flagged():
     det = CodeStyleDetector()
-    evs = det.detect(SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n    return a + b\n")
+    evs = det.detect(
+        SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n    return a + b\n"
+    )
     assert any(e.description == "trivial docstring on obvious function" for e in evs)
     assert all(e.category is Category.STYLE for e in evs)
 
@@ -1647,9 +1731,10 @@ def test_docstring_longer_than_body():
 
 def test_catch_all_density():
     det = CodeStyleDetector()
-    src = "\n".join(
-        f"try:\n    f{d}()\nexcept Exception:\n    pass" for d in range(6)
-    ) + "\nx = 1\n" * 40
+    src = (
+        "\n".join(f"try:\n    f{d}()\nexcept Exception:\n    pass" for d in range(6))
+        + "\nx = 1\n" * 40
+    )
     evs = det.detect(SF, src)
     assert sum(e.weight for e in evs if "catch-all" in e.description) >= 6
 
@@ -1671,7 +1756,8 @@ def test_docstring_perfection_flagged():
     funcs = []
     for i in range(6):
         funcs.append(
-            f"def f{i}(x):\n    '''Does f{i}.\n\n    Args:\n        x: value\n\n    Returns:\n        result\n    '''\n    return x + {i}\n")
+            f"def f{i}(x):\n    '''Does f{i}.\n\n    Args:\n        x: value\n\n    Returns:\n        result\n    '''\n    return x + {i}\n"
+        )
     evs = det.detect(SF, "".join(funcs))
     assert any("textbook-perfect docstrings" in e.description for e in evs)
 
@@ -1699,9 +1785,9 @@ from slopcount.scanner import ScannedFile
 
 _EMOJI = re.compile(r"[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF]")
 _TRIVIAL_DOC = re.compile(
-    r"^(Adds?|Returns?|Gets?|Sets?|Creates?|Initiali[sz]es?|Updates?|Checks?)\b", re.I)
-_CATCH_ALL = re.compile(
-    r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)")
+    r"^(Adds?|Returns?|Gets?|Sets?|Creates?|Initiali[sz]es?|Updates?|Checks?)\b", re.I
+)
+_CATCH_ALL = re.compile(r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)")
 _DEF = re.compile(r"^\s*(?:async\s+)?def\s+(\w+)|^\s*\w[\w\s\*&:<>,]*\s+\w+\s*\([^;]*\)\s*\{?\s*$")
 
 
@@ -1710,8 +1796,12 @@ class CodeStyleDetector:
 
     def detect(self, sf: ScannedFile, text: str) -> list[Evidence]:
         checks: list[Callable[[ScannedFile, str], list[Evidence]]] = [
-            self._docstrings, self._catch_all, self._emoji_comments,
-            self._docstring_perfection, self._monotone_comments]
+            self._docstrings,
+            self._catch_all,
+            self._emoji_comments,
+            self._docstring_perfection,
+            self._monotone_comments,
+        ]
         out: list[Evidence] = []
         for check in checks:
             out.extend(check(sf, text))
@@ -1725,11 +1815,25 @@ class CodeStyleDetector:
             n = len(b.lines)
             first = b.lines[0] if b.lines else ""
             if n <= 2 and _TRIVIAL_DOC.match(first):
-                evs.append(Evidence(sf.path, b.start_line, Category.STYLE, 2,
-                                    "trivial docstring on obvious function"))
+                evs.append(
+                    Evidence(
+                        sf.path,
+                        b.start_line,
+                        Category.STYLE,
+                        2,
+                        "trivial docstring on obvious function",
+                    )
+                )
             if code_lines and n / max(code_lines, 1) > 0.5 and n >= 5:
-                evs.append(Evidence(sf.path, b.start_line, Category.STYLE, 2,
-                                    f"docstring longer than body ({n} lines)"))
+                evs.append(
+                    Evidence(
+                        sf.path,
+                        b.start_line,
+                        Category.STYLE,
+                        2,
+                        f"docstring longer than body ({n} lines)",
+                    )
+                )
         return evs
 
     def _catch_all(self, sf, text) -> list[Evidence]:
@@ -1738,11 +1842,13 @@ class CodeStyleDetector:
         for i, line in enumerate(text.split("\n"), 1):
             if _CATCH_ALL.search(line):
                 total += 1
-                evs.append(Evidence(sf.path, i, Category.STYLE, 1,
-                                    "catch-all exception swallowing"))
+                evs.append(
+                    Evidence(sf.path, i, Category.STYLE, 1, "catch-all exception swallowing")
+                )
         if total >= 5:
-            evs.append(Evidence(sf.path, 0, Category.STYLE, 2,
-                                f"defensive catch-all density ({total})"))
+            evs.append(
+                Evidence(sf.path, 0, Category.STYLE, 2, f"defensive catch-all density ({total})")
+            )
         return evs
 
     def _emoji_comments(self, sf, text) -> list[Evidence]:
@@ -1750,8 +1856,11 @@ class CodeStyleDetector:
         for b in extract_comments(text, sf.language or ""):
             for k, line in enumerate(b.lines):
                 if _EMOJI.search(line):
-                    evs.append(Evidence(sf.path, b.start_line + k, Category.STYLE, 2,
-                                        "emoji in code comment"))
+                    evs.append(
+                        Evidence(
+                            sf.path, b.start_line + k, Category.STYLE, 2, "emoji in code comment"
+                        )
+                    )
         return evs
 
     _GOOGLE = re.compile(r"\b(Args|Parameters|Returns|Raises)\s*:", re.I)
@@ -1762,27 +1871,45 @@ class CodeStyleDetector:
         defs = [i for i, l in enumerate(lines, 1) if self._DEF_LINE.match(l)]
         if len(defs) < 5:
             return []
-        doc_starts = {b.start_line for b in extract_comments(text, sf.language or "")
-                      if b.is_docstring}
+        doc_starts = {
+            b.start_line for b in extract_comments(text, sf.language or "") if b.is_docstring
+        }
         perfect = sum(
-            1 for d in defs
+            1
+            for d in defs
             if any(ds == d + 1 for ds in doc_starts)
-            and any(self._GOOGLE.search(l) for l in lines[d:d + 15]))
+            and any(self._GOOGLE.search(l) for l in lines[d : d + 15])
+        )
         if perfect / len(defs) >= 0.8:
-            return [Evidence(sf.path, 0, Category.STYLE, 2,
-                             f"textbook-perfect docstrings on {perfect}/{len(defs)} functions")]
+            return [
+                Evidence(
+                    sf.path,
+                    0,
+                    Category.STYLE,
+                    2,
+                    f"textbook-perfect docstrings on {perfect}/{len(defs)} functions",
+                )
+            ]
         return []
 
     def _monotone_comments(self, sf, text) -> list[Evidence]:
-        lens = [len(line) for b in extract_comments(text, sf.language or "")
-                for line in b.lines if line]
+        lens = [
+            len(line) for b in extract_comments(text, sf.language or "") for line in b.lines if line
+        ]
         if len(lens) < 10:
             return []
         mean = sum(lens) / len(lens)
         var = sum((x - mean) ** 2 for x in lens) / len(lens)
         if var < 25:
-            return [Evidence(sf.path, 0, Category.STYLE, 2,
-                             f"monotone comment length (var={var:.1f}) — machine cadence")]
+            return [
+                Evidence(
+                    sf.path,
+                    0,
+                    Category.STYLE,
+                    2,
+                    f"monotone comment length (var={var:.1f}) — machine cadence",
+                )
+            ]
         return []
 ```
 
@@ -1897,11 +2024,14 @@ class _Header:
 
 def _load():
     import tomllib
+
     base = resources.files("slopcount").joinpath("rules/env_markers.toml")
     data = tomllib.loads(Path(str(base)).read_text(encoding="utf-8"))
     paths = [(m["path"], m["weight"], m["description"]) for m in data.get("marker", [])]
-    headers = [_Header(re.compile(h["pattern"]), h["weight"], h["description"])
-               for h in data.get("header", [])]
+    headers = [
+        _Header(re.compile(h["pattern"]), h["weight"], h["description"])
+        for h in data.get("header", [])
+    ]
     return paths, headers
 
 
@@ -1928,8 +2058,7 @@ class EnvMarkerDetector:
             for line in text.splitlines()[:5]:
                 for h in self.headers:
                     if h.pattern.search(line):
-                        evs.append(Evidence(sf.path, 1, Category.AGENCY,
-                                            h.weight, h.description))
+                        evs.append(Evidence(sf.path, 1, Category.AGENCY, h.weight, h.description))
         return evs
 
 
@@ -1968,12 +2097,21 @@ from slopcount.detectors.git_history import GitUnavailable, detect
 
 
 def git(tmp_path, *args):
-    subprocess.run(["git", "-C", str(tmp_path), *args], check=True,
-                   capture_output=True, env={"GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
-                   "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t",
-                   "GIT_AUTHOR_DATE": "2026-01-01T04:00:00",
-                   "GIT_COMMITTER_DATE": "2026-01-01T04:00:00",
-                   "PATH": "/usr/bin:/bin:/usr/local/bin", "HOME": str(tmp_path)})
+    subprocess.run(
+        ["git", "-C", str(tmp_path), *args],
+        check=True,
+        capture_output=True,
+        env={
+            "GIT_AUTHOR_NAME": "T",
+            "GIT_AUTHOR_EMAIL": "t@t",
+            "GIT_COMMITTER_NAME": "T",
+            "GIT_COMMITTER_EMAIL": "t@t",
+            "GIT_AUTHOR_DATE": "2026-01-01T04:00:00",
+            "GIT_COMMITTER_DATE": "2026-01-01T04:00:00",
+            "PATH": "/usr/bin:/bin:/usr/local/bin",
+            "HOME": str(tmp_path),
+        },
+    )
 
 
 @pytest.fixture
@@ -1981,8 +2119,17 @@ def repo(tmp_path):
     git(tmp_path, "init", "-q")
     (tmp_path / "a.txt").write_text("hello\n")
     git(tmp_path, "add", ".")
-    git(tmp_path, "-c", "user.name=T", "-c", "user.email=t@t", "commit", "-q",
-        "-m", "feat: add hello\n\nCo-Authored-By: Claude <noreply@anthropic.com>")
+    git(
+        tmp_path,
+        "-c",
+        "user.name=T",
+        "-c",
+        "user.email=t@t",
+        "commit",
+        "-q",
+        "-m",
+        "feat: add hello\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+    )
     return tmp_path
 
 
@@ -2017,7 +2164,8 @@ _GENERATED = re.compile(r"^Generated with (?:Claude Code|Cursor|Copilot|Gemini)"
 _AIDER = re.compile(r"^(aider|🤖):?", re.I)
 _EMOJI = re.compile(r"[\U0001F300-\U0001FAFF]")
 _CONVENTIONAL = re.compile(
-    r"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+")
+    r"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+"
+)
 
 
 class GitUnavailable(Exception):
@@ -2027,13 +2175,26 @@ class GitUnavailable(Exception):
 def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
     try:
         out = subprocess.run(
-            ["git", "-C", str(root), "log", f"-{limit}", "--no-color",
-             "--pretty=format:%x1e%H%x00%aI%x00%B", "--numstat"],
-            capture_output=True, text=True, check=True, timeout=60).stdout
+            [
+                "git",
+                "-C",
+                str(root),
+                "log",
+                f"-{limit}",
+                "--no-color",
+                "--pretty=format:%x1e%H%x00%aI%x00%B",
+                "--numstat",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=60,
+        ).stdout
     except subprocess.CalledProcessError as exc:
         # пустой репозиторий: rc 1 от rev-parse --verify -q HEAD — это ок
-        probe = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "-q", "HEAD"],
-                               capture_output=True)
+        probe = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--verify", "-q", "HEAD"], capture_output=True
+        )
         if probe.returncode == 1:
             return [], 0
         raise GitUnavailable(str(exc)) from exc
@@ -2054,28 +2215,29 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
         subjects.append(subject)
         for i, line in enumerate(lines, 1):
             if _COAUTHOR.search(line):
-                evidences.append(Evidence(ref, i, Category.HISTORY, 5,
-                                          "Co-Authored-By an AI"))
+                evidences.append(Evidence(ref, i, Category.HISTORY, 5, "Co-Authored-By an AI"))
         if _GENERATED.search(body):
-            evidences.append(Evidence(ref, 1, Category.HISTORY, 5,
-                                      "'Generated with' trailer"))
+            evidences.append(Evidence(ref, 1, Category.HISTORY, 5, "'Generated with' trailer"))
         if _AIDER.match(subject):
             evidences.append(Evidence(ref, 1, Category.HISTORY, 3, "aider prefix"))
         if _EMOJI.search(subject):
-            evidences.append(Evidence(ref, 1, Category.HISTORY, 2,
-                                      "emoji in commit subject"))
+            evidences.append(Evidence(ref, 1, Category.HISTORY, 2, "emoji in commit subject"))
         hour = _hour(aiso)
         if hour is not None and hour <= 5:
-            evidences.append(Evidence(ref, 1, Category.HISTORY, 1,
-                                      f"night commit ({hour:02d}:00)"))
-        changed = sum(int(m.group(1) or 0) + int(m.group(2) or 0)
-                      for line in lines if (m := _REC.match(line.strip())))
+            evidences.append(Evidence(ref, 1, Category.HISTORY, 1, f"night commit ({hour:02d}:00)"))
+        changed = sum(
+            int(m.group(1) or 0) + int(m.group(2) or 0)
+            for line in lines
+            if (m := _REC.match(line.strip()))
+        )
         if changed > 2000:
-            evidences.append(Evidence(ref, 0, Category.HISTORY, 3,
-                                      f"machine velocity ({changed} lines)"))
+            evidences.append(
+                Evidence(ref, 0, Category.HISTORY, 3, f"machine velocity ({changed} lines)")
+            )
     if len(subjects) >= 20 and all(_CONVENTIONAL.match(s) for s in subjects):
-        evidences.append(Evidence("git:", 0, Category.HISTORY, 3,
-                                  "100% conventional commits (humans get tired)"))
+        evidences.append(
+            Evidence("git:", 0, Category.HISTORY, 3, "100% conventional commits (humans get tired)")
+        )
     return evidences, len(commits)
 
 
@@ -2089,15 +2251,15 @@ def _hour(aiso: str) -> int | None:
 Вклинить в `app.run` (после env-маркеров):
 
 ```python
-    if opts.history:
-        from slopcount.detectors.git_history import GitUnavailable, detect as git_detect
-        try:
-            hist_evs, commits = git_detect(root, opts.history)
-            evidences.extend(hist_evs)
-            history_commits = commits
-        except GitUnavailable:
-            print("slopcount: git history unavailable; skipping archaeology",
-                  file=sys.stderr)
+if opts.history:
+    from slopcount.detectors.git_history import GitUnavailable, detect as git_detect
+
+    try:
+        hist_evs, commits = git_detect(root, opts.history)
+        evidences.extend(hist_evs)
+        history_commits = commits
+    except GitUnavailable:
+        print("slopcount: git history unavailable; skipping archaeology", file=sys.stderr)
 ```
 
 с инициализатором `history_commits: int | None = None` и передачей в `aggregate(..., history_commits=history_commits)`; импорт `sys` наверху `app.py`.
@@ -2107,13 +2269,28 @@ def _hour(aiso: str) -> int | None:
 ```python
 def test_history_flag_on_git_repo(tmp_path):
     import subprocess
+
     env = {"PATH": "/usr/bin:/bin"}
     subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
     (tmp_path / "x.md").write_text("# 🚀 doc\n")
     subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True)
-    subprocess.run(["git", "-C", str(tmp_path), "-c", "user.name=T", "-c",
-                    "user.email=t@t", "commit", "-q", "-m", "feat: x"],
-                   check=True, env=env)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(tmp_path),
+            "-c",
+            "user.name=T",
+            "-c",
+            "user.email=t@t",
+            "commit",
+            "-q",
+            "-m",
+            "feat: x",
+        ],
+        check=True,
+        env=env,
+    )
     code, out = run_cli([str(tmp_path), "--history", "10", "--lang", "en"])
     assert code == 0 and "Git history" in out
 ```
@@ -2141,7 +2318,7 @@ git commit -m "feat: git history archaeology detector"
 def test_aggregate_full_slop_formula():
     evs = [
         _ev("a.py", 1, Category.PROSE, 5),
-        _ev("a.py", 1, Category.STYLE, 2),      # разные категории на одной строке
+        _ev("a.py", 1, Category.STYLE, 2),  # разные категории на одной строке
         _ev("b.md", 4, Category.DOCS, 2),
         _ev("git:ab12cd34", 2, Category.HISTORY, 5),
         _ev(".claude", 0, Category.AGENCY, 3),  # не входит в SLOP
@@ -2191,7 +2368,9 @@ def test_flat_control_flow_scores_low():
 def test_nesting_increases_score():
     flat = "if a:\n    pass\nif b:\n    pass\n"
     nested = "if a:\n    if b:\n        if c:\n            pass\n"
-    assert approx_cognitive_complexity(nested, "python") > approx_cognitive_complexity(flat, "python")
+    assert approx_cognitive_complexity(nested, "python") > approx_cognitive_complexity(
+        flat, "python"
+    )
     # 1 + (1+1) + (1+2) = 6
     assert approx_cognitive_complexity(nested, "python") == 6
 
@@ -2211,8 +2390,7 @@ from __future__ import annotations
 import math
 import re
 
-_NESTING = re.compile(
-    r"\b(if|for|while|case|when|switch)\b|&&|\|\||\b(and|or)\b(?=\s)", re.I)
+_NESTING = re.compile(r"\b(if|for|while|case|when|switch)\b|&&|\|\||\b(and|or)\b(?=\s)", re.I)
 _FLAT = re.compile(r"\b(else|elif|catch|except)\b", re.I)
 
 
@@ -2242,10 +2420,23 @@ def approx_cognitive_complexity(text: str, language: str) -> int:
 
 _IDENT = re.compile(r"[A-Za-z_]\w*")
 _NUM = re.compile(r"\b\d+(?:\.\d+)?\b")
-_MULTI_OPS = ["==", "!=", "<=", ">=", "->", "::", "+=", "-=", "*=", "/=",
-              "**", "//", "&&", "||"]
-_OPS_KEYWORDS = {"if", "for", "while", "return", "def", "class", "import",
-                 "from", "function", "func", "fn", "switch", "case", "try"}
+_MULTI_OPS = ["==", "!=", "<=", ">=", "->", "::", "+=", "-=", "*=", "/=", "**", "//", "&&", "||"]
+_OPS_KEYWORDS = {
+    "if",
+    "for",
+    "while",
+    "return",
+    "def",
+    "class",
+    "import",
+    "from",
+    "function",
+    "func",
+    "fn",
+    "switch",
+    "case",
+    "try",
+}
 
 
 def halstead_seconds(text: str) -> float:
@@ -2268,7 +2459,8 @@ def halstead_seconds(text: str) -> float:
             n1.add(ch)
             N1 += 1
     operands = _NUM.findall(rest) + [
-        t for t in _IDENT.findall(rest) if t.lower() not in _OPS_KEYWORDS]
+        t for t in _IDENT.findall(rest) if t.lower() not in _OPS_KEYWORDS
+    ]
     n2 = set(operands)
     N2 = len(operands)
     n = len(n1) + len(n2)
@@ -2304,11 +2496,12 @@ from slopcount.metrics.slocomo import compute
 
 
 def test_cocomo_parody_numbers():
-    res = compute(slop=10_000, prose_words=23_800, cognitive_points=100,
-                  halstead_secs=0.0, opts=Options())
+    res = compute(
+        slop=10_000, prose_words=23_800, cognitive_points=100, halstead_secs=0.0, opts=Options()
+    )
     # KSLOP=10 → pm = 2.4*10**1.05 = 26.86...
-    assert abs(res.person_months - 2.4 * 10 ** 1.05) < 1e-6
-    assert abs(res.schedule_months - 2.5 * res.person_months ** 0.38) < 1e-6
+    assert abs(res.person_months - 2.4 * 10**1.05) < 1e-6
+    assert abs(res.schedule_months - 2.5 * res.person_months**0.38) < 1e-6
     assert abs(res.therapists - res.person_months / res.schedule_months) < 1e-6
     assert abs(res.cost - res.person_months * 4690.50 * 2.4) < 1e-6
     # чтение: 23800 слов / 238 wpm / 60 * 2.3 = 3.83 часа; когниция: 100*0.5/60
@@ -2317,8 +2510,9 @@ def test_cocomo_parody_numbers():
 
 
 def test_joke_conversions():
-    res = compute(slop=1000, prose_words=20_000, cognitive_points=0,
-                  halstead_secs=0.0, opts=Options())
+    res = compute(
+        slop=1000, prose_words=20_000, cognitive_points=0, halstead_secs=0.0, opts=Options()
+    )
     tokens = 20_000 * 1.3
     assert abs(res.context_windows_200k - tokens / 200_000) < 1e-9
     assert abs(res.gpu_hours - tokens / 100 / 3600) < 1e-9
@@ -2326,8 +2520,13 @@ def test_joke_conversions():
 
 
 def test_no_therapy_flag():
-    res = compute(slop=1000, prose_words=100, cognitive_points=0,
-                  halstead_secs=0.0, opts=Options(no_therapy=True))
+    res = compute(
+        slop=1000,
+        prose_words=100,
+        cognitive_points=0,
+        halstead_secs=0.0,
+        opts=Options(no_therapy=True),
+    )
     assert res.therapy_sessions == 0 and res.therapy_cost == 0.0
 ```
 
@@ -2344,9 +2543,9 @@ from dataclasses import dataclass
 
 from slopcount.app import Options
 
-WPM = 238            # Brysbaert 2019
-REREAD = 2.3         # коэффициент перечитывания от недоверия (шутка, помечена)
-COG_MINUTES = 0.5    # 1 балл Cognitive Complexity ≈ полминуты
+WPM = 238  # Brysbaert 2019
+REREAD = 2.3  # коэффициент перечитывания от недоверия (шутка, помечена)
+COG_MINUTES = 0.5  # 1 балл Cognitive Complexity ≈ полминуты
 TOKENS_PER_WORD = 1.3
 THERAPY_PRICE = 150.0
 
@@ -2367,31 +2566,44 @@ class SlocomoResult:
     coffee_cost: float
     therapy_sessions: int
     therapy_cost: float
-    approximate: bool = True   # cognitive approximation mode
+    approximate: bool = True  # cognitive approximation mode
 
 
-def compute(*, slop: int, prose_words: int, cognitive_points: int,
-            halstead_secs: float, opts: Options,
-            approximate: bool = True) -> SlocomoResult:
-    reading = (prose_words / WPM / 60 * REREAD
-               + cognitive_points * COG_MINUTES / 60
-               + halstead_secs / 3600)
+def compute(
+    *,
+    slop: int,
+    prose_words: int,
+    cognitive_points: int,
+    halstead_secs: float,
+    opts: Options,
+    approximate: bool = True,
+) -> SlocomoResult:
+    reading = (
+        prose_words / WPM / 60 * REREAD + cognitive_points * COG_MINUTES / 60 + halstead_secs / 3600
+    )
     kslop = slop / 1000
-    pm = 2.4 * kslop ** 1.05
-    months = 2.5 * pm ** 0.38
+    pm = 2.4 * kslop**1.05
+    months = 2.5 * pm**0.38
     tokens = prose_words * TOKENS_PER_WORD
     coffee = math.ceil(reading / 4)
     sessions = 0 if opts.no_therapy else max(1, math.ceil(pm * 2))
     return SlocomoResult(
-        slop=slop, reading_hours=reading, person_months=pm, person_years=pm / 12,
-        schedule_months=months, therapists=(pm / months) if months else 0.0,
+        slop=slop,
+        reading_hours=reading,
+        person_months=pm,
+        person_years=pm / 12,
+        schedule_months=months,
+        therapists=(pm / months) if months else 0.0,
         cost=pm * opts.personcost * opts.overhead,
-        context_windows_200k=tokens / 200_000, context_windows_1m=tokens / 1_000_000,
-        gpu_hours=tokens / 100 / 3600, coffee_cups=coffee,
+        context_windows_200k=tokens / 200_000,
+        context_windows_1m=tokens / 1_000_000,
+        gpu_hours=tokens / 100 / 3600,
+        coffee_cups=coffee,
         coffee_cost=coffee * opts.coffee_price,
         therapy_sessions=sessions,
         therapy_cost=sessions * THERAPY_PRICE,
-        approximate=approximate)
+        approximate=approximate,
+    )
 ```
 
 - [x] **Step 4: Run** `python -m pytest tests/test_slocomo.py -v` → PASS (при необходимости уточнить ожидания кофе/терапии по формуле — формулы неприкосновенны)
@@ -2401,10 +2613,15 @@ def compute(*, slop: int, prose_words: int, cognitive_points: int,
 В `app.run` накапливать входы: для файлов с ≥1 STYLE-уликой добавлять `approx_cognitive_complexity(text, lang)` и `halstead_seconds(text)`; `prose_words` — `flagged_words(...)` (уже есть) + для заражённых md `int(total_words * 0.8)`. В конце:
 
 ```python
-    from slopcount.metrics.slocomo import compute as slocomo_compute
-    report.slocomo = slocomo_compute(
-        slop=report.slop, prose_words=prose_words, cognitive_points=cog_points,
-        halstead_secs=hal_secs, opts=opts)
+from slopcount.metrics.slocomo import compute as slocomo_compute
+
+report.slocomo = slocomo_compute(
+    slop=report.slop,
+    prose_words=prose_words,
+    cognitive_points=cog_points,
+    halstead_secs=hal_secs,
+    opts=opts,
+)
 ```
 
 В `render/text.py` добавить блок SLOCOMO между Slop Ratio и VERDICT:
@@ -2429,13 +2646,13 @@ def render_slocomo(report: Report) -> str:
         f"{_('Context Windows Consumed'):<57}"
         f" = {fmt_float(r.context_windows_200k)} × 200K / {fmt_float(r.context_windows_1m)} × 1M",
         f"{_('GPU-hours of Regret'):<57} = {fmt_float(r.gpu_hours)}",
-        f"{_('Coffee Required'):<57}"
-        f" = {fmt_int(r.coffee_cups)} ($ {fmt_float(r.coffee_cost)})",
+        f"{_('Coffee Required'):<57} = {fmt_int(r.coffee_cups)} ($ {fmt_float(r.coffee_cost)})",
     ]
     if r.therapy_sessions:
         lines.append(
             f"{_('Therapy Recommended'):<57}"
-            f" = {fmt_int(r.therapy_sessions)} ($ {fmt_float(r.therapy_cost)})")
+            f" = {fmt_int(r.therapy_sessions)} ($ {fmt_float(r.therapy_cost)})"
+        )
     return "\n".join(lines)
 ```
 
@@ -2522,8 +2739,14 @@ def test_json_output_stable_keys():
     data = json.loads(out)
     assert {"sloc", "slop", "slop_ratio", "categories", "slocomo", "verdict"} <= set(data)
     assert set(data["categories"]) == {"prose", "docs", "style", "agency", "history"}
-    assert data["verdict"]["code"] in {"HUMAN", "NEURO_CLOUD", "ESTABLISHED_SLOP",
-                                       "AGENT_SELF_SERVICE", "AGENT_OCCUPATION", "RECURSION"}
+    assert data["verdict"]["code"] in {
+        "HUMAN",
+        "NEURO_CLOUD",
+        "ESTABLISHED_SLOP",
+        "AGENT_SELF_SERVICE",
+        "AGENT_OCCUPATION",
+        "RECURSION",
+    }
     json.dumps(data)  # сериализуемо
 
 
@@ -2538,9 +2761,11 @@ def test_text_renderer_golden():
     """Golden-file тест из спеки §9. Первый запуск/обновление эталона:
     GOLDEN=1 python -m pytest tests/test_render.py -v"""
     from pathlib import Path
+
     code, out = run_cli([str(SLOP), "--lang", "en"])
     golden = Path(__file__).parent / "golden" / "slop_project_en.txt"
     import os
+
     if golden.exists():
         assert out == golden.read_text()
     elif os.environ.get("GOLDEN"):
@@ -2579,24 +2804,34 @@ def render_json(report: Report) -> str:
             "approximate": report.slocomo.approximate,
         }
     v = verdict_for(report.slop_ratio)
-    return json.dumps({
-        "sloc": report.sloc,
-        "slop": report.slop,
-        "slop_ratio": round(report.slop_ratio, 2) if report.slop_ratio != float("inf") else None,
-        "skipped_files": report.skip_count,
-        "infected_md_lines": report.infected_md_lines,
-        "history_commits": report.history_commits,
-        "categories": {
-            c.value: {"files": report.categories[c].files,
-                      "slop_lines": report.categories[c].slop_lines,
-                      "weight": report.categories[c].weight,
-                      "cognitivity": report.categories[c].cognitivity}
-            for c in Category},
-        "evidence_count": len(report.details),
-        "slocomo": sc,
-        "verdict": {"code": v.code, "ratio": round(report.slop_ratio, 2)
-                    if report.slop_ratio != float("inf") else None},
-    }, indent=2)
+    return json.dumps(
+        {
+            "sloc": report.sloc,
+            "slop": report.slop,
+            "slop_ratio": round(report.slop_ratio, 2)
+            if report.slop_ratio != float("inf")
+            else None,
+            "skipped_files": report.skip_count,
+            "infected_md_lines": report.infected_md_lines,
+            "history_commits": report.history_commits,
+            "categories": {
+                c.value: {
+                    "files": report.categories[c].files,
+                    "slop_lines": report.categories[c].slop_lines,
+                    "weight": report.categories[c].weight,
+                    "cognitivity": report.categories[c].cognitivity,
+                }
+                for c in Category
+            },
+            "evidence_count": len(report.details),
+            "slocomo": sc,
+            "verdict": {
+                "code": v.code,
+                "ratio": round(report.slop_ratio, 2) if report.slop_ratio != float("inf") else None,
+            },
+        },
+        indent=2,
+    )
 ```
 
 `src/slopcount/render/csv_out.py`:
@@ -2681,6 +2916,7 @@ def main(argv=None) -> int:
     i18n.setup(args.lang)
     opts = _opts_from(args)
     from pathlib import Path
+
     if not Path(opts.paths[0]).exists():
         print(f"slopcount: path not found: {opts.paths[0]}", file=sys.stderr)
         return 2
@@ -2857,10 +3093,11 @@ import shutil
 import pytest
 
 
-@pytest.mark.skipif(shutil.which("msgfmt") is None
-                    and not __import__("pathlib").Path(
-                        "src/slopcount/locale/ru/LC_MESSAGES/slopcount.mo").exists(),
-                    reason="no compiled ru catalog")
+@pytest.mark.skipif(
+    shutil.which("msgfmt") is None
+    and not __import__("pathlib").Path("src/slopcount/locale/ru/LC_MESSAGES/slopcount.mo").exists(),
+    reason="no compiled ru catalog",
+)
 def test_russian_translation_active():
     setup("ru")
     assert _("Slop Ratio (SLOP/SLOC)") == "Доля слопа (SLOP/SLOC)"
@@ -2918,6 +3155,7 @@ class FakeModel:
     def __call__(self, input_ids=None):
         class L:  # равномерные логиты → перплексия = vocab_size
             logits = [[[0.0] * 50 for _ in range(3)]]
+
         return L()
 
 
@@ -2952,6 +3190,7 @@ def available() -> bool:
     try:
         import transformers  # noqa: F401
         import torch  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -2960,11 +3199,13 @@ def available() -> bool:
 class PerplexityDetector:
     """GPTZero-стиль: низкая средняя перплексия + низкий burstiness = слоп.
     Требует extras: pipx install 'slopcount[perplexity]'."""
+
     category = Category.PROSE
 
     def __init__(self, model_name: str = "gpt2"):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
+
         self._torch = torch
         self._tok = AutoTokenizer.from_pretrained(model_name)
         self._model = AutoModelForCausalLM.from_pretrained(model_name)
@@ -2992,8 +3233,15 @@ class PerplexityDetector:
         if mean >= self._max_ppl or burst >= self._max_burst:
             return []
         approx_line = 1
-        return [Evidence(sf.path, approx_line, Category.PROSE, 2,
-                         f"suspiciously smooth prose (ppl≈{mean:.0f}, burst≈{burst:.2f})")]
+        return [
+            Evidence(
+                sf.path,
+                approx_line,
+                Category.PROSE,
+                2,
+                f"suspiciously smooth prose (ppl≈{mean:.0f}, burst≈{burst:.2f})",
+            )
+        ]
 ```
 
 `src/slopcount/download_model.py`:
@@ -3002,6 +3250,7 @@ class PerplexityDetector:
 def main() -> None:
     print("Downloading gpt2 (~500 MB) for --perplexity ...")
     from transformers import AutoModelForCausalLM, AutoTokenizer
+
     AutoTokenizer.from_pretrained("gpt2")
     AutoModelForCausalLM.from_pretrained("gpt2")
     print("Done. Re-run slopcount with --perplexity.")
@@ -3014,14 +3263,15 @@ if __name__ == "__main__":
 В `app.run` (лениво, при `opts.perplexity`):
 
 ```python
-    pplx = None
-    if opts.perplexity:
-        if not perplexity_available():
-            raise SystemExit(
-                "slopcount: --perplexity requires extras; "
-                "pipx install 'slopcount[perplexity]' and "
-                "python -m slopcount.download_model (exit 2)")
-        pplx = PerplexityDetector()
+pplx = None
+if opts.perplexity:
+    if not perplexity_available():
+        raise SystemExit(
+            "slopcount: --perplexity requires extras; "
+            "pipx install 'slopcount[perplexity]' and "
+            "python -m slopcount.download_model (exit 2)"
+        )
+    pplx = PerplexityDetector()
 ```
 
 и в цикле `evidences.extend(pplx.detect(sf, text))` для markdown/prose. В `cli.py` ловить `SystemExit` от `run` → `return 2`.
@@ -3051,6 +3301,7 @@ ts = pytest.importorskip("tree_sitter", reason="no [treesitter] extra")
 
 def test_exact_mode_lowers_approximation_flag():
     from slopcount.metrics.cognitive import exact_available
+
     # smoke: функция существует и не падает; полный прогон только с extras
     assert exact_available() in (True, False)
 ```
@@ -3063,14 +3314,21 @@ def exact_available() -> bool:
     try:
         import tree_sitter  # noqa: F401
         import tree_sitter_python  # noqa: F401
+
         return True
     except ImportError:
         return False
 
 
-_CONTROL_NODES = {"if_statement", "for_statement", "while_statement",
-                  "switch_expression", "catch_clause", "conditional_expression",
-                  "boolean_operator"}
+_CONTROL_NODES = {
+    "if_statement",
+    "for_statement",
+    "while_statement",
+    "switch_expression",
+    "catch_clause",
+    "conditional_expression",
+    "boolean_operator",
+}
 
 
 def cognitive_complexity_tspython(text: str) -> int:
@@ -3182,6 +3440,7 @@ def test_human_fixture_stays_clean():
     assert "Slop Ratio (SLOP/SLOC)" in out
     # фиксируем: человеческий код не параноится —ratio < 10%
     import re
+
     m = re.search(r"Slop Ratio \(SLOP/SLOC\)\s*=\s*([\d.]+)%", out)
     assert m and float(m.group(1)) < 10.0
 
