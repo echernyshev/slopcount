@@ -1802,7 +1802,7 @@ git commit -m "feat: code style stylometry detector"
 - Create: `src/slopcount/rules/env_markers.toml`, `src/slopcount/detectors/env_markers.py`, `tests/test_env_markers.py`
 - Modify: `src/slopcount/app.py`
 
-- [ ] **Step 1: Каталог** `src/slopcount/rules/env_markers.toml`:
+- [x] **Step 1: Каталог** `src/slopcount/rules/env_markers.toml`:
 
 ```toml
 [[marker]]
@@ -1851,7 +1851,7 @@ weight = 5
 description = "generated-by header"
 ```
 
-- [ ] **Step 2: Failing-тест** `tests/test_env_markers.py`:
+- [x] **Step 2: Failing-тест** `tests/test_env_markers.py`:
 
 ```python
 from pathlib import Path
@@ -1873,7 +1873,7 @@ def test_presence_and_headers(tmp_path):
     assert gen.weight == 5 and gen.category is Category.AGENCY
 ```
 
-- [ ] **Step 3: Run** → FAIL; **Step 4: Реализация** `src/slopcount/detectors/env_markers.py`:
+- [x] **Step 3: Run** → FAIL; **Step 4: Реализация** `src/slopcount/detectors/env_markers.py`:
 
 ```python
 from __future__ import annotations
@@ -1942,7 +1942,7 @@ def _all_entries(root: Path) -> list[str]:
 
 Вклинить в `app.run`: после файлового цикла `evidences.extend(EnvMarkerDetector().detect(root, files, read_text))` (сохранить `files = scan(root)` в переменную). `aggregate` уже относит AGENCY в `report.agency`.
 
-- [ ] **Step 5: Run all** → PASS; commit:
+- [x] **Step 5: Run all** → PASS; commit:
 
 ```bash
 git add src/slopcount/rules/env_markers.toml src/slopcount/detectors/env_markers.py src/slopcount/app.py tests
