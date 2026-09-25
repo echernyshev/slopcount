@@ -1089,7 +1089,7 @@ def verdict_for(slop_ratio_pct: float) -> Verdict:
     if slop_ratio_pct > 100.0:
         return _RECURSION
     for bound, v in _SCALE:
-        if slop_ratio_pct <= bound:
+        if slop_ratio_pct < bound:
             return v
     return _SCALE[-1][1]
 
