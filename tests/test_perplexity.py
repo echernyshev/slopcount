@@ -53,3 +53,30 @@ def test_too_few_long_sentences_skipped():
     det = _mock_detector(20.0)
     sf = ScannedFile("doc.md", None, "markdown", 0)
     assert det.detect(sf, "Only one long enough sentence here to evaluate now.") == []
+
+
+def test_overlong_chunks_skipped():
+    """Чанки длиннее контекстного окна модели (gpt2: 1024 токена) не должны
+    доходить до модели — иначе IndexError в position embeddings (wpe)."""
+    from types import SimpleNamespace
+
+    class SmallWindowTok:
+        model_max_length = 10
+
+        def __call__(self, text, return_tensors=None):
+            # ~1 токен на 2 символа: предложения фикстуры (~50 симв.) → ~25 токенов > 10
+            return SimpleNamespace(input_ids=SimpleNamespace(
+                shape=(1, max(2, len(text) // 2))))
+
+    class SentinelModel:
+        def __call__(self, input_ids=None):
+            raise AssertionError("model called with an overlong input")
+
+    import contextlib
+
+    det = PerplexityDetector.__new__(PerplexityDetector)
+    det._tok, det._model = SmallWindowTok(), SentinelModel()
+    det._max_ppl, det._max_burst = 35.0, 0.3
+    det._torch = SimpleNamespace(no_grad=contextlib.nullcontext)
+    evs = det.detect(ScannedFile("doc.md", None, "markdown", 0), SMOOTH)
+    assert evs == []  # все чанки длиннее окна → ничего не измеряем, но и не падаем

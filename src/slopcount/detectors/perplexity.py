@@ -40,11 +40,16 @@ class PerplexityDetector:
 
     def _ppls(self, sentences: list[str]) -> list[float]:
         """Натуральные лог-перплексии (mean NLL) по предложениям.
-        Предложения из одного токена пропускаем: предсказывать нечего."""
+        Предложения из одного токена пропускаем: предсказывать нечего.
+        Чанки длиннее контекстного окна модели (gpt2: 1024 токена) тоже
+        пропускаем — иначе IndexError в position embeddings."""
+        max_len = int(getattr(self._tok, "model_max_length", 1024) or 1024)
         nlls: list[float] = []
         for s in sentences:
             ids = self._tok(s, return_tensors="pt").input_ids
             if ids.shape[1] < 2:
+                continue
+            if ids.shape[1] > max_len:
                 continue
             with self._torch.no_grad():
                 logits = self._model(ids).logits
