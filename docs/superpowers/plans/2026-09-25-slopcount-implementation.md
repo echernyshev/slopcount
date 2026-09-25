@@ -2028,9 +2028,16 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
     try:
         out = subprocess.run(
             ["git", "-C", str(root), "log", f"-{limit}", "--no-color",
-             "--pretty=format:%H%x00%aI%x00%B%x1e", "--numstat"],
+             "--pretty=format:%x1e%H%x00%aI%x00%B", "--numstat"],
             capture_output=True, text=True, check=True, timeout=60).stdout
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired) as exc:
+    except subprocess.CalledProcessError as exc:
+        # пустой репозиторий: rc 1 от rev-parse --verify -q HEAD — это ок
+        probe = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "-q", "HEAD"],
+                               capture_output=True)
+        if probe.returncode == 1:
+            return [], 0
+        raise GitUnavailable(str(exc)) from exc
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
         raise GitUnavailable(str(exc)) from exc
 
     evidences: list[Evidence] = []
