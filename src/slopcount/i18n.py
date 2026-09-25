@@ -9,7 +9,7 @@ DOMAIN = "slopcount"
 _translations = gettext.NullTranslations()
 _lang = "en"
 
-_THOUSANDS = {"en": ",", "ru": " "}   # неразрывный узкий пробел
+_THOUSANDS = {"en": ",", "ru": "\u202f"}   # неразрывный узкий пробел
 _DECIMAL = {"en": ".", "ru": ","}
 
 
@@ -18,8 +18,11 @@ def detect_lang() -> str:
     for var in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
         val = os.environ.get(var, "")
         token = val.split(":", 1)[0].strip()
-        if token and token not in ("C", "POSIX"):
-            return token.split(".", 1)[0].split("_", 1)[0]
+        if not token:
+            continue
+        lang = token.split(".", 1)[0].split("_", 1)[0]
+        if lang not in ("C", "POSIX"):
+            return lang
     return "en"
 
 
@@ -49,12 +52,11 @@ def current_lang() -> str:
 
 def fmt_int(n: int) -> str:
     sep = _THOUSANDS.get(_lang, ",")
-    grouped = f"{abs(n):,}".replace(",", "\x00")
-    return ("-" if n < 0 else "") + grouped.replace("\x00", sep)
+    return f"{n:,}".replace(",", sep)
 
 
 def fmt_float(x: float, ndigits: int = 2) -> str:
     s = f"{x:,.{ndigits}f}"
     if _lang == "ru":
-        s = s.replace(",", "\x00").replace(".", ",").replace("\x00", " ")
+        s = s.replace(",", "\x00").replace(".", ",").replace("\x00", "\u202f")
     return s
