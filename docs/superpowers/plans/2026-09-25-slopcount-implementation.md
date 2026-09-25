@@ -617,7 +617,7 @@ def extract_comments(text: str, language: str) -> list[CommentBlock]:
 
 def _line_comments(text: str, marker: str) -> list[CommentBlock]:
     out = []
-    for i, line in enumerate(text.splitlines(), 1):
+    for i, line in enumerate(text.split("\n"), 1):
         if marker in line:
             out.append(CommentBlock(i, [_clean(1, line.split(marker, 1)[1].strip())]))
     return out
@@ -627,7 +627,7 @@ def _slash(text: str) -> list[CommentBlock]:
     out: list[CommentBlock] = []
     block: list[str] = []
     start = 0
-    for i, line in enumerate(text.splitlines(), 1):
+    for i, line in enumerate(text.split("\n"), 1):
         stripped = line.strip()
         if block:
             if "*/" in stripped:
@@ -651,7 +651,7 @@ def _slash(text: str) -> list[CommentBlock]:
 
 def _python(text: str) -> list[CommentBlock]:
     out: list[CommentBlock] = []
-    lines = text.splitlines()
+    lines = text.split("\n")
     i = 0
     while i < len(lines):
         line = lines[i]
@@ -1005,7 +1005,7 @@ class PhraseDetector:
                 for k, line in enumerate(b.lines)
             ]
         else:  # markdown / prose
-            zones = list(enumerate(text.splitlines(), 1))
+            zones = list(enumerate(text.split("\n"), 1))
         out: list[Evidence] = []
         for line_no, line in zones:
             for r in self.rules:
@@ -1326,7 +1326,7 @@ class Options:
 
 
 def flagged_words(text: str, evidences: list[Evidence]) -> int:
-    lines = text.splitlines()
+    lines = text.split("\n")
     uniq = {e.line for e in evidences if e.line > 0 and e.line <= len(lines)}
     return sum(len(lines[l - 1].split()) for l in uniq)
 
@@ -1715,7 +1715,7 @@ class CodeStyleDetector:
     def _docstrings(self, sf, text) -> list[Evidence]:
         evs = []
         blocks = [b for b in extract_comments(text, sf.language or "") if b.is_docstring]
-        code_lines = len([l for l in text.splitlines() if l.strip()])
+        code_lines = len([l for l in text.split("\n") if l.strip()])
         for b in blocks:
             n = len(b.lines)
             first = b.lines[0] if b.lines else ""
@@ -1730,7 +1730,7 @@ class CodeStyleDetector:
     def _catch_all(self, sf, text) -> list[Evidence]:
         evs = []
         total = 0
-        for i, line in enumerate(text.splitlines(), 1):
+        for i, line in enumerate(text.split("\n"), 1):
             if _CATCH_ALL.search(line):
                 total += 1
                 evs.append(Evidence(sf.path, i, Category.STYLE, 1,
@@ -1753,7 +1753,7 @@ class CodeStyleDetector:
     _DEF_LINE = re.compile(r"^\s*(?:async\s+)?def\s+\w+")
 
     def _docstring_perfection(self, sf, text) -> list[Evidence]:
-        lines = text.splitlines()
+        lines = text.split("\n")
         defs = [i for i, l in enumerate(lines, 1) if self._DEF_LINE.match(l)]
         if len(defs) < 5:
             return []
