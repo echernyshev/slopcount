@@ -10,11 +10,16 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Egor Chernyshev" }]
+keywords = ["sloc", "sloccount", "ai", "llm", "slop", "parody", "cognitive-complexity"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Environment :: Console",
     "Topic :: Software Development",
+    "License :: OSI Approved :: MIT License",
 ]
+
+[project.urls]
+Homepage = "https://github.com/echernyshev/slopcount"
 
 [project.scripts]
 slopcount = "slopcount.cli:main"

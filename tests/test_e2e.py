@@ -156,8 +156,8 @@ def test_human_fixture_stays_clean():
     assert "Slop Ratio (SLOP/SLOC)" in out
     # фиксируем: человеческий код не параноится — ratio < 10%
     import re
-    m = re.search(r"Slop Ratio \(SLOP/SLOC\)\s*=\s*([\d.]+)%", out)
-    assert m and float(m.group(1)) < 10.0
+    m = re.search(r"Slop Ratio \(SLOP/SLOC\)\s*=\s*([\d.,]+)%", out)
+    assert m and float(m.group(1).replace(",", "")) < 10.0
 
 
 def test_perf_smoke_2k_files(tmp_path):
