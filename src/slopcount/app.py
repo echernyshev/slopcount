@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidence
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
 from slopcount.metrics.sloc import count_sloc
@@ -39,7 +40,9 @@ def run(opts: Options) -> Report:
     root = Path(opts.paths[0])
     files: list[ScannedFile] = scan(root)
     phrase = PhraseDetector(load_rules(opts.rules))
+    docs_bloat = DocsBloatDetector()
     evidences: list[Evidence] = []
+    infected: list[tuple[str, int]] = []
     sloc = 0
     skip = 0
     for sf in files:
@@ -51,5 +54,13 @@ def run(opts: Options) -> Report:
             continue
         if sf.kind == "code":
             sloc += count_sloc(text, sf.language or "")
+        if sf.kind == "markdown":
+            bloat = docs_bloat.detect(sf, text)
+            evidences.extend(bloat.evidences)
+            infected.extend(bloat.infected)
         evidences.extend(phrase.detect(sf, text))
-    return aggregate(evidences, sloc=sloc, skip_count=skip, root=str(root))
+    rb = repo_bloat_evidence(files, sloc)
+    if rb:
+        evidences.append(rb)
+    return aggregate(evidences, sloc=sloc, infected=infected,
+                     skip_count=skip, root=str(root))

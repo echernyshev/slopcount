@@ -27,3 +27,8 @@ def test_mvp_run_on_slop_fixture():
 
 def test_exit_zero_and_version_still_works():
     assert run_cli(["--version"])[0] == 0
+
+
+def test_docs_category_in_output():
+    code, out = run_cli([str(SLOP), "--lang", "en"])
+    assert "Markdown specs" in out
