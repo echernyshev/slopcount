@@ -2135,7 +2135,7 @@ git commit -m "feat: git history archaeology detector"
 **Files:**
 - Modify: `tests/test_evidence.py` (добавить кейс), `tests/test_e2e.py`
 
-- [ ] **Step 1: Тест формулы на агрегаторе**
+- [x] **Step 1: Тест формулы на агрегаторе**
 
 ```python
 def test_aggregate_full_slop_formula():
@@ -2152,8 +2152,8 @@ def test_aggregate_full_slop_formula():
     assert abs(report.slop_ratio - 166.0) < 1e-9
 ```
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_evidence.py -v` → PASS (агрегатор уже корректен; тест — страховка от регресса)
-- [ ] **Step 3: E2E-проверка RECURSION-вердикта**
+- [x] **Step 2: Run** `python -m pytest tests/test_evidence.py -v` → PASS (агрегатор уже корректен; тест — страховка от регресса)
+- [x] **Step 3: E2E-проверка RECURSION-вердикта**
 
 ```python
 def test_recursion_verdict_on_pure_slop(tmp_path):
@@ -2162,8 +2162,8 @@ def test_recursion_verdict_on_pure_slop(tmp_path):
     assert "Recursion" in out
 ```
 
-- [ ] **Step 4: Run all** → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run all** → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests
