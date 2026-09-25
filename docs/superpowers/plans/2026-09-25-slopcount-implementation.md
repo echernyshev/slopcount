@@ -1957,7 +1957,7 @@ git commit -m "feat: agent environment marker detector"
 - Create: `src/slopcount/detectors/git_history.py`, `tests/test_git_history.py`
 - Modify: `src/slopcount/app.py`, `tests/test_e2e.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_git_history.py` (создаёт настоящий git-репо в tmp):
+- [x] **Step 1: Failing-тест** `tests/test_git_history.py` (создаёт настоящий git-репо в tmp):
 
 ```python
 import subprocess
@@ -1998,8 +1998,8 @@ def test_not_a_repo_raises(tmp_path):
         detect(tmp_path, 500)
 ```
 
-- [ ] **Step 2: Run** → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/detectors/git_history.py`:
+- [x] **Step 2: Run** → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/detectors/git_history.py`:
 
 ```python
 from __future__ import annotations
@@ -2118,8 +2118,8 @@ def test_history_flag_on_git_repo(tmp_path):
     assert code == 0 and "Git history" in out
 ```
 
-- [ ] **Step 4: Run all** `python -m pytest -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run all** `python -m pytest -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/detectors/git_history.py src/slopcount/app.py tests
