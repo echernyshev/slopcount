@@ -5,6 +5,7 @@ from slopcount.cli import main
 
 def test_version_flag(capsys):
     from slopcount import __version__
+
     try:
         main(["--version"])
     except SystemExit as e:

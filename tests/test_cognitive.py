@@ -11,8 +11,9 @@ def test_flat_control_flow_scores_low():
 def test_nesting_increases_score():
     flat = "if a:\n    pass\nif b:\n    pass\n"
     nested = "if a:\n    if b:\n        if c:\n            pass\n"
-    assert (approx_cognitive_complexity(nested, "python")
-            > approx_cognitive_complexity(flat, "python"))
+    assert approx_cognitive_complexity(nested, "python") > approx_cognitive_complexity(
+        flat, "python"
+    )
     # 1 + (1+1) + (1+2) = 6
     assert approx_cognitive_complexity(nested, "python") == 6
 
@@ -34,6 +35,7 @@ def test_approximation_pins():
 def test_exact_mode_treesitter():
     pytest.importorskip("tree_sitter", reason="no [treesitter] extra")
     from slopcount.metrics.cognitive import cognitive_complexity_tspython
+
     # вложенность: 1 (if a) + 1 (if b) + 2 (if c вложенный) = 4 (Campbell:
     # вложенный оператор стоит 1 + nesting за каждый уровень)
     src = "if a:\n    pass\nif b:\n    if c:\n        pass\n"

@@ -7,7 +7,7 @@ from slopcount.scanner import ScannedFile
 def test_hits_in_python_comments():
     det = PhraseDetector(load_rules())
     sf = ScannedFile("a.py", "python", "code", 10)
-    src = 'def f():\n    # Great question! But certainly! here\n    return 1\n'
+    src = "def f():\n    # Great question! But certainly! here\n    return 1\n"
     evs = det.detect(sf, src)
     assert len(evs) == 2
     assert all(e.category is Category.PROSE for e in evs)

@@ -19,8 +19,8 @@ class Category(StrEnum):
 
 @dataclass(frozen=True)
 class Evidence:
-    file: str          # путь относительно корня скана или "git:<sha8>" для коммитов
-    line: int          # 1-based; 0 = файл-уровень
+    file: str  # путь относительно корня скана или "git:<sha8>" для коммитов
+    line: int  # 1-based; 0 = файл-уровень
     category: Category
     weight: int
     description: str
@@ -78,9 +78,14 @@ def aggregate(
         files_per_cat[e.category].add(e.file)
         weight_per_cat[e.category] += e.weight
 
-    report = Report(root=root, sloc=sloc, history_commits=history_commits,
-                    skip_count=skip_count, details=list(evidences),
-                    agency=[e for e in evidences if e.category is Category.AGENCY])
+    report = Report(
+        root=root,
+        sloc=sloc,
+        history_commits=history_commits,
+        skip_count=skip_count,
+        details=list(evidences),
+        agency=[e for e in evidences if e.category is Category.AGENCY],
+    )
     report.infected_md_lines = sum(round(n * 0.8) for _, n in infected)
     for cat in Category:
         totals = report.categories[cat]

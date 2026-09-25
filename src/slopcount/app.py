@@ -50,19 +50,27 @@ def run(opts: Options) -> Report:
     root = Path(opts.paths[0])
     files: list[ScannedFile] = scan(root)
     if len(opts.paths) > 1:
-        print(_("slopcount: multiple paths given, scanning only the first: {path}")
-              .format(path=opts.paths[0]), file=sys.stderr)
+        print(
+            _("slopcount: multiple paths given, scanning only the first: {path}").format(
+                path=opts.paths[0]
+            ),
+            file=sys.stderr,
+        )
     phrase = PhraseDetector(load_rules(opts.rules))
     docs_bloat = DocsBloatDetector()
     style_detector = CodeStyleDetector()
     pplx = None
     if opts.perplexity:
         from slopcount.detectors.perplexity import PerplexityDetector, available
+
         if not available():
             raise RuntimeError(
-                _("slopcount: --perplexity requires extras; "
-                  "pipx install 'slopcount[perplexity]' and "
-                  "python -m slopcount.download_model"))
+                _(
+                    "slopcount: --perplexity requires extras; "
+                    "pipx install 'slopcount[perplexity]' and "
+                    "python -m slopcount.download_model"
+                )
+            )
         pplx = PerplexityDetector()
     evidences: list[Evidence] = []
     infected: list[tuple[str, int]] = []
@@ -71,7 +79,7 @@ def run(opts: Options) -> Report:
     prose_words = 0
     cog_points = 0
     hal_secs = 0.0
-    used_approx = False     # был ли хоть один файл посчитан приближённо
+    used_approx = False  # был ли хоть один файл посчитан приближённо
     n = 0
     progressed = False
     is_stderr_tty = sys.stderr.isatty()
@@ -93,14 +101,13 @@ def run(opts: Options) -> Report:
             style_evs = style_detector.detect(sf, text)
             evidences.extend(style_evs)
             file_evidences.extend(style_evs)
-            if style_evs:   # SLOCOMO: вес слоп-кода
+            if style_evs:  # SLOCOMO: вес слоп-кода
                 # Точный режим: python + [treesitter] extras; остальное —
                 # приближение. Смешанный режим считается приближённым.
                 if sf.language == "python" and exact_available():
                     cog_points += cognitive_complexity_tspython(text)
                 else:
-                    cog_points += approx_cognitive_complexity(
-                        text, sf.language or "")
+                    cog_points += approx_cognitive_complexity(text, sf.language or "")
                     used_approx = True
                 hal_secs += halstead_seconds(text)
         if sf.kind == "markdown":
@@ -117,7 +124,7 @@ def run(opts: Options) -> Report:
             evidences.extend(pplx.detect(sf, text))
         prose_words += flagged_words(text, file_evidences)
     if progressed:
-        print(file=sys.stderr)          # завершаем строку прогресса
+        print(file=sys.stderr)  # завершаем строку прогресса
     rb = repo_bloat_evidence(files, sloc)
     if rb:
         evidences.append(rb)
@@ -126,19 +133,30 @@ def run(opts: Options) -> Report:
     if opts.history:
         from slopcount.detectors.git_history import GitUnavailable
         from slopcount.detectors.git_history import detect as git_detect
+
         try:
             hist_evs, commits = git_detect(root, opts.history)
             evidences.extend(hist_evs)
             history_commits = commits
         except GitUnavailable:
-            print(_("slopcount: git history unavailable; skipping archaeology"),
-                  file=sys.stderr)
-    report = aggregate(evidences, sloc=sloc, infected=infected,
-                       skip_count=skip, root=str(root),
-                       history_commits=history_commits)
+            print(_("slopcount: git history unavailable; skipping archaeology"), file=sys.stderr)
+    report = aggregate(
+        evidences,
+        sloc=sloc,
+        infected=infected,
+        skip_count=skip,
+        root=str(root),
+        history_commits=history_commits,
+    )
     # Ленивый импорт: модуль slocomo импортирует Options из этого модуля
     from slopcount.metrics.slocomo import compute as slocomo_compute
+
     report.slocomo = slocomo_compute(
-        slop=report.slop, prose_words=prose_words, cognitive_points=cog_points,
-        halstead_secs=hal_secs, opts=opts, approximate=used_approx)
+        slop=report.slop,
+        prose_words=prose_words,
+        cognitive_points=cog_points,
+        halstead_secs=hal_secs,
+        opts=opts,
+        approximate=used_approx,
+    )
     return report

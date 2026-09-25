@@ -4,8 +4,10 @@ from slopcount.scanner import ScannedFile
 
 
 def make_sf(path, n_lines):
-    return (ScannedFile(path, None, "markdown", 0),
-            "\n".join(f"line {i}" for i in range(n_lines)) + "\n")
+    return (
+        ScannedFile(path, None, "markdown", 0),
+        "\n".join(f"line {i}" for i in range(n_lines)) + "\n",
+    )
 
 
 def test_spec_giant_flagged():
@@ -33,6 +35,7 @@ def test_small_clean_file_not_infected():
 
 def test_repo_bloat_evidence():
     from slopcount.detectors.docs_bloat import repo_bloat_evidence
+
     files = [ScannedFile("big.md", None, "markdown", 300 * 1024)]
     ev = repo_bloat_evidence(files, sloc=1000)
     assert ev and ev.weight == 4 and "docs bloat" in ev.description

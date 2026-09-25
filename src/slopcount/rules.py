@@ -34,20 +34,20 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
     paths = [Path(os.fspath(base / n)) for n in names] + list(extra_paths or [])
     for p in paths:
         if not p.is_file():
-            print(_("slopcount: rules file not found, skipped: {p}").format(p=p),
-                  file=sys.stderr)
+            print(_("slopcount: rules file not found, skipped: {p}").format(p=p), file=sys.stderr)
             continue
         try:
             data = tomllib.loads(p.read_text(encoding="utf-8"))
             for r in data.get("rule", []):
                 desc = r.get("description", "")
-                rules.append(PhraseRule(
-                    pattern=re.compile(r["pattern"], re.IGNORECASE),
-                    weight=int(r.get("weight", 1)),
-                    # пустая строка — без _(): gettext("") вернул бы PO-заголовок
-                    description=_(desc) if desc else "",
-                ))
-        except (tomllib.TOMLDecodeError, re.error, KeyError, TypeError,
-                ValueError) as exc:
+                rules.append(
+                    PhraseRule(
+                        pattern=re.compile(r["pattern"], re.IGNORECASE),
+                        weight=int(r.get("weight", 1)),
+                        # пустая строка — без _(): gettext("") вернул бы PO-заголовок
+                        description=_(desc) if desc else "",
+                    )
+                )
+        except (tomllib.TOMLDecodeError, re.error, KeyError, TypeError, ValueError) as exc:
             raise RuntimeError(f"slopcount: bad rules file {p}: {exc}") from exc
     return rules

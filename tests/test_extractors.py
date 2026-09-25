@@ -23,13 +23,13 @@ def test_python_comments_and_docstrings():
     assert (7, "top-level comment") in inline
 
 
-C_LIKE = '''\
+C_LIKE = """\
 // setup the engine
 int x = 1;
 /* block
    of wisdom */
 int y = 2;  // trailing note
-'''
+"""
 
 
 def test_c_style_comments():
@@ -68,7 +68,7 @@ def test_blank_docstring_lines_keep_physical_mapping():
     src = 'def f():\n    """One.\n\n    Two.\n    """\n    x = 1\n'
     doc = next(b for b in extract_comments(src, "python") if b.is_docstring)
     assert doc.start_line == 2
-    assert doc.lines == ["One.", "", "Two.", ""]   # 4 записи = строки 2-5
+    assert doc.lines == ["One.", "", "Two.", ""]  # 4 записи = строки 2-5
 
 
 def test_c_multiline_block_start_line():

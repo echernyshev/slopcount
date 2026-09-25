@@ -8,7 +8,7 @@ def _ev(file, line, cat, weight):
 def test_aggregate_counts_unique_slop_lines_per_category():
     evs = [
         _ev("a.py", 1, Category.PROSE, 5),
-        _ev("a.py", 1, Category.PROSE, 2),   # та же строка — не удваивает slop_lines
+        _ev("a.py", 1, Category.PROSE, 2),  # та же строка — не удваивает slop_lines
         _ev("a.py", 9, Category.PROSE, 5),
         _ev("b.py", 3, Category.STYLE, 1),
     ]
@@ -43,7 +43,7 @@ def test_zero_sloc_edge():
 def test_aggregate_full_slop_formula():
     evs = [
         _ev("a.py", 1, Category.PROSE, 5),
-        _ev("a.py", 1, Category.STYLE, 2),      # разные категории на одной строке
+        _ev("a.py", 1, Category.STYLE, 2),  # разные категории на одной строке
         _ev("b.md", 4, Category.DOCS, 2),
         _ev("git:ab12cd34", 2, Category.HISTORY, 5),
         _ev(".claude", 0, Category.AGENCY, 3),  # не входит в SLOP

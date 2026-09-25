@@ -1,4 +1,3 @@
-
 from slopcount.detectors.env_markers import EnvMarkerDetector
 from slopcount.evidence import Category
 from slopcount.scanner import read_text, scan
@@ -19,7 +18,7 @@ def test_presence_and_headers(tmp_path):
 def test_marker_semantics(tmp_path):
     det = EnvMarkerDetector()
     (tmp_path / "sub").mkdir()
-    (tmp_path / "sub" / "CLAUDE.md").write_text("hi\n")          # nested basename
+    (tmp_path / "sub" / "CLAUDE.md").write_text("hi\n")  # nested basename
     (tmp_path / ".github").mkdir()
     (tmp_path / ".github" / "copilot-instructions.md").write_text("x\n")  # full relpath
     # line 6: no hit

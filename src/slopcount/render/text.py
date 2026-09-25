@@ -19,24 +19,32 @@ def render_text(report: Report) -> str:
     label_w = max(len(_("Origin")), *(len(n) for n in labels.values())) + 1
     out.append(_("Totals grouped by slop origin (dominant slop source first):"))
     out.append("-" * 79)
-    out.append(f"{_('Origin'):<{label_w}}{_('files'):>10}{_('slop lines'):>14}"
-               f"{_('slop %'):>10}  {_('cognitivity'):<10}")
+    out.append(
+        f"{_('Origin'):<{label_w}}{_('files'):>10}{_('slop lines'):>14}"
+        f"{_('slop %'):>10}  {_('cognitivity'):<10}"
+    )
     out.append("-" * 79)
     ordered = sorted(
         [c for c in Category if c is not Category.AGENCY],
-        key=lambda c: report.categories[c].slop_lines, reverse=True)
+        key=lambda c: report.categories[c].slop_lines,
+        reverse=True,
+    )
     for cat in ordered:
         t = report.categories[cat]
         name = labels[cat]
         if cat is Category.HISTORY and report.history_commits:
             name = name + f" ({report.history_commits})"
         pct = (t.slop_lines / report.slop * 100) if report.slop else 0.0
-        out.append(f"{name:<{label_w}}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
-                   f"{fmt_float(pct, 1):>10}  {_(t.cognitivity):<10}")
+        out.append(
+            f"{name:<{label_w}}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
+            f"{fmt_float(pct, 1):>10}  {_(t.cognitivity):<10}"
+        )
     agency = report.agency
     name = labels[Category.AGENCY]
-    out.append(f"{name:<{label_w}}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}"
-               f"{'—':>10}  {'—':<10}")
+    out.append(
+        f"{name:<{label_w}}{fmt_int(len({e.file for e in agency})):>10}{'—':>14}"
+        f"{'—':>10}  {'—':<10}"
+    )
     out.append("-" * 79)
     out.append(f"{_('Total Physical Source Lines of Code (SLOC)'):<55} = {fmt_int(report.sloc)}")
     out.append(f"{_('Total Suspicious Lines Of Prose (SLOP)'):<55} = {fmt_int(report.slop)}")
@@ -71,7 +79,8 @@ def render_slocomo(report: Report) -> str:
         sessions = ngettext("%d session", "%d sessions", r.therapy_sessions)
         lines.append(
             f"{_('Therapy Recommended'):<57}"
-            f" = {sessions % r.therapy_sessions} ($ {fmt_float(r.therapy_cost)})")
+            f" = {sessions % r.therapy_sessions} ($ {fmt_float(r.therapy_cost)})"
+        )
     return "\n".join(lines)
 
 

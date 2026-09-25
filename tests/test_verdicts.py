@@ -18,7 +18,7 @@ def test_texts_are_english_msgids():
 
 
 def test_progress_bar():
-    setup("en")   # в прогресс-баре локализованный процент — фиксируем en
+    setup("en")  # в прогресс-баре локализованный процент — фиксируем en
     assert progress_bar(50.0, width=4) == "[██░░] 50.0%"
 
 

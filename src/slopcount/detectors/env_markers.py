@@ -22,12 +22,14 @@ class _Header:
 def _load():
     """Внутренний каталог; битый TOML падает сразу (fail fast, ассет в пакете)."""
     import tomllib
+
     base = resources.files("slopcount").joinpath("rules/env_markers.toml")
     data = tomllib.loads(Path(str(base)).read_text(encoding="utf-8"))
-    paths = [(m["path"], m["weight"], _(m["description"]))
-             for m in data.get("marker", [])]
-    headers = [_Header(re.compile(h["pattern"]), h["weight"], _(h["description"]))
-               for h in data.get("header", [])]
+    paths = [(m["path"], m["weight"], _(m["description"])) for m in data.get("marker", [])]
+    headers = [
+        _Header(re.compile(h["pattern"]), h["weight"], _(h["description"]))
+        for h in data.get("header", [])
+    ]
     return paths, headers
 
 
@@ -37,8 +39,9 @@ class EnvMarkerDetector:
     def __init__(self):
         self.paths, self.headers = _load()
 
-    def detect(self, root: Path, scanned: list[ScannedFile],
-               reader: Callable[[Path], str | None]) -> list[Evidence]:
+    def detect(
+        self, root: Path, scanned: list[ScannedFile], reader: Callable[[Path], str | None]
+    ) -> list[Evidence]:
         evs: list[Evidence] = []
         names = [sf.path for sf in scanned] + _all_entries(root)
         for pat, weight, desc in self.paths:
@@ -55,8 +58,7 @@ class EnvMarkerDetector:
             for line in text.split("\n")[:5]:
                 for h in self.headers:
                     if h.pattern.search(line):
-                        evs.append(Evidence(sf.path, 1, self.category,
-                                            h.weight, h.description))
+                        evs.append(Evidence(sf.path, 1, self.category, h.weight, h.description))
         return evs
 
 

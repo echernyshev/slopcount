@@ -4,8 +4,7 @@ import math
 import re
 from functools import cache
 
-_NESTING = re.compile(
-    r"\b(if|for|while|case|when|switch)\b|&&|\|\||\b(and|or)\b(?=\s)", re.I)
+_NESTING = re.compile(r"\b(if|for|while|case|when|switch)\b|&&|\|\||\b(and|or)\b(?=\s)", re.I)
 _FLAT = re.compile(r"\b(else|elif|catch|except)\b", re.I)
 
 
@@ -39,18 +38,32 @@ def approx_cognitive_complexity(text: str, language: str) -> int:
 
 _IDENT = re.compile(r"[A-Za-z_]\w*")
 _NUM = re.compile(r"\b\d+(?:\.\d+)?\b")
-_MULTI_OPS = ["==", "!=", "<=", ">=", "->", "::", "+=", "-=", "*=", "/=",
-              "**", "//", "&&", "||"]
-_OPS_KEYWORDS = {"if", "for", "while", "return", "def", "class", "import",
-                 "from", "function", "func", "fn", "switch", "case", "try"}
+_MULTI_OPS = ["==", "!=", "<=", ">=", "->", "::", "+=", "-=", "*=", "/=", "**", "//", "&&", "||"]
+_OPS_KEYWORDS = {
+    "if",
+    "for",
+    "while",
+    "return",
+    "def",
+    "class",
+    "import",
+    "from",
+    "function",
+    "func",
+    "fn",
+    "switch",
+    "case",
+    "try",
+}
 
 
-@cache     # доступность extras не меняется за один запуск
+@cache  # доступность extras не меняется за один запуск
 def exact_available() -> bool:
     """Есть ли [treesitter] extras: точный режим возможен только для python."""
     try:
         import tree_sitter  # noqa: F401
         import tree_sitter_python  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -60,8 +73,14 @@ def exact_available() -> bool:
 # управляющее выражение дорожает на 1 за уровень). Имена сверены с грамматикой
 # tree-sitter-python: except_clause (не catch_clause), case_clause (не
 # switch_expression); try_statement/match_statement сами по себе не считаются.
-_CONTROL_NODES = {"if_statement", "for_statement", "while_statement",
-                  "case_clause", "conditional_expression", "boolean_operator"}
+_CONTROL_NODES = {
+    "if_statement",
+    "for_statement",
+    "while_statement",
+    "case_clause",
+    "conditional_expression",
+    "boolean_operator",
+}
 
 # else/elif/except — плоско +1, без надбавки за вложенность.
 _FLAT_NODES = {"else_clause", "elif_clause", "except_clause"}
@@ -130,7 +149,8 @@ def halstead_seconds(text: str) -> float:
             n1.add(ch)
             N1 += 1
     operands = _NUM.findall(rest) + [
-        t for t in _IDENT.findall(rest) if t.lower() not in _OPS_KEYWORDS]
+        t for t in _IDENT.findall(rest) if t.lower() not in _OPS_KEYWORDS
+    ]
     n2 = set(operands)
     N2 = len(operands)
     n = len(n1) + len(n2)

@@ -1,4 +1,3 @@
-
 import pytest
 
 from slopcount.rules import load_rules
@@ -43,6 +42,6 @@ def test_weight_default_and_bad_regex(tmp_path):
 
 def test_bad_toml_raises_runtime_error(tmp_path):
     extra = tmp_path / "broken.toml"
-    extra.write_text('[[rule]\npattern = "abc"\n')      # unclosed table
+    extra.write_text('[[rule]\npattern = "abc"\n')  # unclosed table
     with pytest.raises(RuntimeError):
         load_rules([extra])

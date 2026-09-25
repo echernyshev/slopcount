@@ -12,16 +12,24 @@ class Verdict:
 
 
 _SCALE: list[tuple[float, Verdict]] = [
-    (10.0, Verdict("HUMAN",
-        "Almost human. Suspiciously clean. Where are you hiding the slop?")),
-    (25.0, Verdict("NEURO_CLOUD",
-        "A light neuro-haze: the slop has arrived, but so far it does the dishes")),
-    (50.0, Verdict("ESTABLISHED_SLOP",
-        "The slop has settled in for good. More documentation than meaning")),
-    (75.0, Verdict("AGENT_SELF_SERVICE",
-        "Repository on LLM self-service. Humans visit on weekends")),
-    (float("inf"), Verdict("AGENT_OCCUPATION",
-        "Agent occupation. Resistance is futile")),
+    (10.0, Verdict("HUMAN", "Almost human. Suspiciously clean. Where are you hiding the slop?")),
+    (
+        25.0,
+        Verdict(
+            "NEURO_CLOUD", "A light neuro-haze: the slop has arrived, but so far it does the dishes"
+        ),
+    ),
+    (
+        50.0,
+        Verdict(
+            "ESTABLISHED_SLOP", "The slop has settled in for good. More documentation than meaning"
+        ),
+    ),
+    (
+        75.0,
+        Verdict("AGENT_SELF_SERVICE", "Repository on LLM self-service. Humans visit on weekends"),
+    ),
+    (float("inf"), Verdict("AGENT_OCCUPATION", "Agent occupation. Resistance is futile")),
 ]
 _RECURSION = Verdict("RECURSION", "You ran slopcount inside slop. Recursion")
 

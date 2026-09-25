@@ -9,16 +9,23 @@ from slopcount.evidence import Category
 
 
 def git(tmp_path, *args, date="2026-01-01T04:00:00"):
-    subprocess.run(["git", "-C", str(tmp_path), *args], check=True,
-                   capture_output=True, env={
-        "GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
-        "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t",
-        "GIT_AUTHOR_DATE": date,
-        "GIT_COMMITTER_DATE": date,
-        "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
-        "HOME": str(tmp_path),
-        "GIT_CONFIG_NOSYSTEM": "1",
-        "GIT_CONFIG_GLOBAL": os.devnull})
+    subprocess.run(
+        ["git", "-C", str(tmp_path), *args],
+        check=True,
+        capture_output=True,
+        env={
+            "GIT_AUTHOR_NAME": "T",
+            "GIT_AUTHOR_EMAIL": "t@t",
+            "GIT_COMMITTER_NAME": "T",
+            "GIT_COMMITTER_EMAIL": "t@t",
+            "GIT_AUTHOR_DATE": date,
+            "GIT_COMMITTER_DATE": date,
+            "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+            "HOME": str(tmp_path),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+        },
+    )
 
 
 @pytest.fixture
@@ -26,8 +33,17 @@ def repo(tmp_path):
     git(tmp_path, "init", "-q")
     (tmp_path / "a.txt").write_text("hello\n")
     git(tmp_path, "add", ".")
-    git(tmp_path, "-c", "user.name=T", "-c", "user.email=t@t", "commit", "-q",
-        "-m", "feat: add hello\n\nCo-Authored-By: Claude <noreply@anthropic.com>")
+    git(
+        tmp_path,
+        "-c",
+        "user.name=T",
+        "-c",
+        "user.email=t@t",
+        "commit",
+        "-q",
+        "-m",
+        "feat: add hello\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+    )
     return tmp_path
 
 
@@ -48,7 +64,7 @@ def test_ref_is_sha8_and_weights(repo):
     co = next(e for e in evs if "Co-Authored-By" in e.description)
     night = next(e for e in evs if "night commit" in e.description)
     assert re.fullmatch(r"git:[0-9a-f]{8}", co.file)
-    assert co.line == 3 and co.weight == 5                 # 3-я строка сообщения
+    assert co.line == 3 and co.weight == 5  # 3-я строка сообщения
     assert night.line == 1 and night.weight == 1
     assert co.category is Category.HISTORY and night.category is Category.HISTORY
 
@@ -103,16 +119,15 @@ def test_conventional_perfection_needs_20_commits(tmp_path):
 def test_timeout_raises_git_unavailable(repo, monkeypatch):
     def boom(*args, **kwargs):
         raise subprocess.TimeoutExpired(cmd=args[0], timeout=60)
-    monkeypatch.setattr(
-        "slopcount.detectors.git_history.subprocess.run", boom)
+
+    monkeypatch.setattr("slopcount.detectors.git_history.subprocess.run", boom)
     with pytest.raises(GitUnavailable):
         detect(repo, 500)
 
 
 def test_generated_with_trailer(repo):
     # доп-коммит с трейлером в теле
-    git(repo, "commit", "-q", "--allow-empty", "-m",
-        "chore: regen\n\nGenerated with Claude Code\n")
+    git(repo, "commit", "-q", "--allow-empty", "-m", "chore: regen\n\nGenerated with Claude Code\n")
     evs, n = detect(repo, 500)
     assert n == 2
     assert any("'Generated with' trailer" in e.description and e.weight == 5 for e in evs)

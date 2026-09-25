@@ -4,16 +4,28 @@ import re
 from dataclasses import dataclass
 
 HASH_LANGS = {"ruby", "sh"}
-SLASH_LANGS = {"javascript", "typescript", "go", "rust", "c", "cpp",
-               "java", "php", "csharp", "swift", "kotlin", "scala"}
+SLASH_LANGS = {
+    "javascript",
+    "typescript",
+    "go",
+    "rust",
+    "c",
+    "cpp",
+    "java",
+    "php",
+    "csharp",
+    "swift",
+    "kotlin",
+    "scala",
+}
 
 _TRIPLE = re.compile(r'(?:[rbfu]*)("""|\'\'\')(.*)$')
 
 
 @dataclass(frozen=True)
 class CommentBlock:
-    start_line: int          # физическая строка файла, 1-based
-    lines: list[str]         # очищенные строки текста комментария
+    start_line: int  # физическая строка файла, 1-based
+    lines: list[str]  # очищенные строки текста комментария
     is_docstring: bool = False
 
 
@@ -21,7 +33,7 @@ def _clean(text: str) -> str:
     s = text.strip()
     for tok in ("///", "//", "#", "/*", "*/", "*"):
         if s.startswith(tok):
-            return s[len(tok):].strip()
+            return s[len(tok) :].strip()
     return s
 
 

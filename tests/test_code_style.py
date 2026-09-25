@@ -7,25 +7,29 @@ SF = ScannedFile("m.py", "python", "code", 0)
 
 def test_trivial_docstring_flagged():
     det = CodeStyleDetector()
-    evs = det.detect(SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n"
-                         "    return a + b\n")
+    evs = det.detect(
+        SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n    return a + b\n"
+    )
     assert any(e.description == "trivial docstring on obvious function" for e in evs)
     assert all(e.category is Category.STYLE for e in evs)
 
 
 def test_docstring_longer_than_body():
     det = CodeStyleDetector()
-    src = ("def f():\n    '''Line1\n    Line2\n    Line3\n"
-           "    Line4\n    Line5\n    '''\n    return 1\n")
+    src = (
+        "def f():\n    '''Line1\n    Line2\n    Line3\n"
+        "    Line4\n    Line5\n    '''\n    return 1\n"
+    )
     evs = det.detect(SF, src)
     assert any("docstring longer than" in e.description for e in evs)
 
 
 def test_catch_all_density():
     det = CodeStyleDetector()
-    src = "\n".join(
-        f"try:\n    f{d}()\nexcept Exception:\n    pass" for d in range(6)
-    ) + "\nx = 1\n" * 40
+    src = (
+        "\n".join(f"try:\n    f{d}()\nexcept Exception:\n    pass" for d in range(6))
+        + "\nx = 1\n" * 40
+    )
     evs = det.detect(SF, src)
     assert sum(e.weight for e in evs if "catch-all" in e.description) >= 6
 

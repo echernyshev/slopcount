@@ -15,7 +15,8 @@ from slopcount.render.text import render_details, render_slocomo, render_text, r
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="slopcount",
-        description="Count the AI slop in a project and the cost of comprehending it.")
+        description="Count the AI slop in a project and the cost of comprehending it.",
+    )
     p.add_argument("--version", action="version", version=f"slopcount {__version__}")
     p.add_argument("paths", nargs="*", default=["."])
     p.add_argument("--details", action="store_true")
@@ -42,20 +43,31 @@ def main(argv=None) -> int:
         return int(e.code or 0)
     i18n.setup(args.lang)
     opts = Options(
-        paths=args.paths or ["."], details=args.details, json_out=args.json_out,
-        csv_out=args.csv_out, history=args.history, perplexity=args.perplexity,
-        rules=args.rules, lang=args.lang, personcost=args.personcost,
-        overhead=args.overhead, coffee_price=args.coffee_price,
-        no_therapy=args.no_therapy, fail_above=args.fail_above,
-        verdict_only=args.verdict_only, wide=args.wide)
+        paths=args.paths or ["."],
+        details=args.details,
+        json_out=args.json_out,
+        csv_out=args.csv_out,
+        history=args.history,
+        perplexity=args.perplexity,
+        rules=args.rules,
+        lang=args.lang,
+        personcost=args.personcost,
+        overhead=args.overhead,
+        coffee_price=args.coffee_price,
+        no_therapy=args.no_therapy,
+        fail_above=args.fail_above,
+        verdict_only=args.verdict_only,
+        wide=args.wide,
+    )
     root = Path(opts.paths[0])
     if not root.exists():
-        print(_("slopcount: path not found: {path}").format(path=root),
-              file=sys.stderr)
+        print(_("slopcount: path not found: {path}").format(path=root), file=sys.stderr)
         return 2
     if root.is_file():
-        print(_("slopcount: path is a file, directory expected: {path}")
-              .format(path=root), file=sys.stderr)
+        print(
+            _("slopcount: path is a file, directory expected: {path}").format(path=root),
+            file=sys.stderr,
+        )
         return 2
     try:
         report = run(opts)

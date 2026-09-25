@@ -6,29 +6,62 @@ from dataclasses import dataclass
 from pathlib import Path
 
 SKIP_DIRS = {
-    ".git", ".hg", ".svn", "node_modules", ".venv", "venv", "env",
-    "__pycache__", "dist", "build", "target", ".tox", ".mypy_cache",
-    ".pytest_cache", ".ruff_cache", ".idea", ".vscode", ".eggs", ".serena",
+    ".git",
+    ".hg",
+    ".svn",
+    "node_modules",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "dist",
+    "build",
+    "target",
+    ".tox",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".idea",
+    ".vscode",
+    ".eggs",
+    ".serena",
 }
 
 CODE_EXTS = {
-    ".py": "python", ".js": "javascript", ".mjs": "javascript",
-    ".cjs": "javascript", ".ts": "typescript", ".tsx": "typescript",
-    ".jsx": "javascript", ".go": "go", ".rs": "rust", ".c": "c", ".h": "c",
-    ".cpp": "cpp", ".cc": "cpp", ".hpp": "cpp", ".java": "java",
-    ".rb": "ruby", ".sh": "sh", ".bash": "sh", ".zsh": "sh", ".php": "php",
-    ".cs": "csharp", ".swift": "swift", ".kt": "kotlin", ".kts": "kotlin",
+    ".py": "python",
+    ".js": "javascript",
+    ".mjs": "javascript",
+    ".cjs": "javascript",
+    ".ts": "typescript",
+    ".tsx": "typescript",
+    ".jsx": "javascript",
+    ".go": "go",
+    ".rs": "rust",
+    ".c": "c",
+    ".h": "c",
+    ".cpp": "cpp",
+    ".cc": "cpp",
+    ".hpp": "cpp",
+    ".java": "java",
+    ".rb": "ruby",
+    ".sh": "sh",
+    ".bash": "sh",
+    ".zsh": "sh",
+    ".php": "php",
+    ".cs": "csharp",
+    ".swift": "swift",
+    ".kt": "kotlin",
+    ".kts": "kotlin",
     ".scala": "scala",
 }
-PROSE_EXTS = {".md": "markdown", ".markdown": "markdown", ".rst": "markdown",
-              ".txt": "prose"}
+PROSE_EXTS = {".md": "markdown", ".markdown": "markdown", ".rst": "markdown", ".txt": "prose"}
 
 
 @dataclass(frozen=True)
 class ScannedFile:
-    path: str            # posix-путь относительно корня
+    path: str  # posix-путь относительно корня
     language: str | None
-    kind: str            # "code" | "markdown" | "prose" | "other"
+    kind: str  # "code" | "markdown" | "prose" | "other"
     size: int
 
 

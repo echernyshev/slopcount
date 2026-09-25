@@ -14,7 +14,7 @@ MODEL_NAME = "gpt2"
 # классы НЕ разделяет (0.6-0.9 у обоих) — убран из правила. gpt2 — слабый
 # судья (слоп-слова для него редки), поэтому сигнал точный, но редкий.
 # Более сильная/мультиязычная модель: SLOPCOUNT_PPLX_MODEL=Qwen/Qwen2.5-0.5B.
-MAX_MEDIAN_PPL = 40.0   # медиана ниже — «слишком гладкая» проза
+MAX_MEDIAN_PPL = 40.0  # медиана ниже — «слишком гладкая» проза
 _OVERLONG_MSG = "Token indices sequence length"
 
 
@@ -61,8 +61,7 @@ class PerplexityDetector:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
-        model_name = model_name or os.environ.get(
-            "SLOPCOUNT_PPLX_MODEL", MODEL_NAME)
+        model_name = model_name or os.environ.get("SLOPCOUNT_PPLX_MODEL", MODEL_NAME)
         self._torch = torch
         self._tok = AutoTokenizer.from_pretrained(model_name)
         self._model = AutoModelForCausalLM.from_pretrained(model_name)
@@ -92,18 +91,20 @@ class PerplexityDetector:
         with self._torch.no_grad():
             logits = self._model(ids).logits
         logp = self._torch.log_softmax(logits[:, :-1], dim=-1)
-        nll = (-self._torch.gather(logp, 2, ids[:, 1:].unsqueeze(-1))
-               .squeeze(-1)[0]).tolist()
+        nll = (-self._torch.gather(logp, 2, ids[:, 1:].unsqueeze(-1)).squeeze(-1)[0]).tolist()
 
         ppls: list[float] = []
         for s in (x.strip() for x in flat.split(". ") if len(x.strip()) > 30):
             a = flat.find(s)
             b = a + len(s)
-            toks = [i for i, (s0, e0) in enumerate(offs)
-                    if s0 >= a and e0 <= b and i + 1 < len(ids_list)]
+            toks = [
+                i
+                for i, (s0, e0) in enumerate(offs)
+                if s0 >= a and e0 <= b and i + 1 < len(ids_list)
+            ]
             if len(toks) < 2:
                 continue
-            vals = [nll[i] for i in toks[1:]]   # первый токен — без контекста
+            vals = [nll[i] for i in toks[1:]]  # первый токен — без контекста
             if vals:
                 ppls.append(math.exp(sum(vals) / len(vals)))
         return ppls
@@ -116,15 +117,24 @@ class PerplexityDetector:
         if len(ppls) < 3:
             return []
         ppls_sorted = sorted(ppls)
-        median = (ppls_sorted[len(ppls) // 2]
-                  if len(ppls) % 2
-                  else (ppls_sorted[len(ppls) // 2 - 1]
-                        + ppls_sorted[len(ppls) // 2]) / 2)
+        median = (
+            ppls_sorted[len(ppls) // 2]
+            if len(ppls) % 2
+            else (ppls_sorted[len(ppls) // 2 - 1] + ppls_sorted[len(ppls) // 2]) / 2
+        )
         if median >= self._max_ppl:
             return []
-        return [Evidence(sf.path, 0, self.category, 2,
-                         ngettext("suspiciously smooth prose "
-                                  "(median ppl≈%.0f over %d sentence)",
-                                  "suspiciously smooth prose "
-                                  "(median ppl≈%.0f over %d sentences)",
-                                  len(ppls)) % (median, len(ppls)))]
+        return [
+            Evidence(
+                sf.path,
+                0,
+                self.category,
+                2,
+                ngettext(
+                    "suspiciously smooth prose (median ppl≈%.0f over %d sentence)",
+                    "suspiciously smooth prose (median ppl≈%.0f over %d sentences)",
+                    len(ppls),
+                )
+                % (median, len(ppls)),
+            )
+        ]

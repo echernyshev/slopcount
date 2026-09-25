@@ -9,16 +9,32 @@ from test_e2e import SLOP, run_cli
 def test_json_output_stable_keys():
     _code, out = run_cli([str(SLOP), "--json", "--lang", "en"])
     data = json.loads(out)
-    assert set(data) == {"sloc", "slop", "slop_ratio", "skipped_files",
-                         "infected_md_lines", "history_commits", "categories",
-                         "evidence_count", "slocomo", "verdict"}
+    assert set(data) == {
+        "sloc",
+        "slop",
+        "slop_ratio",
+        "skipped_files",
+        "infected_md_lines",
+        "history_commits",
+        "categories",
+        "evidence_count",
+        "slocomo",
+        "verdict",
+    }
     assert set(data["categories"]) == {"prose", "docs", "style", "agency", "history"}
-    assert data["verdict"]["code"] in {"HUMAN", "NEURO_CLOUD", "ESTABLISHED_SLOP",
-                                       "AGENT_SELF_SERVICE", "AGENT_OCCUPATION", "RECURSION"}
+    assert data["verdict"]["code"] in {
+        "HUMAN",
+        "NEURO_CLOUD",
+        "ESTABLISHED_SLOP",
+        "AGENT_SELF_SERVICE",
+        "AGENT_OCCUPATION",
+        "RECURSION",
+    }
     json.dumps(data)  # сериализуемо
     # sanity: 1M-окно — это 200K/5 (каждое поле округлено до 4 знаков независимо)
     assert data["slocomo"]["context_windows_1m"] == pytest.approx(
-        data["slocomo"]["context_windows_200k"] / 5, abs=1e-4)
+        data["slocomo"]["context_windows_200k"] / 5, abs=1e-4
+    )
 
 
 def test_csv_rows():
@@ -35,6 +51,7 @@ def test_text_renderer_golden():
     from pathlib import Path
 
     from slopcount.metrics.cognitive import exact_available
+
     if exact_available():
         # Эталон закрепляет вывод режима приближения: с [treesitter] extras
         # суффикс «(approximate)» исчезает — сверять не с чем.

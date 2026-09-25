@@ -9,7 +9,7 @@ DOMAIN = "slopcount"
 _translations = gettext.NullTranslations()
 _lang = "en"
 
-_THOUSANDS = {"en": ",", "ru": "\u202f"}   # неразрывный узкий пробел
+_THOUSANDS = {"en": ",", "ru": "\u202f"}  # неразрывный узкий пробел
 _DECIMAL = {"en": ".", "ru": ","}
 
 
@@ -32,8 +32,7 @@ def setup(lang: str | None = None) -> None:
     _lang = lang if lang else detect_lang()
     localedir = os.fspath(resources.files(DOMAIN).joinpath("locale"))
     try:
-        _translations = gettext.translation(
-            DOMAIN, localedir=localedir, languages=[_lang])
+        _translations = gettext.translation(DOMAIN, localedir=localedir, languages=[_lang])
     except (FileNotFoundError, OSError):
         _translations = gettext.NullTranslations()
 

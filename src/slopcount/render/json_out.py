@@ -24,20 +24,26 @@ def render_json(report: Report) -> str:
         }
     v = verdict_for(report.slop_ratio)
     ratio = round(report.slop_ratio, 2) if not math.isinf(report.slop_ratio) else None
-    return json.dumps({
-        "sloc": report.sloc,
-        "slop": report.slop,
-        "slop_ratio": ratio,
-        "skipped_files": report.skip_count,
-        "infected_md_lines": report.infected_md_lines,
-        "history_commits": report.history_commits,
-        "categories": {
-            c.value: {"files": report.categories[c].files,
-                      "slop_lines": report.categories[c].slop_lines,
-                      "weight": report.categories[c].weight,
-                      "cognitivity": report.categories[c].cognitivity}
-            for c in Category},
-        "evidence_count": len(report.details),
-        "slocomo": sc,
-        "verdict": {"code": v.code, "ratio": ratio},
-    }, indent=2)
+    return json.dumps(
+        {
+            "sloc": report.sloc,
+            "slop": report.slop,
+            "slop_ratio": ratio,
+            "skipped_files": report.skip_count,
+            "infected_md_lines": report.infected_md_lines,
+            "history_commits": report.history_commits,
+            "categories": {
+                c.value: {
+                    "files": report.categories[c].files,
+                    "slop_lines": report.categories[c].slop_lines,
+                    "weight": report.categories[c].weight,
+                    "cognitivity": report.categories[c].cognitivity,
+                }
+                for c in Category
+            },
+            "evidence_count": len(report.details),
+            "slocomo": sc,
+            "verdict": {"code": v.code, "ratio": ratio},
+        },
+        indent=2,
+    )

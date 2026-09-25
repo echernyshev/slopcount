@@ -10,13 +10,13 @@ def test_default_is_english_identity(monkeypatch):
     for var in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
         monkeypatch.delenv(var, raising=False)
     setup(None)
-    assert _("Totals") == "Totals"          # каталога ru не выбрано — msgid
+    assert _("Totals") == "Totals"  # каталога ru не выбрано — msgid
     assert fmt_int(12411) == "12,411"
     assert fmt_float(14.76) == "14.76"
 
 
 def test_lang_argument_forces_language():
-    setup("en")                              # en — всегда msgid
+    setup("en")  # en — всегда msgid
     assert fmt_int(1234567) == "1,234,567"
     setup("ru")
     assert fmt_int(1234567) == "1\u202f234\u202f567"
@@ -46,6 +46,7 @@ def test_russian_plurals():
 def test_details_descriptions_translated():
     from slopcount.detectors.code_style import CodeStyleDetector
     from slopcount.scanner import ScannedFile
+
     sf = ScannedFile("m.py", "python", "code", 0)
     det = CodeStyleDetector()
     setup("ru")
@@ -58,10 +59,14 @@ def test_details_descriptions_translated():
 
 def test_details_plural_descriptions():
     setup("ru")
-    assert ngettext("spec giant: %d line", "spec giant: %d lines", 3) % 3 \
+    assert (
+        ngettext("spec giant: %d line", "spec giant: %d lines", 3) % 3
         == "гигантская спека: 3 строки"
-    assert ngettext("spec giant: %d line", "spec giant: %d lines", 5) % 5 \
+    )
+    assert (
+        ngettext("spec giant: %d line", "spec giant: %d lines", 5) % 5
         == "гигантская спека: 5 строк"
+    )
 
 
 def test_po_mo_consistency():
@@ -69,6 +74,7 @@ def test_po_mo_consistency():
     import subprocess
     from importlib import resources
     from pathlib import Path
+
     if shutil.which("msgfmt") is None:
         pytest.skip("msgfmt not available")
     base = Path(os.fspath(resources.files("slopcount") / "locale"))
@@ -79,15 +85,18 @@ def test_po_mo_consistency():
     assert out.read_bytes() == mo.read_bytes(), ".po changed without recompiling .mo"
 
 
-@pytest.mark.parametrize(("env", "expected"), [
-    ({"LANGUAGE": "ru:en", "LANG": "en_US.UTF-8"}, "ru"),
-    ({"LC_ALL": "ru_RU.UTF-8", "LANG": "en"}, "ru"),
-    ({"LANG": "de_DE.UTF-8@euro"}, "de"),
-    ({"LANG": "C"}, "en"),
-    ({"LANG": "C.UTF-8"}, "en"),
-    ({"LANG": "POSIX"}, "en"),
-    ({}, "en"),
-])
+@pytest.mark.parametrize(
+    ("env", "expected"),
+    [
+        ({"LANGUAGE": "ru:en", "LANG": "en_US.UTF-8"}, "ru"),
+        ({"LC_ALL": "ru_RU.UTF-8", "LANG": "en"}, "ru"),
+        ({"LANG": "de_DE.UTF-8@euro"}, "de"),
+        ({"LANG": "C"}, "en"),
+        ({"LANG": "C.UTF-8"}, "en"),
+        ({"LANG": "POSIX"}, "en"),
+        ({}, "en"),
+    ],
+)
 def test_detect_lang_matrix(monkeypatch, env, expected):
     for var in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
         monkeypatch.delenv(var, raising=False)

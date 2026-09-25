@@ -10,9 +10,11 @@ from slopcount.i18n import _, ngettext
 from slopcount.scanner import ScannedFile
 
 _TRIVIAL_DOC = re.compile(
-    r"^(Adds?|Returns?|Gets?|Sets?|Creates?|Initiali[sz]es?|Updates?|Checks?)\b", re.I)
+    r"^(Adds?|Returns?|Gets?|Sets?|Creates?|Initiali[sz]es?|Updates?|Checks?)\b", re.I
+)
 _CATCH_ALL = re.compile(
-    r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)\b")
+    r"except\s+(Exception|BaseException)|catch\s*\(\s*(e|err|error|Exception)\b"
+)
 
 
 class CodeStyleDetector:
@@ -20,8 +22,12 @@ class CodeStyleDetector:
 
     def detect(self, sf: ScannedFile, text: str) -> list[Evidence]:
         checks: list[Callable[[ScannedFile, str], list[Evidence]]] = [
-            self._docstrings, self._catch_all, self._emoji_comments,
-            self._docstring_perfection, self._monotone_comments]
+            self._docstrings,
+            self._catch_all,
+            self._emoji_comments,
+            self._docstring_perfection,
+            self._monotone_comments,
+        ]
         out: list[Evidence] = []
         for check in checks:
             out.extend(check(sf, text))
@@ -35,12 +41,30 @@ class CodeStyleDetector:
             n = len(b.lines)
             first = b.lines[0] if b.lines else ""
             if n <= 2 and _TRIVIAL_DOC.match(first):
-                evs.append(Evidence(sf.path, b.start_line, self.category, 2,
-                                    _("trivial docstring on obvious function")))
+                evs.append(
+                    Evidence(
+                        sf.path,
+                        b.start_line,
+                        self.category,
+                        2,
+                        _("trivial docstring on obvious function"),
+                    )
+                )
             if code_lines and n / code_lines > 0.5 and n >= 5:
-                evs.append(Evidence(sf.path, b.start_line, self.category, 2,
-                                    ngettext("docstring longer than body (%d line)",
-                                             "docstring longer than body (%d lines)", n) % n))
+                evs.append(
+                    Evidence(
+                        sf.path,
+                        b.start_line,
+                        self.category,
+                        2,
+                        ngettext(
+                            "docstring longer than body (%d line)",
+                            "docstring longer than body (%d lines)",
+                            n,
+                        )
+                        % n,
+                    )
+                )
         return evs
 
     def _catch_all(self, sf, text) -> list[Evidence]:
@@ -49,11 +73,15 @@ class CodeStyleDetector:
         for i, line in enumerate(text.split("\n"), 1):
             if _CATCH_ALL.search(line):
                 total += 1
-                evs.append(Evidence(sf.path, i, self.category, 1,
-                                    _("catch-all exception swallowing")))
+                evs.append(
+                    Evidence(sf.path, i, self.category, 1, _("catch-all exception swallowing"))
+                )
         if total >= 5:
-            evs.append(Evidence(sf.path, 0, self.category, 2,
-                                _("defensive catch-all density (%d)") % total))
+            evs.append(
+                Evidence(
+                    sf.path, 0, self.category, 2, _("defensive catch-all density (%d)") % total
+                )
+            )
         return evs
 
     def _emoji_comments(self, sf, text) -> list[Evidence]:
@@ -61,8 +89,11 @@ class CodeStyleDetector:
         for b in extract_comments(text, sf.language or ""):
             for k, line in enumerate(b.lines):
                 if EMOJI_RE.search(line):
-                    evs.append(Evidence(sf.path, b.start_line + k, self.category, 2,
-                                        _("emoji in code comment")))
+                    evs.append(
+                        Evidence(
+                            sf.path, b.start_line + k, self.category, 2, _("emoji in code comment")
+                        )
+                    )
         return evs
 
     _GOOGLE = re.compile(r"\b(Args|Parameters|Returns|Raises)\s*:", re.I)
@@ -73,27 +104,43 @@ class CodeStyleDetector:
         defs = [i for i, line in enumerate(lines, 1) if self._DEF_LINE.match(line)]
         if len(defs) < 5:
             return []
-        doc_starts = {b.start_line for b in extract_comments(text, sf.language or "")
-                      if b.is_docstring}
+        doc_starts = {
+            b.start_line for b in extract_comments(text, sf.language or "") if b.is_docstring
+        }
         perfect = sum(
-            1 for d in defs
+            1
+            for d in defs
             if any(ds == d + 1 for ds in doc_starts)
-            and any(self._GOOGLE.search(line) for line in lines[d:d + 15]))
+            and any(self._GOOGLE.search(line) for line in lines[d : d + 15])
+        )
         if perfect / len(defs) >= 0.8:
-            return [Evidence(sf.path, 0, self.category, 2,
-                             _("textbook-perfect docstrings on %d/%d functions")
-                             % (perfect, len(defs)))]
+            return [
+                Evidence(
+                    sf.path,
+                    0,
+                    self.category,
+                    2,
+                    _("textbook-perfect docstrings on %d/%d functions") % (perfect, len(defs)),
+                )
+            ]
         return []
 
     def _monotone_comments(self, sf, text) -> list[Evidence]:
-        lens = [len(line) for b in extract_comments(text, sf.language or "")
-                for line in b.lines if line]
+        lens = [
+            len(line) for b in extract_comments(text, sf.language or "") for line in b.lines if line
+        ]
         if len(lens) < 10:
             return []
         mean = sum(lens) / len(lens)
         var = sum((x - mean) ** 2 for x in lens) / len(lens)
         if var < 25:
-            return [Evidence(sf.path, 0, self.category, 2,
-                             _("monotone comment length (var=%.1f) — machine cadence")
-                             % var)]
+            return [
+                Evidence(
+                    sf.path,
+                    0,
+                    self.category,
+                    2,
+                    _("monotone comment length (var=%.1f) — machine cadence") % var,
+                )
+            ]
         return []

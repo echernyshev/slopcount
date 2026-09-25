@@ -23,5 +23,5 @@ def test_sloc_c_language():
 def test_sloc_edge_cases():
     assert count_sloc("", "python") == 0
     assert count_sloc("   \n\t\n", "python") == 0
-    assert count_sloc("int x;\nint y;", "c") == 2          # no trailing newline
-    assert count_sloc("-- sql\nselect 1;\n", "sql") == 2   # unknown lang: all non-blank
+    assert count_sloc("int x;\nint y;", "c") == 2  # no trailing newline
+    assert count_sloc("-- sql\nselect 1;\n", "sql") == 2  # unknown lang: all non-blank
