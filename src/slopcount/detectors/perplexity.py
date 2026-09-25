@@ -41,8 +41,8 @@ def _silence_overlong_tokenizer_warning() -> None:
 def available() -> bool:
     """True, если установлены extras (transformers + torch)."""
     try:
-        import transformers  # noqa: F401
         import torch  # noqa: F401
+        import transformers  # noqa: F401
     except ImportError:
         return False
     return True

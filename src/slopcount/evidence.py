@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # цикл: evidence → metrics.slocomo → app → evidence
+    from slopcount.metrics.slocomo import SlocomoResult
 
 
-class Category(str, Enum):
+class Category(StrEnum):
     PROSE = "prose"
     DOCS = "docs"
     STYLE = "style"
@@ -54,7 +58,7 @@ class Report:
     history_commits: int | None = None
     details: list[Evidence] = field(default_factory=list)
     agency: list[Evidence] = field(default_factory=list)
-    slocomo: "SlocomoResult | None" = None  # forward ref, модуль metrics.slocomo
+    slocomo: SlocomoResult | None = None  # модуль metrics.slocomo
 
 
 def aggregate(

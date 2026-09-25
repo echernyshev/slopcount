@@ -3,12 +3,11 @@ import io
 import json
 
 import pytest
-
 from test_e2e import SLOP, run_cli
 
 
 def test_json_output_stable_keys():
-    code, out = run_cli([str(SLOP), "--json", "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--json", "--lang", "en"])
     data = json.loads(out)
     assert set(data) == {"sloc", "slop", "slop_ratio", "skipped_files",
                          "infected_md_lines", "history_commits", "categories",
@@ -23,7 +22,7 @@ def test_json_output_stable_keys():
 
 
 def test_csv_rows():
-    code, out = run_cli([str(SLOP), "--csv", "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--csv", "--lang", "en"])
     rows = list(csv.reader(io.StringIO(out)))
     assert rows[0] == ["file", "line", "category", "weight", "description"]
     assert any(r[3] == "5" for r in rows[1:])
@@ -32,14 +31,15 @@ def test_csv_rows():
 def test_text_renderer_golden():
     """Golden-file тест из спеки §9. Первый запуск/обновление эталона:
     GOLDEN=1 python -m pytest tests/test_render.py -v"""
-    from pathlib import Path
     import os
+    from pathlib import Path
+
     from slopcount.metrics.cognitive import exact_available
     if exact_available():
         # Эталон закрепляет вывод режима приближения: с [treesitter] extras
         # суффикс «(approximate)» исчезает — сверять не с чем.
         pytest.skip("exact mode active (treesitter extras installed)")
-    code, out = run_cli([str(SLOP), "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
     golden = Path(__file__).parent / "golden" / "slop_project_en.txt"
     if golden.exists():
         assert out == golden.read_text()

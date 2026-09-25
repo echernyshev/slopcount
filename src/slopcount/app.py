@@ -10,9 +10,12 @@ from slopcount.detectors.env_markers import EnvMarkerDetector
 from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
 from slopcount.i18n import _
-from slopcount.metrics.cognitive import (approx_cognitive_complexity,
-                                         cognitive_complexity_tspython,
-                                         exact_available, halstead_seconds)
+from slopcount.metrics.cognitive import (
+    approx_cognitive_complexity,
+    cognitive_complexity_tspython,
+    exact_available,
+    halstead_seconds,
+)
 from slopcount.metrics.sloc import count_sloc
 from slopcount.rules import load_rules
 from slopcount.scanner import ScannedFile, read_text, scan
@@ -40,7 +43,7 @@ class Options:
 def flagged_words(text: str, evidences: list[Evidence]) -> int:
     lines = text.split("\n")
     uniq = {e.line for e in evidences if e.line > 0 and e.line <= len(lines)}
-    return sum(len(lines[l - 1].split()) for l in uniq)
+    return sum(len(lines[ln - 1].split()) for ln in uniq)
 
 
 def run(opts: Options) -> Report:
@@ -121,7 +124,8 @@ def run(opts: Options) -> Report:
     evidences.extend(EnvMarkerDetector().detect(root, files, read_text))
     history_commits: int | None = None
     if opts.history:
-        from slopcount.detectors.git_history import GitUnavailable, detect as git_detect
+        from slopcount.detectors.git_history import GitUnavailable
+        from slopcount.detectors.git_history import detect as git_detect
         try:
             hist_evs, commits = git_detect(root, opts.history)
             evidences.extend(hist_evs)

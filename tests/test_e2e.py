@@ -42,7 +42,7 @@ def test_exit_zero_and_version_still_works():
 
 def test_docs_category_in_output():
     import re
-    code, out = run_cli([str(SLOP), "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Markdown specs\s+\d+\s+(\d+)", out)
     assert m and int(m.group(1)) == 2          # DOCS slop lines from fixture
     assert "= 13" in out                       # total SLOP: 7 evidence lines + 6 infected
@@ -50,7 +50,7 @@ def test_docs_category_in_output():
 
 def test_style_category_in_output():
     import re
-    code, out = run_cli([str(SLOP), "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Code style\s+\d+\s+(\d+)", out)
     assert m and int(m.group(1)) == 2          # STYLE: defensive.py lines 2+13
     assert re.search(r"Total Suspicious Lines Of Prose \(SLOP\)\s+= \d+", out)
@@ -59,7 +59,7 @@ def test_style_category_in_output():
 
 def test_agency_row_in_output():
     import re
-    code, out = run_cli([str(SLOP), "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
     m = re.search(r"Environment markers\s+(\d+)", out)
     assert m and int(m.group(1)) == 1          # AGENCY: fixture CLAUDE.md marker
 
@@ -93,12 +93,12 @@ def test_history_flag_on_non_repo_skips_archaeology(tmp_path):
 
 def test_recursion_verdict_on_pure_slop(tmp_path):
     (tmp_path / "ONLY_SLOP.md").write_text("Great question! " * 200)
-    code, out = run_cli([str(tmp_path), "--lang", "en"])
+    _code, out = run_cli([str(tmp_path), "--lang", "en"])
     assert "Recursion" in out
 
 
 def test_slocomo_block_present():
-    code, out = run_cli([str(SLOP), "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
     assert "Cognitive Awareness Effort" in out
     assert "Total Estimated Cost to Comprehend" in out
     assert "GPU-hours of Regret" in out
@@ -106,33 +106,33 @@ def test_slocomo_block_present():
 
 
 def test_no_therapy_hides_line():
-    code, out = run_cli([str(SLOP), "--no-therapy", "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--no-therapy", "--lang", "en"])
     assert "Therapy Recommended" not in out
     assert "Coffee Required" in out
 
 
 def test_details_lists_evidence():
-    code, out = run_cli([str(SLOP), "--details", "--lang", "en"])
+    _code, out = run_cli([str(SLOP), "--details", "--lang", "en"])
     assert "DETAILS" in out
     assert "greeter.py" in out
     assert "[prose]" in out and "+5" in out
 
 
 def test_details_ru_translated():
-    code, out = run_cli([str(SLOP), "--details", "--lang", "ru"])
+    _code, out = run_cli([str(SLOP), "--details", "--lang", "ru"])
     assert "ДЕТАЛИ" in out
     assert "greeter.py" in out
     assert "Классический энтузиазм LLM" in out   # описание улики из каталога фраз
 
 
 def test_ru_output():
-    code, out = run_cli([str(SLOP), "--lang", "ru"])
+    _code, out = run_cli([str(SLOP), "--lang", "ru"])
     assert "ВЕРДИКТ:" in out and "Доля слопа" in out
     assert "Итоги по источникам слопа" in out
 
 
 def test_ru_table_headers_and_cognitivity():
-    code, out = run_cli([str(SLOP), "--lang", "ru"])
+    _code, out = run_cli([str(SLOP), "--lang", "ru"])
     assert "Источник" in out and "файлы" in out and "строки слопа" in out
     assert "когнитивность" in out
     assert "высокая" in out                       # Prose row: cognitivity=high
@@ -154,12 +154,12 @@ def test_ru_stderr_messages(tmp_path, capsys):
 def test_perplexity_without_extras_exit_2():
     if available():
         pytest.skip("extras installed")
-    code, out = run_cli([str(SLOP), "--perplexity", "--lang", "en"])
+    code, _out = run_cli([str(SLOP), "--perplexity", "--lang", "en"])
     assert code == 2
 
 
 def test_human_fixture_stays_clean():
-    code, out = run_cli([str(HUMAN), "--lang", "en"])
+    _code, out = run_cli([str(HUMAN), "--lang", "en"])
     assert "Slop Ratio (SLOP/SLOC)" in out
     # фиксируем: человеческий код не параноится — ratio < 10%
     import re

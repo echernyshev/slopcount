@@ -45,8 +45,8 @@ def test_not_a_repo_raises(tmp_path):
 
 def test_ref_is_sha8_and_weights(repo):
     evs, _ = detect(repo, 500)
-    co = [e for e in evs if "Co-Authored-By" in e.description][0]
-    night = [e for e in evs if "night commit" in e.description][0]
+    co = next(e for e in evs if "Co-Authored-By" in e.description)
+    night = next(e for e in evs if "night commit" in e.description)
     assert re.fullmatch(r"git:[0-9a-f]{8}", co.file)
     assert co.line == 3 and co.weight == 5                 # 3-я строка сообщения
     assert night.line == 1 and night.weight == 1
@@ -123,7 +123,7 @@ def test_aider_prefix(tmp_path):
     (tmp_path / "a.txt").write_text("x\n")
     git(tmp_path, "add", ".")
     git(tmp_path, "commit", "-q", "-m", "aider: added the file")
-    evs, n = detect(tmp_path, 500)
+    evs, _n = detect(tmp_path, 500)
     assert any(e.description == "aider prefix" and e.weight == 3 for e in evs)
 
 
@@ -132,6 +132,6 @@ def test_emoji_subject_and_message_not_numstat(tmp_path):
     (tmp_path / "a.txt").write_text("x\n")
     git(tmp_path, "add", ".")
     git(tmp_path, "commit", "-q", "-m", "🎉 shipped it\n\nfake quote:\n9999\t9999\tnope.txt\n")
-    evs, n = detect(tmp_path, 500)
+    evs, _n = detect(tmp_path, 500)
     assert any("emoji in commit subject" in e.description and e.weight == 2 for e in evs)
     assert not any("machine velocity" in e.description for e in evs)  # Fix 1 pin

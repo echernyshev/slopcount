@@ -1,6 +1,6 @@
-from slopcount.cli import main
-
 from test_e2e import SLOP, run_cli
+
+from slopcount.cli import main
 
 
 def test_version_flag(capsys):

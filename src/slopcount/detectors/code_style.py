@@ -30,7 +30,7 @@ class CodeStyleDetector:
     def _docstrings(self, sf, text) -> list[Evidence]:
         evs = []
         blocks = [b for b in extract_comments(text, sf.language or "") if b.is_docstring]
-        code_lines = len([l for l in text.split("\n") if l.strip()])
+        code_lines = len([line for line in text.split("\n") if line.strip()])
         for b in blocks:
             n = len(b.lines)
             first = b.lines[0] if b.lines else ""
@@ -70,7 +70,7 @@ class CodeStyleDetector:
 
     def _docstring_perfection(self, sf, text) -> list[Evidence]:
         lines = text.split("\n")
-        defs = [i for i, l in enumerate(lines, 1) if self._DEF_LINE.match(l)]
+        defs = [i for i, line in enumerate(lines, 1) if self._DEF_LINE.match(line)]
         if len(defs) < 5:
             return []
         doc_starts = {b.start_line for b in extract_comments(text, sf.language or "")
@@ -78,7 +78,7 @@ class CodeStyleDetector:
         perfect = sum(
             1 for d in defs
             if any(ds == d + 1 for ds in doc_starts)
-            and any(self._GOOGLE.search(l) for l in lines[d:d + 15]))
+            and any(self._GOOGLE.search(line) for line in lines[d:d + 15]))
         if perfect / len(defs) >= 0.8:
             return [Evidence(sf.path, 0, self.category, 2,
                              _("textbook-perfect docstrings on %d/%d functions")

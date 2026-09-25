@@ -7,14 +7,16 @@ SF = ScannedFile("m.py", "python", "code", 0)
 
 def test_trivial_docstring_flagged():
     det = CodeStyleDetector()
-    evs = det.detect(SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n    return a + b\n")
+    evs = det.detect(SF, "def add(a, b):\n    '''Adds two numbers and returns the result.'''\n"
+                         "    return a + b\n")
     assert any(e.description == "trivial docstring on obvious function" for e in evs)
     assert all(e.category is Category.STYLE for e in evs)
 
 
 def test_docstring_longer_than_body():
     det = CodeStyleDetector()
-    src = "def f():\n    '''Line1\n    Line2\n    Line3\n    Line4\n    Line5\n    '''\n    return 1\n"
+    src = ("def f():\n    '''Line1\n    Line2\n    Line3\n"
+           "    Line4\n    Line5\n    '''\n    return 1\n")
     evs = det.detect(SF, src)
     assert any("docstring longer than" in e.description for e in evs)
 
@@ -45,7 +47,8 @@ def test_docstring_perfection_flagged():
     funcs = []
     for i in range(6):
         funcs.append(
-            f"def f{i}(x):\n    '''Does f{i}.\n\n    Args:\n        x: value\n\n    Returns:\n        result\n    '''\n    return x + {i}\n"
+            f"def f{i}(x):\n    '''Does f{i}.\n\n    Args:\n        x: value\n\n"
+            f"    Returns:\n        result\n    '''\n    return x + {i}\n"
         )
     evs = det.detect(SF, "".join(funcs))
     assert any("textbook-perfect docstrings" in e.description for e in evs)

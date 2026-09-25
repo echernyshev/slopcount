@@ -17,6 +17,9 @@ COCOMO). Детекция и формулы честные, единицы — �
 .venv/bin/python -m pytest tests/test_e2e.py::test_name -q   # один тест
 .venv/bin/slopcount .                           # самоскан
 .venv/bin/slopcount tests/fixtures/slop_project --details    # на эталонном слопе
+.venv/bin/ruff check .                          # линтер (конфиг в pyproject.toml)
+.venv/bin/ruff format --check .                 # проверить форматирование
+.venv/bin/ruff format .                         # отформатировать
 ```
 
 

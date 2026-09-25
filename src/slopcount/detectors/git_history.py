@@ -76,8 +76,8 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
                 numstat_lines.append(line.strip())
             else:
                 break
-        changed = sum(int(_REC.match(l).group(1)) + int(_REC.match(l).group(2))
-                      for l in numstat_lines)
+        changed = sum(int(_REC.match(ln).group(1)) + int(_REC.match(ln).group(2))
+                      for ln in numstat_lines)
         if changed > 2000:
             evidences.append(Evidence(ref, 0, Category.HISTORY, 3,
                                       ngettext("machine velocity (%d line)",

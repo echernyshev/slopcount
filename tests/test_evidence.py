@@ -1,4 +1,4 @@
-from slopcount.evidence import Category, CategoryTotals, Evidence, Report, aggregate
+from slopcount.evidence import Category, CategoryTotals, Evidence, aggregate
 
 
 def _ev(file, line, cat, weight):

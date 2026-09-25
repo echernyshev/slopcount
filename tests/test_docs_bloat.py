@@ -4,7 +4,8 @@ from slopcount.scanner import ScannedFile
 
 
 def make_sf(path, n_lines):
-    return ScannedFile(path, None, "markdown", 0), "\n".join(f"line {i}" for i in range(n_lines)) + "\n"
+    return (ScannedFile(path, None, "markdown", 0),
+            "\n".join(f"line {i}" for i in range(n_lines)) + "\n")
 
 
 def test_spec_giant_flagged():

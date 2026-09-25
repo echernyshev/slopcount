@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import re
-from functools import lru_cache
+from functools import cache
 
 _NESTING = re.compile(
     r"\b(if|for|while|case|when|switch)\b|&&|\|\||\b(and|or)\b(?=\s)", re.I)
@@ -45,7 +45,7 @@ _OPS_KEYWORDS = {"if", "for", "while", "return", "def", "class", "import",
                  "from", "function", "func", "fn", "switch", "case", "try"}
 
 
-@lru_cache(maxsize=None)     # доступность extras не меняется за один запуск
+@cache     # доступность extras не меняется за один запуск
 def exact_available() -> bool:
     """Есть ли [treesitter] extras: точный режим возможен только для python."""
     try:

@@ -1,4 +1,5 @@
-import math
+
+from typing import ClassVar
 
 from slopcount.detectors.perplexity import PerplexityDetector, available
 from slopcount.evidence import Category
@@ -13,7 +14,7 @@ class FakeTok:
 class FakeModel:
     def __call__(self, input_ids=None):
         class L:  # равномерные логиты → перплексия = vocab_size
-            logits = [[[0.0] * 50 for _ in range(3)]]
+            logits: ClassVar = [[[0.0] * 50 for _ in range(3)]]
         return L()
 
 
@@ -85,8 +86,8 @@ def test_model_never_sees_overlong_input():
             seen.append(ids.shape[1])
             return SimpleNamespace(logits=torch.zeros(1, ids.shape[1], 8))
 
-    from types import SimpleNamespace
     import contextlib
+    from types import SimpleNamespace
 
     det = PerplexityDetector.__new__(PerplexityDetector)
     det._tok, det._model = FakeTok(), FakeModel()

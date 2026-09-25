@@ -49,5 +49,5 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
                 ))
         except (tomllib.TOMLDecodeError, re.error, KeyError, TypeError,
                 ValueError) as exc:
-            raise RuntimeError(f"slopcount: bad rules file {p}: {exc}")
+            raise RuntimeError(f"slopcount: bad rules file {p}: {exc}") from exc
     return rules

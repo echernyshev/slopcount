@@ -1,6 +1,5 @@
 from slopcount.extractors import extract_comments
 
-
 PY = '''\
 def f():
     """Does the thing.
@@ -67,12 +66,12 @@ def test_single_line_docstring():
 
 def test_blank_docstring_lines_keep_physical_mapping():
     src = 'def f():\n    """One.\n\n    Two.\n    """\n    x = 1\n'
-    doc = [b for b in extract_comments(src, "python") if b.is_docstring][0]
+    doc = next(b for b in extract_comments(src, "python") if b.is_docstring)
     assert doc.start_line == 2
     assert doc.lines == ["One.", "", "Two.", ""]   # 4 записи = строки 2-5
 
 
 def test_c_multiline_block_start_line():
     blocks = extract_comments("int a;\n/* one\ntwo */\nint b;\n", "c")
-    b = [x for x in blocks if len(x.lines) == 2][0]
+    b = next(x for x in blocks if len(x.lines) == 2)
     assert b.start_line == 2 and b.lines == ["one", "two"]

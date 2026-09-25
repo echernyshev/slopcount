@@ -11,7 +11,8 @@ def test_flat_control_flow_scores_low():
 def test_nesting_increases_score():
     flat = "if a:\n    pass\nif b:\n    pass\n"
     nested = "if a:\n    if b:\n        if c:\n            pass\n"
-    assert approx_cognitive_complexity(nested, "python") > approx_cognitive_complexity(flat, "python")
+    assert (approx_cognitive_complexity(nested, "python")
+            > approx_cognitive_complexity(flat, "python"))
     # 1 + (1+1) + (1+2) = 6
     assert approx_cognitive_complexity(nested, "python") == 6
 
