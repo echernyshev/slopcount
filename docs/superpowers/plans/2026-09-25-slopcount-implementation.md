@@ -1593,13 +1593,18 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
 
 и инициализаторы перед циклом: `docs_bloat = DocsBloatDetector()`, `infected: list[tuple[str, int]] = []`; после цикла добавить repo-level улику: `rb = repo_bloat_evidence(files, sloc); if rb: evidences.append(rb)`; в финальном `aggregate(...)` передать `infected=infected`. Импорт: `from slopcount.detectors.docs_bloat import DocsBloatDetector, repo_bloat_evidence` (переменную `files = scan(root)` сохранить).
 
-Дополнить e2e-тест:
+Дополнить e2e-тест (с фиксированными числами фикстуры — не безусловными ярлыками):
 
 ```python
 def test_docs_category_in_output():
+    import re
     code, out = run_cli([str(SLOP), "--lang", "en"])
-    assert "Markdown specs" in out
+    m = re.search(r"Markdown specs\s+\d+\s+(\d+)", out)
+    assert m and int(m.group(1)) == 2          # DOCS slop lines from fixture
+    assert "= 11" in out                       # total SLOP incl. 6 infected lines
 ```
+
+ПРАВИЛО для Tasks 12–14: e2e-тесты вьюинга детекторов утверждают числа фикстуры, а не безусловно печатаемые ярлыки.
 
 - [ ] **Step 6: Run all** `python -m pytest -v` → PASS; commit:
 
