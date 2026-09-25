@@ -2463,7 +2463,7 @@ git commit -m "feat: SLOCOMO cost-to-comprehend model with joke conversions"
 **Files:**
 - Modify: `src/slopcount/render/text.py`, `src/slopcount/cli.py`, `tests/test_e2e.py`
 
-- [ ] **Step 1: Failing-тест**
+- [x] **Step 1: Failing-тест**
 
 ```python
 def test_details_lists_evidence():
@@ -2473,8 +2473,8 @@ def test_details_lists_evidence():
     assert "[prose]" in out and "+5" in out
 ```
 
-- [ ] **Step 2: Run** → FAIL
-- [ ] **Step 3: Реализация** — в `render/text.py`:
+- [x] **Step 2: Run** → FAIL
+- [x] **Step 3: Реализация** — в `render/text.py`:
 
 ```python
 def render_details(report: Report, limit: int = 50) -> str:
@@ -2492,7 +2492,7 @@ def render_details(report: Report, limit: int = 50) -> str:
         print(render_details(report))
 ```
 
-- [ ] **Step 4: Run all** → PASS
+- [x] **Step 4: Run all** → PASS
 - **Step 5: Commit**
 
 ```bash
