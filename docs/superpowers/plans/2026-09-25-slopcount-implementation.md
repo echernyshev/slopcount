@@ -2507,7 +2507,7 @@ git commit -m "feat: --details evidence listing"
 **Files:**
 - Create: `src/slopcount/render/json_out.py`, `src/slopcount/render/csv_out.py`, `tests/test_render.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_render.py`:
+- [x] **Step 1: Failing-тест** `tests/test_render.py`:
 
 ```python
 import csv
@@ -2550,8 +2550,8 @@ def test_text_renderer_golden():
         raise AssertionError("golden file missing; regenerate with GOLDEN=1")
 ```
 
-- [ ] **Step 2: Run** → FAIL
-- [ ] **Step 3: Реализация**
+- [x] **Step 2: Run** → FAIL
+- [x] **Step 3: Реализация**
 
 `src/slopcount/render/json_out.py`:
 
@@ -2636,7 +2636,7 @@ def render_csv(report: Report) -> str:
             print(render_details(report))
 ```
 
-- [ ] **Step 4: Run all** → PASS
+- [x] **Step 4: Run all** → PASS
 - **Step 5: Commit**
 
 ```bash
