@@ -10,6 +10,7 @@ from pathlib import Path
 
 from slopcount.detectors import EMOJI_RE
 from slopcount.evidence import Category, Evidence
+from slopcount.i18n import _, ngettext
 
 _REC = re.compile(r"^(\d+)\t(\d+)\t(.+)$")
 _COAUTHOR = re.compile(r"Co-Authored-By:.*(?:Claude|Copilot|GPT|Gemini|aider)", re.I)
@@ -54,19 +55,19 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
         for i, line in enumerate(lines, 1):
             if _COAUTHOR.search(line):
                 evidences.append(Evidence(ref, i, Category.HISTORY, 5,
-                                          "Co-Authored-By an AI"))
+                                          _("Co-Authored-By an AI")))
         if _GENERATED.search(body):
             evidences.append(Evidence(ref, 1, Category.HISTORY, 5,
-                                      "'Generated with' trailer"))
+                                      _("'Generated with' trailer")))
         if _AIDER.match(subject):
-            evidences.append(Evidence(ref, 1, Category.HISTORY, 3, "aider prefix"))
+            evidences.append(Evidence(ref, 1, Category.HISTORY, 3, _("aider prefix")))
         if EMOJI_RE.search(subject):
             evidences.append(Evidence(ref, 1, Category.HISTORY, 2,
-                                      "emoji in commit subject"))
+                                      _("emoji in commit subject")))
         hour = _hour(aiso)
         if hour is not None and hour <= 5:
             evidences.append(Evidence(ref, 1, Category.HISTORY, 1,
-                                      f"night commit ({hour:02d}:00)"))
+                                      _("night commit (%02d:00)") % hour))
         # numstat — строгий хвост записи: с конца до первой не-numstat строки,
         # чтобы цитаты вида "12\t34\tpath" в тексте коммита не считались
         numstat_lines: list[str] = []
@@ -79,10 +80,12 @@ def detect(root: Path, limit: int) -> tuple[list[Evidence], int]:
                       for l in numstat_lines)
         if changed > 2000:
             evidences.append(Evidence(ref, 0, Category.HISTORY, 3,
-                                      f"machine velocity ({changed} lines)"))
+                                      ngettext("machine velocity (%d line)",
+                                               "machine velocity (%d lines)",
+                                               changed) % changed))
     if len(subjects) >= 20 and all(_CONVENTIONAL.match(s) for s in subjects):
         evidences.append(Evidence("git:", 0, Category.HISTORY, 3,
-                                  "100% conventional commits (humans get tired)"))
+                                  _("100% conventional commits (humans get tired)")))
     return evidences, len(commits)
 
 

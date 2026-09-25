@@ -4,6 +4,7 @@ import logging
 import math
 
 from slopcount.evidence import Category, Evidence
+from slopcount.i18n import ngettext
 from slopcount.scanner import ScannedFile
 
 MODEL_NAME = "gpt2"
@@ -122,5 +123,8 @@ class PerplexityDetector:
         if median >= self._max_ppl:
             return []
         return [Evidence(sf.path, 0, self.category, 2,
-                         f"suspiciously smooth prose "
-                         f"(median ppl≈{median:.0f} over {len(ppls)} sentences)")]
+                         ngettext("suspiciously smooth prose "
+                                  "(median ppl≈%.0f over %d sentence)",
+                                  "suspiciously smooth prose "
+                                  "(median ppl≈%.0f over %d sentences)",
+                                  len(ppls)) % (median, len(ppls)))]

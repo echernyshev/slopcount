@@ -43,6 +43,27 @@ def test_russian_plurals():
     assert ngettext("%d cup", "%d cups", 21) % 21 == "21 чашка"
 
 
+def test_details_descriptions_translated():
+    from slopcount.detectors.code_style import CodeStyleDetector
+    from slopcount.scanner import ScannedFile
+    sf = ScannedFile("m.py", "python", "code", 0)
+    det = CodeStyleDetector()
+    setup("ru")
+    evs = det.detect(sf, "# 🎉\n")
+    assert [e.description for e in evs] == ["эмодзи в комментарии кода"]
+    setup("en")
+    evs = det.detect(sf, "# 🎉\n")
+    assert [e.description for e in evs] == ["emoji in code comment"]
+
+
+def test_details_plural_descriptions():
+    setup("ru")
+    assert ngettext("spec giant: %d line", "spec giant: %d lines", 3) % 3 \
+        == "гигантская спека: 3 строки"
+    assert ngettext("spec giant: %d line", "spec giant: %d lines", 5) % 5 \
+        == "гигантская спека: 5 строк"
+
+
 def test_po_mo_consistency():
     import shutil
     import subprocess

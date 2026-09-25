@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from slopcount.detectors import EMOJI_RE
 from slopcount.evidence import Category, Evidence
+from slopcount.i18n import _, ngettext
 from slopcount.scanner import ScannedFile
 
 _EMOJI_HEADER = re.compile(r"^#{1,6}\s.*" + EMOJI_RE.pattern)
@@ -27,12 +28,13 @@ class DocsBloatDetector:
         weight = 0
         if total > 500:
             ev.append(Evidence(sf.path, 0, self.category, 5,
-                               f"spec giant: {total} lines"))
+                               ngettext("spec giant: %d line",
+                                        "spec giant: %d lines", total) % total))
             weight += 5
         for i, line in enumerate(lines, 1):
             if _EMOJI_HEADER.match(line):
                 ev.append(Evidence(sf.path, i, self.category, 2,
-                                   "emoji-decorated section header"))
+                                   _("emoji-decorated section header")))
                 weight += 2
         infected: list[tuple[str, int]] = []
         if total > 0 and weight / total > 0.1:
@@ -49,5 +51,5 @@ def repo_bloat_evidence(files: list[ScannedFile], sloc: int) -> Evidence | None:
     kb_per_kloc = docs_bytes / 1024 / (sloc / 1000)
     if kb_per_kloc > 100:
         return Evidence("<repo>", 0, Category.DOCS, 4,
-                        f"docs bloat: {kb_per_kloc:.0f} KB of markdown per KLOC")
+                        _("docs bloat: %.0f KB of markdown per KLOC") % kb_per_kloc)
     return None

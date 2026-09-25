@@ -40,10 +40,12 @@ def load_rules(extra_paths: list[Path] | None = None) -> list[PhraseRule]:
         try:
             data = tomllib.loads(p.read_text(encoding="utf-8"))
             for r in data.get("rule", []):
+                desc = r.get("description", "")
                 rules.append(PhraseRule(
                     pattern=re.compile(r["pattern"], re.IGNORECASE),
                     weight=int(r.get("weight", 1)),
-                    description=r.get("description", ""),
+                    # пустая строка — без _(): gettext("") вернул бы PO-заголовок
+                    description=_(desc) if desc else "",
                 ))
         except (tomllib.TOMLDecodeError, re.error, KeyError, TypeError,
                 ValueError) as exc:

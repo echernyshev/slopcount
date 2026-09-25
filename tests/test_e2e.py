@@ -118,6 +118,13 @@ def test_details_lists_evidence():
     assert "[prose]" in out and "+5" in out
 
 
+def test_details_ru_translated():
+    code, out = run_cli([str(SLOP), "--details", "--lang", "ru"])
+    assert "ДЕТАЛИ" in out
+    assert "greeter.py" in out
+    assert "Классический энтузиазм LLM" in out   # описание улики из каталога фраз
+
+
 def test_ru_output():
     code, out = run_cli([str(SLOP), "--lang", "ru"])
     assert "ВЕРДИКТ:" in out and "Доля слопа" in out

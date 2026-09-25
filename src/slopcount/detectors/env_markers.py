@@ -8,6 +8,7 @@ from importlib import resources
 from pathlib import Path
 
 from slopcount.evidence import Category, Evidence
+from slopcount.i18n import _
 from slopcount.scanner import ScannedFile
 
 
@@ -23,8 +24,9 @@ def _load():
     import tomllib
     base = resources.files("slopcount").joinpath("rules/env_markers.toml")
     data = tomllib.loads(Path(str(base)).read_text(encoding="utf-8"))
-    paths = [(m["path"], m["weight"], m["description"]) for m in data.get("marker", [])]
-    headers = [_Header(re.compile(h["pattern"]), h["weight"], h["description"])
+    paths = [(m["path"], m["weight"], _(m["description"]))
+             for m in data.get("marker", [])]
+    headers = [_Header(re.compile(h["pattern"]), h["weight"], _(h["description"]))
                for h in data.get("header", [])]
     return paths, headers
 

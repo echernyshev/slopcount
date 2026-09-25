@@ -148,3 +148,154 @@ msgid_plural "%d sessions"
 msgstr[0] "%d сессия"
 msgstr[1] "%d сессии"
 msgstr[2] "%d сессий"
+
+# Описания улик в --details / --csv: детекторы
+
+msgid "trivial docstring on obvious function"
+msgstr "тривиальный докстринг на очевидной функции"
+
+msgid "docstring longer than body (%d line)"
+msgid_plural "docstring longer than body (%d lines)"
+msgstr[0] "докстринг длиннее тела (%d строка)"
+msgstr[1] "докстринг длиннее тела (%d строки)"
+msgstr[2] "докстринг длиннее тела (%d строк)"
+
+msgid "catch-all exception swallowing"
+msgstr "подавление исключений catch-all"
+
+msgid "defensive catch-all density (%d)"
+msgstr "плотность защитных catch-all (%d)"
+
+msgid "emoji in code comment"
+msgstr "эмодзи в комментарии кода"
+
+msgid "textbook-perfect docstrings on %d/%d functions"
+msgstr "учебниково-идеальные докстринги на %d/%d функциях"
+
+msgid "monotone comment length (var=%.1f) — machine cadence"
+msgstr "монотонная длина комментариев (var=%.1f) — машинный ритм"
+
+msgid "spec giant: %d line"
+msgid_plural "spec giant: %d lines"
+msgstr[0] "гигантская спека: %d строка"
+msgstr[1] "гигантская спека: %d строки"
+msgstr[2] "гигантская спека: %d строк"
+
+msgid "emoji-decorated section header"
+msgstr "заголовок раздела, украшенный эмодзи"
+
+msgid "docs bloat: %.0f KB of markdown per KLOC"
+msgstr "раздувание документации: %.0f КБ markdown на KLOC"
+
+msgid "Co-Authored-By an AI"
+msgstr "Co-Authored-By от ИИ"
+
+msgid "'Generated with' trailer"
+msgstr "приписка 'Generated with'"
+
+msgid "aider prefix"
+msgstr "префикс aider"
+
+msgid "emoji in commit subject"
+msgstr "эмодзи в заголовке коммита"
+
+msgid "night commit (%02d:00)"
+msgstr "ночной коммит (%02d:00)"
+
+msgid "machine velocity (%d line)"
+msgid_plural "machine velocity (%d lines)"
+msgstr[0] "машинная скорость (%d строка)"
+msgstr[1] "машинная скорость (%d строки)"
+msgstr[2] "машинная скорость (%d строк)"
+
+msgid "100% conventional commits (humans get tired)"
+msgstr "100% conventional commits (люди устают)"
+
+msgid "suspiciously smooth prose (median ppl≈%.0f over %d sentence)"
+msgid_plural "suspiciously smooth prose (median ppl≈%.0f over %d sentences)"
+msgstr[0] "подозрительно гладкая проза (медиана ppl≈%.0f на %d предложении)"
+msgstr[1] "подозрительно гладкая проза (медиана ppl≈%.0f на %d предложениях)"
+msgstr[2] "подозрительно гладкая проза (медиана ppl≈%.0f на %d предложениях)"
+
+# Описания улик в --details / --csv: TOML-каталоги
+
+msgid "Claude Code lives here"
+msgstr "Здесь живёт Claude Code"
+
+msgid "CLAUDE.md agent instructions"
+msgstr "агентные инструкции CLAUDE.md"
+
+msgid "AGENTS.md agent instructions"
+msgstr "агентные инструкции AGENTS.md"
+
+msgid "Cursor editor residue"
+msgstr "следы редактора Cursor"
+
+msgid "aider residue"
+msgstr "следы aider"
+
+msgid "Copilot instructions"
+msgstr "инструкции Copilot"
+
+msgid "Gemini agent instructions"
+msgstr "агентные инструкции Gemini"
+
+msgid "Windsurf residue"
+msgstr "следы Windsurf"
+
+msgid "generated-by header"
+msgstr "заголовок generated-by"
+
+msgid "Classic LLM enthusiasm"
+msgstr "Классический энтузиазм LLM"
+
+msgid "Eager assistant energy"
+msgstr "Энергия ретивого ассистента"
+
+msgid "Self-identification"
+msgstr "Самоидентификация"
+
+msgid "The 'not X but Y' rhetorical flip"
+msgstr "Риторический приём «не X, а Y»"
+
+msgid "Comprehensive-guide opener"
+msgstr "Заход «вот подробное руководство»"
+
+msgid "Delving, as promised"
+msgstr "То самое «углубимся», как и обещали"
+
+msgid "Important note, noted"
+msgstr "Важное замечание — зафиксировано"
+
+msgid "Essay-style conclusion"
+msgstr "Заключение в стиле сочинения"
+
+msgid "Diving deep"
+msgstr "Погружение вглубь"
+
+msgid "Seamlessness worship"
+msgstr "Культ бесшовности"
+
+msgid "Robust solution boilerplate"
+msgstr "Бойлерплейт «надёжное решение»"
+
+msgid "Classic LLM enthusiasm (ru)"
+msgstr "Классический энтузиазм LLM (ru)"
+
+msgid "Eager assistant energy (ru)"
+msgstr "Энергия ретивого ассистента (ru)"
+
+msgid "Self-identification (ru)"
+msgstr "Самоидентификация (ru)"
+
+msgid "Let-us-consider opener (ru)"
+msgstr "Заход «давайте рассмотрим» (ru)"
+
+msgid "Important note, noted (ru)"
+msgstr "Важное замечание — зафиксировано (ru)"
+
+msgid "Essay-style conclusion (ru)"
+msgstr "Заключение в стиле сочинения (ru)"
+
+msgid "Comprehensive solution boilerplate (ru)"
+msgstr "Бойлерплейт «комплексное решение» (ru)"

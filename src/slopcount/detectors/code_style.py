@@ -6,6 +6,7 @@ from collections.abc import Callable
 from slopcount.detectors import EMOJI_RE
 from slopcount.evidence import Category, Evidence
 from slopcount.extractors import extract_comments
+from slopcount.i18n import _, ngettext
 from slopcount.scanner import ScannedFile
 
 _TRIVIAL_DOC = re.compile(
@@ -35,10 +36,11 @@ class CodeStyleDetector:
             first = b.lines[0] if b.lines else ""
             if n <= 2 and _TRIVIAL_DOC.match(first):
                 evs.append(Evidence(sf.path, b.start_line, self.category, 2,
-                                    "trivial docstring on obvious function"))
+                                    _("trivial docstring on obvious function")))
             if code_lines and n / code_lines > 0.5 and n >= 5:
                 evs.append(Evidence(sf.path, b.start_line, self.category, 2,
-                                    f"docstring longer than body ({n} lines)"))
+                                    ngettext("docstring longer than body (%d line)",
+                                             "docstring longer than body (%d lines)", n) % n))
         return evs
 
     def _catch_all(self, sf, text) -> list[Evidence]:
@@ -48,10 +50,10 @@ class CodeStyleDetector:
             if _CATCH_ALL.search(line):
                 total += 1
                 evs.append(Evidence(sf.path, i, self.category, 1,
-                                    "catch-all exception swallowing"))
+                                    _("catch-all exception swallowing")))
         if total >= 5:
             evs.append(Evidence(sf.path, 0, self.category, 2,
-                                f"defensive catch-all density ({total})"))
+                                _("defensive catch-all density (%d)") % total))
         return evs
 
     def _emoji_comments(self, sf, text) -> list[Evidence]:
@@ -60,7 +62,7 @@ class CodeStyleDetector:
             for k, line in enumerate(b.lines):
                 if EMOJI_RE.search(line):
                     evs.append(Evidence(sf.path, b.start_line + k, self.category, 2,
-                                        "emoji in code comment"))
+                                        _("emoji in code comment")))
         return evs
 
     _GOOGLE = re.compile(r"\b(Args|Parameters|Returns|Raises)\s*:", re.I)
@@ -79,7 +81,8 @@ class CodeStyleDetector:
             and any(self._GOOGLE.search(l) for l in lines[d:d + 15]))
         if perfect / len(defs) >= 0.8:
             return [Evidence(sf.path, 0, self.category, 2,
-                             f"textbook-perfect docstrings on {perfect}/{len(defs)} functions")]
+                             _("textbook-perfect docstrings on %d/%d functions")
+                             % (perfect, len(defs)))]
         return []
 
     def _monotone_comments(self, sf, text) -> list[Evidence]:
@@ -91,5 +94,6 @@ class CodeStyleDetector:
         var = sum((x - mean) ** 2 for x in lens) / len(lens)
         if var < 25:
             return [Evidence(sf.path, 0, self.category, 2,
-                             f"monotone comment length (var={var:.1f}) — machine cadence")]
+                             _("monotone comment length (var=%.1f) — machine cadence")
+                             % var)]
         return []
