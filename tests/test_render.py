@@ -34,6 +34,11 @@ def test_text_renderer_golden():
     GOLDEN=1 python -m pytest tests/test_render.py -v"""
     from pathlib import Path
     import os
+    from slopcount.metrics.cognitive import exact_available
+    if exact_available():
+        # Эталон закрепляет вывод режима приближения: с [treesitter] extras
+        # суффикс «(approximate)» исчезает — сверять не с чем.
+        pytest.skip("exact mode active (treesitter extras installed)")
     code, out = run_cli([str(SLOP), "--lang", "en"])
     golden = Path(__file__).parent / "golden" / "slop_project_en.txt"
     if golden.exists():

@@ -1,3 +1,5 @@
+import pytest
+
 from slopcount.metrics.cognitive import approx_cognitive_complexity, halstead_seconds
 
 
@@ -26,3 +28,12 @@ def test_approximation_pins():
     assert approx_cognitive_complexity("int main() {}\n", "c") == 0
     assert halstead_seconds("just words here\n") == 0.0
     assert halstead_seconds("") == 0.0
+
+
+def test_exact_mode_treesitter():
+    pytest.importorskip("tree_sitter", reason="no [treesitter] extra")
+    from slopcount.metrics.cognitive import cognitive_complexity_tspython
+    # вложенность: 1 (if a) + 1 (if b) + 2 (if c вложенный) = 4 (Campbell:
+    # вложенный оператор стоит 1 + nesting за каждый уровень)
+    src = "if a:\n    pass\nif b:\n    if c:\n        pass\n"
+    assert cognitive_complexity_tspython(src) == 4

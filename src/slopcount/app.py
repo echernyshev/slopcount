@@ -11,7 +11,8 @@ from slopcount.detectors.phrase import PhraseDetector
 from slopcount.evidence import Evidence, Report, aggregate
 from slopcount.i18n import _
 from slopcount.metrics.cognitive import (approx_cognitive_complexity,
-                                         halstead_seconds)
+                                         cognitive_complexity_tspython,
+                                         exact_available, halstead_seconds)
 from slopcount.metrics.sloc import count_sloc
 from slopcount.rules import load_rules
 from slopcount.scanner import ScannedFile, read_text, scan
@@ -67,6 +68,7 @@ def run(opts: Options) -> Report:
     prose_words = 0
     cog_points = 0
     hal_secs = 0.0
+    used_approx = False     # был ли хоть один файл посчитан приближённо
     for sf in files:
         if sf.kind not in ("code", "markdown", "prose"):
             continue
@@ -81,7 +83,14 @@ def run(opts: Options) -> Report:
             evidences.extend(style_evs)
             file_evidences.extend(style_evs)
             if style_evs:   # SLOCOMO: вес слоп-кода
-                cog_points += approx_cognitive_complexity(text, sf.language or "")
+                # Точный режим: python + [treesitter] extras; остальное —
+                # приближение. Смешанный режим считается приближённым.
+                if sf.language == "python" and exact_available():
+                    cog_points += cognitive_complexity_tspython(text)
+                else:
+                    cog_points += approx_cognitive_complexity(
+                        text, sf.language or "")
+                    used_approx = True
                 hal_secs += halstead_seconds(text)
         if sf.kind == "markdown":
             bloat = docs_bloat.detect(sf, text)
@@ -117,5 +126,5 @@ def run(opts: Options) -> Report:
     from slopcount.metrics.slocomo import compute as slocomo_compute
     report.slocomo = slocomo_compute(
         slop=report.slop, prose_words=prose_words, cognitive_points=cog_points,
-        halstead_secs=hal_secs, opts=opts)
+        halstead_secs=hal_secs, opts=opts, approximate=used_approx)
     return report

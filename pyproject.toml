@@ -22,7 +22,7 @@ slopcount = "slopcount.cli:main"
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 perplexity = ["transformers>=4.40", "torch>=2.2"]
-treesitter = ["tree-sitter>=0.21", "tree-sitter-python>=0.21"]
+treesitter = ["tree-sitter>=0.22", "tree-sitter-python>=0.23"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/slopcount"]
