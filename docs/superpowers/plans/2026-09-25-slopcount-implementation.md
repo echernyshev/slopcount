@@ -1115,7 +1115,7 @@ git commit -m "feat: verdict scale and progress bar"
 **Files:**
 - Create: `src/slopcount/i18n.py`, `tests/test_i18n.py`
 
-- [ ] **Step 1: Failing-тест** `tests/test_i18n.py`:
+- [x] **Step 1: Failing-тест** `tests/test_i18n.py`:
 
 ```python
 from slopcount.i18n import _, fmt_float, fmt_int, ngettext, setup
@@ -1144,8 +1144,8 @@ def test_ngettext_english_forms():
 
 Примечание: если ru-каталог ещё не скомпилирован (Task 21), `_()` при `setup("ru")` возвращает msgid — это корректный identity-фолбэк, тест на русский текст `_()` появится в Task 21.
 
-- [ ] **Step 2: Run** `python -m pytest tests/test_i18n.py -v` → FAIL
-- [ ] **Step 3: Реализация** `src/slopcount/i18n.py`:
+- [x] **Step 2: Run** `python -m pytest tests/test_i18n.py -v` → FAIL
+- [x] **Step 3: Реализация** `src/slopcount/i18n.py`:
 
 ```python
 from __future__ import annotations
@@ -1210,8 +1210,8 @@ def fmt_float(x: float, ndigits: int = 2) -> str:
     return s
 ```
 
-- [ ] **Step 4: Run** `python -m pytest tests/test_i18n.py -v` → PASS
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run** `python -m pytest tests/test_i18n.py -v` → PASS
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopcount/i18n.py tests/test_i18n.py
