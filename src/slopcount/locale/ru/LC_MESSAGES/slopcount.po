@@ -51,7 +51,7 @@ msgid "Environment markers"
 msgstr "Маркеры окружения"
 
 msgid "Context Windows Consumed"
-msgstr "Поглощено контекстных окон"
+msgstr "Истрачено контекстных окон"
 
 msgid "GPU-hours of Regret"
 msgstr "GPU-часы сожаления"
@@ -63,7 +63,7 @@ msgid "Therapy Recommended"
 msgstr "Рекомендована терапия"
 
 msgid "Cost Ladder (write / regenerate / comprehend)"
-msgstr "Лестница затрат (написать / перегенерировать / понять)"
+msgstr "Лестница затрат (написать руками / перегенерировать / понять)"
 
 msgid "LOCOMO  regenerate it with an LLM"
 msgstr "LOCOMO  перегенерировать LLM-ом"
@@ -194,7 +194,7 @@ msgid "emoji in code comment"
 msgstr "эмодзи в комментарии кода"
 
 msgid "textbook-perfect docstrings on %d/%d functions"
-msgstr "учебниково-идеальные докстринги на %d/%d функциях"
+msgstr "идеальные (как по учебнику) комментарии на %d/%d функциях"
 
 msgid "monotone comment length (var=%.1f) — machine cadence"
 msgstr "монотонная длина комментариев (var=%.1f) — машинный ритм"
@@ -325,10 +325,10 @@ msgid "Comprehensive solution boilerplate (ru)"
 msgstr "Бойлерплейт «комплексное решение» (ru)"
 
 msgid "Documentation-to-Code Ratio (MD/SLOC)"
-msgstr "Документация на код (MD/SLOC)"
+msgstr "Доля документации к коду (MD/SLOC)"
 
 msgid "Comments-to-Code Ratio (comment/SLOC)"
-msgstr "Комментарии к коду (comment/SLOC)"
+msgstr "Доля комментариев к коду (comment/SLOC)"
 
 msgid "%d file"
 msgid_plural "%d files"
@@ -373,7 +373,7 @@ msgid "Detected SLOP"
 msgstr "Детектированный слоп"
 
 msgid "Slop-to-Code Ratio (SLOP/SLOC)"
-msgstr "Доля слопа (SLOP/SLOC)"
+msgstr "Доля слопа к коду (SLOP/SLOC)"
 
 msgid "COMPREHENSION EFFORT & COST"
 msgstr "УСИЛИЕ И СТОИМОСТЬ ПОНИМАНИЯ"
@@ -412,7 +412,7 @@ msgid "lines × %d estimate"
 msgstr "строки × %d — оценка"
 
 msgid "COCOMO  write the whole tree (docs count as code)"
-msgstr "COCOMO  написать всё дерево (доки считаются кодом)"
+msgstr "COCOMO  написать все руками (доки считаются кодом)"
 
 msgid "SLOCOMO comprehend the project"
 msgstr "SLOCOMO понять проект"
@@ -421,10 +421,10 @@ msgid "per person"
 msgstr "на человека"
 
 msgid "(a team multiplies by headcount — see the scale below)"
-msgstr "(команда умножает стоимость на численность — см. шкалу ниже)"
+msgstr "(для команды стоимость умножается на численность — см. шкалу ниже)"
 
 msgid "Team Comprehension Cost (headcount × per person)"
-msgstr "Стоимость понимания командой (численность × на человека)"
+msgstr "Стоимость понимания командой (численность × стоимость на человека)"
 
 msgid "%d person"
 msgid_plural "%d people"
@@ -436,7 +436,7 @@ msgid "people"
 msgstr "человек"
 
 msgid "Comprehension Tokens (LOCOMO round-trip: in + out)"
-msgstr "Токены понимания (полный цикл LOCOMO: вход + выход)"
+msgstr "Сколько токенов, чтобы понять (полный цикл LOCOMO: вход + выход)"
 
 msgid "(scc does not count comments)"
 msgstr "(scc их не учитывает)"
