@@ -1,0 +1,43 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: twine check dist/*
+      - name: Wheel must ship locale and rule catalogs
+        run: |
+          unzip -l dist/*.whl | grep -q 'locale/ru/LC_MESSAGES/slopcount\.mo'
+          unzip -l dist/*.whl | grep -q 'rules/languages\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/phrases_en\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/phrases_ru\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/env_markers\.toml'
+      - name: Tag must match package version
+        run: |
+          grep -Fq "version = \"${GITHUB_REF_NAME#v}\"" pyproject.toml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

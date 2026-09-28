@@ -1,0 +1,45 @@
+name: ci
+on:
+  push:
+    branches: [main, slopcount-design]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e .[dev]
+      - name: Install scc 4.1.0 (pinned, sha256 verified)
+        # hash = the pinned table in src/slopcount/scc.py (official checksums.txt v4.1.0)
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /tmp/scc.tar.gz \
+            https://github.com/boyter/scc/releases/download/v4.1.0/scc_Linux_x86_64.tar.gz
+          echo "c7328436d3027f4357d3d7853f7dc3ac2bbcb4ca08f1adad91a27c593884079b  /tmp/scc.tar.gz" \
+            | sha256sum -c
+          sudo tar xzf /tmp/scc.tar.gz -C /usr/local/bin scc
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m pytest tests/ -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: twine check dist/*
+      - name: Wheel must ship locale and rule catalogs
+        run: |
+          unzip -l dist/*.whl | grep -q 'locale/ru/LC_MESSAGES/slopcount\.mo'
+          unzip -l dist/*.whl | grep -q 'rules/languages\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/phrases_en\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/phrases_ru\.toml'
+          unzip -l dist/*.whl | grep -q 'rules/env_markers\.toml'

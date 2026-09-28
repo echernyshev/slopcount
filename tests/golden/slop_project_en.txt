@@ -1,0 +1,77 @@
+PROJECT VOLUME
+-------------------------------------------------------------------------------
+Code by language:                                files           SLOC
+Python                                               2              8
+-------------------------------------------------------------------------------
+Total SLOC                                              = 8
+Files in scan                                           = 4
+Documentation                                           = 12 lines (2 files)
+Documentation-to-Code Ratio (MD/SLOC)                   = 1.500 [████████████████████] 150.0% RECURSION
+                                                         You ran slopcount inside slop. Recursion
+Comments                                                = 12 lines
+Comments-to-Code Ratio (comment/SLOC)                   = 1.500 [████████████████████] 150.0% COMMENT_DRIVEN
+                                                         Comment-driven development. The code is an attachment
+Detected SLOP                                           = 16 lines
+Slop-to-Code Ratio (SLOP/SLOC)                          = 2.000 [████████████████████] 200.0% INFESTED
+                                                         Full slop infestation. Call the exterminators
+COMPREHENSION EFFORT & COST
+-------------------------------------------------------------------------------
+Reading documentation                                   = 0.0 h  (43 words / 238.0 wpm × 2.3)
+Reading code                                            = 0.0 h  (8 SLOC / 200.0 per hour)
+Reading comments                                        = 0.0 h  (72 words, lines × 6 estimate)
+Cognitive processing                                    = 0.1 h  (7 points × 0.5 min)
+Total reading time                                      = 0.1 h
+
+-------------------------------------------------------------------------------
+Cost Ladder (write / regenerate / comprehend)
+-------------------------------------------------------------------------------
+COCOMO  write the whole tree (docs count as code) = $ 352 (0.0 person-months · 0.7 mo · 0.0 people)
+           docs                   0.0 person-months · $ 170
+           source code            0.0 person-months · $ 170
+             code                 0.0 person-months · $ 170
+             comments               —  (scc does not count comments)
+           data                   0.0 person-months · $ 0
+LOCOMO  regenerate it with an LLM                = $ 0.01 (0.0 h + 0.0 h review)
+           docs                   0.0 h · $ 0.01
+           source code            0.0 h · $ 0.01
+             code                 0.0 h · $ 0.01
+             comments               —  (scc does not count comments)
+           data                   0.0 h · $ 0.00
+SLOCOMO comprehend the project                   = $ 25 (0.1 h reading · 0.0 person-months) — per person
+           (a team multiplies by headcount — see the scale below)
+           docs                   0.0 h · $ 2
+           source code            0.1 h · $ 23
+             code                 0.1 h · $ 22  (incl. cognitive 0.1 h)
+             comments             0.0 h · $ 1
+           data                     —  (not read)
+
+Team Comprehension Cost (headcount × per person)
+    1 person = 0.0 person-months · $ 25
+    2 people = 0.0 person-months · $ 49
+    3 people = 0.0 person-months · $ 74
+    5 people = 0.0 person-months · $ 123
+    8 people = 0.0 person-months · $ 196
+   13 people = 0.0 person-months · $ 319
+   21 people = 0.0 person-months · $ 515
+
+Comprehension Tokens (LOCOMO round-trip: in + out)      = 2,775
+Context Windows Consumed                                = 0.0139 × 200K / 0.0028 × 1M
+GPU-hours of Regret                                     = 0.0077
+
+Coffee Required                                         = 1 cup ($ 4.00)
+Therapy Recommended                                     = 1 session ($ 150.00)
+DETECTED SLOP
+-------------------------------------------------------------------------------
+Totals grouped by slop origin (dominant slop source first):
+-------------------------------------------------------------------------------
+Origin                           files    slop lines    slop %  cognitivity
+-------------------------------------------------------------------------------
+Prose (comments/docstrings)          2             3      18.8  high      
+Markdown specs                       1             2      12.5  medium    
+Code style                           1             2      12.5  medium    
+Git history                          0             0       0.0  low       
+Environment markers                  1             —         —  —         
+-------------------------------------------------------------------------------
+Top slop files:  README.md 13 lines · src/defensive.py 2 lines · src/greeter.py 1 line
+Agents detected (not counted as slop): CLAUDE.md
+Run with --evidence to see every finding with its source line.

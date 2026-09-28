@@ -1,0 +1,145 @@
+{
+  "languageSummary": [
+    {
+      "Name": "Markdown",
+      "Bytes": 267,
+      "CodeBytes": 0,
+      "Lines": 12,
+      "Code": 8,
+      "Comment": 0,
+      "Blank": 4,
+      "Complexity": 0,
+      "Cognitive": 0,
+      "Count": 2,
+      "WeightedComplexity": 0,
+      "Files": [
+        {
+          "Language": "Markdown",
+          "PossibleLanguages": [
+            "Markdown"
+          ],
+          "Filename": "CLAUDE.md",
+          "Extension": "md",
+          "Location": "CLAUDE.md",
+          "Symlocation": "",
+          "Bytes": 39,
+          "Lines": 1,
+          "Code": 1,
+          "Comment": 0,
+          "Blank": 0,
+          "Complexity": 0,
+          "Cognitive": 0,
+          "WeightedComplexity": 0,
+          "Hash": null,
+          "Binary": false,
+          "Minified": false,
+          "Generated": false,
+          "EndPoint": 0,
+          "Uloc": 0
+        },
+        {
+          "Language": "Markdown",
+          "PossibleLanguages": [
+            "Markdown"
+          ],
+          "Filename": "README.md",
+          "Extension": "md",
+          "Location": "README.md",
+          "Symlocation": "",
+          "Bytes": 228,
+          "Lines": 11,
+          "Code": 7,
+          "Comment": 0,
+          "Blank": 4,
+          "Complexity": 0,
+          "Cognitive": 0,
+          "WeightedComplexity": 0,
+          "Hash": null,
+          "Binary": false,
+          "Minified": false,
+          "Generated": false,
+          "EndPoint": 0,
+          "Uloc": 0
+        }
+      ],
+      "LineLength": null,
+      "ULOC": 0
+    },
+    {
+      "Name": "Python",
+      "Bytes": 378,
+      "CodeBytes": 0,
+      "Lines": 20,
+      "Code": 8,
+      "Comment": 12,
+      "Blank": 0,
+      "Complexity": 3,
+      "Cognitive": 7,
+      "Count": 2,
+      "WeightedComplexity": 0,
+      "Files": [
+        {
+          "Language": "Python",
+          "PossibleLanguages": [
+            "Python"
+          ],
+          "Filename": "defensive.py",
+          "Extension": "py",
+          "Location": "defensive.py",
+          "Symlocation": "",
+          "Bytes": 217,
+          "Lines": 14,
+          "Code": 6,
+          "Comment": 8,
+          "Blank": 0,
+          "Complexity": 3,
+          "Cognitive": 7,
+          "WeightedComplexity": 0,
+          "Hash": null,
+          "Binary": false,
+          "Minified": false,
+          "Generated": false,
+          "EndPoint": 0,
+          "Uloc": 0
+        },
+        {
+          "Language": "Python",
+          "PossibleLanguages": [
+            "Python"
+          ],
+          "Filename": "greeter.py",
+          "Extension": "py",
+          "Location": "greeter.py",
+          "Symlocation": "",
+          "Bytes": 161,
+          "Lines": 6,
+          "Code": 2,
+          "Comment": 4,
+          "Blank": 0,
+          "Complexity": 0,
+          "Cognitive": 0,
+          "WeightedComplexity": 0,
+          "Hash": null,
+          "Binary": false,
+          "Minified": false,
+          "Generated": false,
+          "EndPoint": 0,
+          "Uloc": 0
+        }
+      ],
+      "LineLength": null,
+      "ULOC": 0
+    }
+  ],
+  "estimatedCost": 351.5342182373803,
+  "estimatedScheduleMonths": 0.6696751036919386,
+  "estimatedPeople": 0.04663082186136087,
+  "estimatedLLMCost": 0.01286753681033969,
+  "estimatedLLMInputTokens": 2396.358613752346,
+  "estimatedLLMOutputTokens": 378.5640646055101,
+  "estimatedLLMGenerationSeconds": 7.571281292110203,
+  "estimatedLLMReviewHours": 0.0026666666666666666,
+  "estimatedLLMPreset": "medium",
+  "estimatedLLMAverageComplexityMultiplier": 7.4886206679760825,
+  "estimatedLLMCycles": 2.3660254037844384
+}
