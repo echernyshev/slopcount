@@ -28,8 +28,12 @@ def plain_output():
     """На время вызова глушит цвет принудительно (NO_COLOR=1, FORCE_COLOR убран)
     и восстанавливает окружение. На машинах разработчиков с FORCE_COLOR=3
     typer/rich красят help и usage-ошибки даже при redirect_stdout в StringIO —
-    строгие подстрочные ассерты падают."""
-    saved = {key: os.environ.pop(key, None) for key in ("FORCE_COLOR", "NO_COLOR")}
+    строгие подстрочные ассерты падают. GITHUB_ACTIONS вычищаем тоже: rich
+    считает раннер GitHub Actions терминалом и красит стили (bold/dim) даже
+    при NO_COLOR — без этого два теста CLI падают только в CI."""
+    saved = {
+        key: os.environ.pop(key, None) for key in ("FORCE_COLOR", "NO_COLOR", "GITHUB_ACTIONS")
+    }
     os.environ["NO_COLOR"] = "1"
     try:
         yield
