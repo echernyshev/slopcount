@@ -8,11 +8,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 SLOCOMO вместо COCOMO). Детекция и формулы честные, единицы — шутливые. Каждая улика
 объяснима (`--evidence`).
 
+Процессная документация: [CONTRIBUTING.md](CONTRIBUTING.md) — окружение
+разработчика и полный набор проверок; [RELEASE.md](RELEASE.md) — выпуск версии
+(тег `v*` → автопубликация в PyPI).
+
 
 ## Команды
 
 ```bash
-.venv/bin/python -m pytest tests/ -q            # все тесты (~20 с: e2e гоняет настоящий scc)
+.venv/bin/python -m pytest tests/ -q            # все тесты (~6 с: e2e гоняет настоящий scc)
 .venv/bin/python -m pytest tests/test_slocomo.py -q          # один файл
 .venv/bin/python -m pytest tests/test_e2e.py::test_name -q   # один тест
 .venv/bin/slopcount .                           # самоскан
@@ -32,6 +36,23 @@ SLOCOMO вместо COCOMO). Детекция и формулы честные,
 msgfmt --check -o src/slopcount/locale/ru/LC_MESSAGES/slopcount.mo \
   src/slopcount/locale/ru/LC_MESSAGES/slopcount.po
 ```
+
+### CI и релизы
+
+- `ci.yml` (push/PR, обе ветки): job **tests** — ruff + pytest, scc 4.1.0
+  ставится пином с проверкой sha256 (хеш из таблицы `scc.py`); job **build** —
+  `python -m build` + `twine check` + ассерты, что wheel содержит локаль
+  (`slopcount.mo`) и все каталоги `rules/*.toml`.
+- `release.yml` (только теги `v*`): сборка → `twine check` → ассерты wheel →
+  сверка тега с версией `pyproject.toml` → публикация в PyPI через trusted
+  publishing (OIDC, окружение `pypi`, без токенов). Тесты в релизе не гоняются —
+  main должен быть зелёным до тега; последовательность и нюансы — RELEASE.md.
+- Версия живёт в двух местах (`pyproject.toml` + `src/slopcount/__init__.py`)
+  и меняется синхронно.
+- **README.md (en) и README.ru.md — зеркальная пара**: фактические изменения
+  (флаги, формулы, дефолты, примеры) вносятся в оба файла.
+- sdist не включает `.claude`/`.serena` —
+  `[tool.hatch.build.targets.sdist] exclude` в `pyproject.toml`.
 
 ## Архитектура
 
