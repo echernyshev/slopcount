@@ -345,5 +345,5 @@ def test_md_sloc_lines_in_output():
 
 def test_ru_md_sloc_lines():
     _code, out = run_cli([str(SLOP), "--lang", "ru"])
-    assert "Документация на код (MD/SLOC)" in out
-    assert "Комментарии к коду (comment/SLOC)" in out
+    assert "Доля документации к коду (MD/SLOC)" in out
+    assert "Доля комментариев к коду (comment/SLOC)" in out

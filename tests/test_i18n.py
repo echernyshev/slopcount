@@ -31,7 +31,7 @@ def test_ngettext_english_forms():
 
 def test_russian_translation_active():
     setup("ru")
-    assert _("Slop-to-Code Ratio (SLOP/SLOC)") == "Доля слопа (SLOP/SLOC)"
+    assert _("Slop-to-Code Ratio (SLOP/SLOC)") == "Доля слопа к коду (SLOP/SLOC)"
     assert _("PROJECT VOLUME") == "ОБЪЁМ ПРОЕКТА"
 
 
