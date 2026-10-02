@@ -141,6 +141,98 @@ def test_csv_rows_with_source():
     assert any(r[5].startswith("Great question") for r in rows[1:])
 
 
+def test_top_slop_files_block_layout():
+    """Топ файлов — по строке на файл: ранг, имя, полоса █░ от худшего, строки."""
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
+    lines = out.splitlines()
+    idx = lines.index("Top slop files:")
+    block = lines[idx + 1 : idx + 4]  # в фикстуре ровно 3 файла в топе
+    assert [ln.lstrip()[:2] for ln in block] == ["1.", "2.", "3."]
+    assert block[0].lstrip().startswith("1. README.md ")
+    assert block[1].lstrip().startswith("2. src/defensive.py ")
+    assert block[2].lstrip().startswith("3. src/greeter.py ")
+    for ln in block:
+        assert "█" in ln  # полоса есть у каждого
+    assert block[0].endswith("13 lines")
+    assert block[1].endswith("2 lines")
+    assert block[2].endswith("1 line")
+    # полоса худшего файла — полная, у остальных короче (относительная)
+    assert block[0].count("█") > block[1].count("█") > block[2].count("█")
+    # за блоком сразу идёт строка про агентов, а не хвост старого « · »-формата
+    assert " · " not in lines[idx + 1]
+
+
+def test_color_off_report_has_no_ansi():
+    _code, out = run_cli([str(SLOP), "--lang", "en"])
+    assert "\x1b" not in out
+
+
+def test_color_on_paints_and_preserves_text():
+    """Включённый цвет: ANSI-коды есть во всех секциях, и после зачистки
+    кодов текст побайтово совпадает с бесцветным рендером — подсветка не
+    имеет права менять содержимое и выравнивание."""
+    import re
+
+    from slopcount.app import Options, run
+    from slopcount.render import ansi
+    from slopcount.render.text import render_comprehension, render_slop, render_volume
+
+    report = run(Options(paths=[str(SLOP)]))
+    sections = (render_volume, render_comprehension, render_slop)
+    plain = [fn(report) for fn in sections]
+
+    ansi.set_enabled(True)
+    try:
+        painted = [fn(report) for fn in sections]
+    finally:
+        ansi.set_enabled(False)
+
+    strip = lambda s: re.sub(r"\x1b\[[0-9;]*m", "", s)  # noqa: E731
+    for plain_s, painted_s in zip(plain, painted, strict=True):
+        assert "\x1b[" in painted_s
+        assert strip(painted_s) == plain_s
+    # якорные цвета: bold-заголовки, cyan-файлы, dim-ранг, yellow-полоса/деньги,
+    # RECURSION — слово-шахматка инверсией (у фикстуры md_sloc_ratio=1.5)
+    assert "\x1b[1m" in painted[0]  # PROJECT VOLUME
+    assert "\x1b[7m" in painted[0]  # RECURSION (chess_word)
+    assert "▚▞" in painted[0]  # шахматная полоса вместо прогресс-бара
+    assert "\x1b[33m" in painted[1]  # деньги Cost Ladder
+    assert "\x1b[36m" in painted[2]  # имена файлов топа
+    assert "\x1b[2m" in painted[2]  # ранги 1./2./3.
+    assert "\x1b[33m" in painted[2]  # полоса/счётчик строк топа
+
+
+def test_grade_colors_explicit_palette():
+    """Палитра вердиктов — явная таблица-градиент: green → chartreuse →
+    yellow → orange → red; RECURSION — ч/б слово-шахматка."""
+    from slopcount.render import ansi
+    from slopcount.render.text import _grade_color
+    from slopcount.scales import SCALES, grade
+
+    expected = {
+        "HUMAN": ansi.green,
+        "NEURO_CLOUD": ansi.chartreuse,
+        "ESTABLISHED_SLOP": ansi.yellow,
+        "AGENT_SELF_SERVICE": ansi.orange,
+        "AGENT_OCCUPATION": ansi.red,
+        "RECURSION": ansi.chess_word,
+        "ASCETIC": ansi.green,
+        "DOCUMENTED": ansi.chartreuse,
+        "CHATTY": ansi.yellow,
+        "LECTURE_NOTES": ansi.orange,
+        "COMMENT_DRIVEN": ansi.red,
+        "CLEAN": ansi.green,
+        "TRACE": ansi.chartreuse,
+        "NOTICEABLE": ansi.yellow,
+        "HEAVY": ansi.orange,
+        "INFESTED": ansi.red,
+    }
+    pairs = [(metric, g) for metric in SCALES for _bound, g in SCALES[metric]]
+    pairs.append(("doc", grade("doc", 1.5)))  # RECURSION — спец-вердикт
+    for metric, g in pairs:
+        assert _grade_color(g) is expected[g.code], f"{metric}/{g.code}"
+
+
 def test_text_renderer_golden():
     """Golden-file тест из спеки §8. Первый запуск/обновление эталона:
     GOLDEN=1 python -m pytest tests/test_render.py -v"""

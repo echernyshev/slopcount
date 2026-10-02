@@ -1,12 +1,24 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import lru_cache
 from pathlib import Path
 
 from slopcount.evidence import Category, Report
 from slopcount.i18n import _, fmt_float, fmt_int, ngettext
 from slopcount.metrics import slocomo as sc
-from slopcount.scales import grade, progress_bar
+from slopcount.render.ansi import (
+    bold,
+    chartreuse,
+    chess_word,
+    cyan,
+    dim,
+    green,
+    orange,
+    red,
+    yellow,
+)
+from slopcount.scales import Grade, grade, progress_bar
 
 # _ROW_LABELS — подписи категорий детекции (английские msgid).
 _ROW_LABELS: dict[Category, str] = {
@@ -19,16 +31,51 @@ _ROW_LABELS: dict[Category, str] = {
 
 
 def _fmt_ratio(x: float) -> str:
-    return "∞" if x == float("inf") else fmt_float(x, 3)
+    return red("∞") if x == float("inf") else fmt_float(x, 3)
 
 
 def _fmt_pm(x: float) -> str:
     """Человеко-месяцы — 1 знак: в ru-локали «122,653» читается как тысячи."""
-    return "∞" if x == float("inf") else fmt_float(x, 1)
+    return red("∞") if x == float("inf") else fmt_float(x, 1)
 
 
 def _fmt_money(x: float) -> str:
-    return "∞" if x == float("inf") else fmt_float(x, 0)
+    return red("∞") if x == float("inf") else fmt_float(x, 0)
+
+
+# Палитра вердиктов — явная таблица-градиент (проще точечно править, чем
+# индексное правило): green → chartreuse → yellow → orange → red по позициям
+# #0–#4 в каждой шкале; RECURSION — шутка самоскана, ей положено быть
+# «из ряда вон»: ч/б слово-шахматка (chess_word) + полоса-доска.
+_GRADE_PAINT: dict[str, Callable[[str], str]] = {
+    "HUMAN": green,
+    "NEURO_CLOUD": chartreuse,
+    "ESTABLISHED_SLOP": yellow,
+    "AGENT_SELF_SERVICE": orange,
+    "AGENT_OCCUPATION": red,
+    "RECURSION": chess_word,
+    "ASCETIC": green,
+    "DOCUMENTED": chartreuse,
+    "CHATTY": yellow,
+    "LECTURE_NOTES": orange,
+    "COMMENT_DRIVEN": red,
+    "CLEAN": green,
+    "TRACE": chartreuse,
+    "NOTICEABLE": yellow,
+    "HEAVY": orange,
+    "INFESTED": red,
+}
+
+
+def _chess_bar(pct: float, width: int = 20) -> str:
+    """Полоса-шахматка для RECURSION: шкала doc кончилась (ratio ≥ 1.0),
+    дальше — только доска. ▚▞ — юникод-четверти квадрата; это текст,
+    а не ANSI, поэтому виден даже с выключенным цветом."""
+    return "[" + "▚▞" * (width // 2) + f"] {fmt_float(pct, 1)}%"
+
+
+def _grade_color(g: Grade) -> Callable[[str], str]:
+    return _GRADE_PAINT[g.code]
 
 
 @lru_cache(maxsize=128)
@@ -59,15 +106,18 @@ def _snippet(root: Path, file: str, line: int) -> str:
 
 def _ratio_line(label: str, ratio: float, metric: str) -> str:
     g = grade(metric, ratio)
-    head = f"{label:<55} = {_fmt_ratio(ratio)} {progress_bar(ratio * 100)} {g.code}"
-    return head + f"\n{' ' * 57}{_(g.text)}"
+    paint_ = _grade_color(g)
+    # RECURSION — доска вместо цветного прогресс-бара: шкала doc кончилась
+    bar = _chess_bar(ratio * 100) if g.code == "RECURSION" else paint_(progress_bar(ratio * 100))
+    head = f"{label:<55} = {_fmt_ratio(ratio)} {bar} {paint_(g.code)}"
+    return head + f"\n{' ' * 57}{dim(_(g.text))}"
 
 
 def render_volume(report: Report) -> str:
     v = report.volume
-    out = [_("PROJECT VOLUME"), "-" * 79]
+    out = [bold(_("PROJECT VOLUME")), "-" * 79]
     if v.languages:
-        out.append(f"{_('Code by language:'):<44}{_('files'):>10}{_('SLOC'):>15}")
+        out.append(bold(f"{_('Code by language:'):<44}{_('files'):>10}{_('SLOC'):>15}"))
         for row in v.languages[:10]:
             out.append(f"{row.language:<44}{fmt_int(row.files):>10}{fmt_int(row.sloc):>15}")
         rest = v.languages[10:]
@@ -107,14 +157,14 @@ def _cocomo_rows(report: Report) -> list[str]:
     b = cb.buckets
     rows = [
         f"{'':>11}{_('docs'):<16}{_fmt_pm(b['docs'].person_months):>10}"
-        f" {_('person-months')} · $ {_fmt_money(b['docs'].cost)}",
+        f" {_('person-months')} · " + yellow(f"$ {_fmt_money(b['docs'].cost)}"),
         f"{'':>11}{_('source code'):<16}{_fmt_pm(b['source_code']['total'].person_months):>10}"
-        f" {_('person-months')} · $ {_fmt_money(b['source_code']['total'].cost)}",
+        f" {_('person-months')} · " + yellow(f"$ {_fmt_money(b['source_code']['total'].cost)}"),
         f"{'':>13}{_('code'):<14}{_fmt_pm(b['source_code']['code'].person_months):>10}"
-        f" {_('person-months')} · $ {_fmt_money(b['source_code']['code'].cost)}",
+        f" {_('person-months')} · " + yellow(f"$ {_fmt_money(b['source_code']['code'].cost)}"),
         f"{'':>13}{_('comments'):<14}{'—':>10}  {_('(scc does not count comments)')}",
         f"{'':>11}{_('data'):<16}{_fmt_pm(b['data'].person_months):>10}"
-        f" {_('person-months')} · $ {_fmt_money(b['data'].cost)}",
+        f" {_('person-months')} · " + yellow(f"$ {_fmt_money(b['data'].cost)}"),
     ]
     return rows
 
@@ -125,14 +175,14 @@ def _locomo_rows(report: Report) -> list[str]:
         return []
     rows = [
         f"{'':>11}{_('docs'):<16}{fmt_float(lb['docs'].hours, 1):>10}"
-        f" h · $ {fmt_float(lb['docs'].cost, 2)}",
+        f" h · " + yellow(f"$ {fmt_float(lb['docs'].cost, 2)}"),
         f"{'':>11}{_('source code'):<16}{fmt_float(lb['source_code']['total'].hours, 1):>10}"
-        f" h · $ {fmt_float(lb['source_code']['total'].cost, 2)}",
+        f" h · " + yellow(f"$ {fmt_float(lb['source_code']['total'].cost, 2)}"),
         f"{'':>13}{_('code'):<14}{fmt_float(lb['source_code']['code'].hours, 1):>10}"
-        f" h · $ {fmt_float(lb['source_code']['code'].cost, 2)}",
+        f" h · " + yellow(f"$ {fmt_float(lb['source_code']['code'].cost, 2)}"),
         f"{'':>13}{_('comments'):<14}{'—':>10}  {_('(scc does not count comments)')}",
         f"{'':>11}{_('data'):<16}{fmt_float(lb['data'].hours, 1):>10}"
-        f" h · $ {fmt_float(lb['data'].cost, 2)}",
+        f" h · " + yellow(f"$ {fmt_float(lb['data'].cost, 2)}"),
     ]
     return rows
 
@@ -145,27 +195,30 @@ def _slocomo_rows(report: Report) -> list[str]:
     hours = r.reading_components
     code_h = hours["code"] + hours["cognitive"]
     rows = [
-        f"{'':>11}{_('docs'):<16}{fmt_float(hours['docs'], 1):>10} h · $ {_fmt_money(b['docs'])}",
+        f"{'':>11}{_('docs'):<16}{fmt_float(hours['docs'], 1):>10} h · "
+        + yellow(f"$ {_fmt_money(b['docs'])}"),
         f"{'':>11}{_('source code'):<16}{fmt_float(code_h + hours['comments'], 1):>10}"
-        f" h · $ {_fmt_money(b['source_code']['total'])}",
+        f" h · " + yellow(f"$ {_fmt_money(b['source_code']['total'])}"),
         f"{'':>13}{_('code'):<14}{fmt_float(code_h, 1):>10}"
-        f" h · $ {_fmt_money(b['source_code']['code'])}"
-        f"  ({_('incl. cognitive %s h') % fmt_float(hours['cognitive'], 1)})",
+        f" h · "
+        + yellow(f"$ {_fmt_money(b['source_code']['code'])}")
+        + f"  ({_('incl. cognitive %s h') % fmt_float(hours['cognitive'], 1)})",
         f"{'':>13}{_('comments'):<14}{fmt_float(hours['comments'], 1):>10}"
-        f" h · $ {_fmt_money(b['source_code']['comments'])}",
+        f" h · " + yellow(f"$ {_fmt_money(b['source_code']['comments'])}"),
         f"{'':>11}{_('data'):<16}{'—':>10}  {_('(not read)')}",
     ]
     return rows
 
 
 def _cost_ladder(report: Report) -> list[str]:
-    out = ["-" * 79, _("Cost Ladder (write / regenerate / comprehend)"), "-" * 79]
+    out = ["-" * 79, bold(_("Cost Ladder (write / regenerate / comprehend)")), "-" * 79]
     if report.cocomo is not None and report.cocomo_breakdown is not None:
         cb = report.cocomo_breakdown
         out.append(
             f"{_('COCOMO  write the whole tree (docs count as code)'):<48}"
-            f" = $ {_fmt_money(report.cocomo.cost)}"
-            f" ({_fmt_pm(cb.total_person_months)} {_('person-months')}"
+            f" = "
+            + yellow(f"$ {_fmt_money(report.cocomo.cost)}")
+            + f" ({_fmt_pm(cb.total_person_months)} {_('person-months')}"
             f" · {fmt_float(report.cocomo.schedule_months, 1)} {_('mo')}"
             f" · {fmt_float(report.cocomo.people, 1)} {_('people')})"
         )
@@ -174,8 +227,9 @@ def _cost_ladder(report: Report) -> list[str]:
         gen_h = report.locomo.generation_seconds / 3600
         out.append(
             f"{_('LOCOMO  regenerate it with an LLM'):<48}"
-            f" = $ {fmt_float(report.locomo.cost, 2)}"
-            f" ({fmt_float(gen_h, 1)} {_('h')} + {fmt_float(report.locomo.review_hours, 1)}"
+            f" = "
+            + yellow(f"$ {fmt_float(report.locomo.cost, 2)}")
+            + f" ({fmt_float(gen_h, 1)} {_('h')} + {fmt_float(report.locomo.review_hours, 1)}"
             f" {_('h')} {_('review')})"
         )
         out.extend(_locomo_rows(report))
@@ -183,7 +237,9 @@ def _cost_ladder(report: Report) -> list[str]:
     if r is not None:
         out.append(
             f"{_('SLOCOMO comprehend the project'):<48}"
-            f" = $ {_fmt_money(r.cost)} ({fmt_float(r.reading_hours, 1)} {_('h')} {_('reading')}"
+            f" = "
+            + yellow(f"$ {_fmt_money(r.cost)}")
+            + f" ({fmt_float(r.reading_hours, 1)} {_('h')} {_('reading')}"
             f" · {_fmt_pm(r.person_months)} {_('person-months')}) — {_('per person')}"
         )
         out.append(f"{'':>11}{_('(a team multiplies by headcount — see the scale below)')}")
@@ -194,7 +250,7 @@ def _cost_ladder(report: Report) -> list[str]:
 def render_comprehension(report: Report) -> str:
     v = report.volume
     r = report.slocomo
-    out = [_("COMPREHENSION EFFORT & COST"), "-" * 79]
+    out = [bold(_("COMPREHENSION EFFORT & COST")), "-" * 79]
     if r is not None:
         words = ngettext("%d word", "%d words", v.md_words) % v.md_words
         out.append(
@@ -221,11 +277,12 @@ def render_comprehension(report: Report) -> str:
     out.extend(_cost_ladder(report))
     if r is not None:
         out.append("")
-        out.append(_("Team Comprehension Cost (headcount × per person)"))
+        out.append(bold(_("Team Comprehension Cost (headcount × per person)")))
         for people, person_months, cost in r.team_costs:
             unit = ngettext("%d person", "%d people", people) % people
             out.append(
-                f"{unit:>12} = {_fmt_pm(person_months)} {_('person-months')} · $ {_fmt_money(cost)}"
+                f"{unit:>12} = {_fmt_pm(person_months)} {_('person-months')} · "
+                + yellow(f"$ {_fmt_money(cost)}")
             )
         if r.comprehension_tokens is not None:
             out.append("")
@@ -241,18 +298,44 @@ def render_comprehension(report: Report) -> str:
             out.append(f"{_('GPU-hours of Regret'):<55} = {fmt_float(r.gpu_hours, 4)}")
         out.append("")
         coffee = ngettext("%d cup", "%d cups", r.coffee_cups) % r.coffee_cups
-        out.append(f"{_('Coffee Required'):<55} = {coffee} ($ {fmt_float(r.coffee_cost)})")
+        out.append(
+            f"{_('Coffee Required'):<55} = {coffee} ("
+            + yellow(f"$ {fmt_float(r.coffee_cost)}")
+            + ")"
+        )
         if r.therapy_sessions:
             sessions = (
                 ngettext("%d session", "%d sessions", r.therapy_sessions) % r.therapy_sessions
             )
             out.append(
-                f"{_('Therapy Recommended'):<55} = {sessions} ($ {fmt_float(r.therapy_cost)})"
+                f"{_('Therapy Recommended'):<55} = {sessions} ("
+                + yellow(f"$ {fmt_float(r.therapy_cost)}")
+                + ")"
             )
     return "\n".join(out)
 
 
 # ── Секция 3: DETECTED SLOP ────────────────────────────────────────────
+
+# Кап колонки имени в топе файлов: длинные пути режутся «…» + хвост
+# (хвост с именем файла важнее директорий).
+_TOP_NAME_CAP = 48
+
+
+def _rel_bar(value: int, max_value: int, width: int = 20) -> str:
+    """Полоса «доля от худшего файла»; символы те же, что у progress_bar,
+    но без %-подписи — у прогресс-баров шкал другая семантика."""
+    filled = width if max_value <= 0 else round(value / max_value * width)
+    filled = max(1, min(width, filled))  # файл в топе всегда заслуживает полоску
+    return "█" * filled + "░" * (width - filled)
+
+
+# Когнитивность категории: raw-значение из evidence.CognitiveTotals (до _()).
+_COG_COLOR: dict[str, Callable[[str], str]] = {
+    "high": red,
+    "medium": yellow,
+    "low": green,
+}
 
 
 def render_slop(report: Report) -> str:
@@ -260,12 +343,14 @@ def render_slop(report: Report) -> str:
     labels = {cat: _(_ROW_LABELS[cat]) for cat in Category}
     label_w = max(len(_("Origin")), *(len(n) for n in labels.values())) + 1
     out = [
-        _("DETECTED SLOP"),
+        bold(_("DETECTED SLOP")),
         "-" * 79,
         _("Totals grouped by slop origin (dominant slop source first):"),
         "-" * 79,
-        f"{_('Origin'):<{label_w}}{_('files'):>10}{_('slop lines'):>14}"
-        f"{_('slop %'):>10}  {_('cognitivity'):<10}",
+        bold(
+            f"{_('Origin'):<{label_w}}{_('files'):>10}{_('slop lines'):>14}"
+            f"{_('slop %'):>10}  {_('cognitivity'):<10}"
+        ),
         "-" * 79,
     ]
     ordered = sorted(
@@ -281,7 +366,7 @@ def render_slop(report: Report) -> str:
         pct = (t.slop_lines / s.total * 100) if s.total else 0.0
         out.append(
             f"{name:<{label_w}}{fmt_int(t.files):>10}{fmt_int(t.slop_lines):>14}"
-            f"{fmt_float(pct, 1):>10}  {_(t.cognitivity):<10}"
+            f"{fmt_float(pct, 1):>10}  " + _COG_COLOR[t.cognitivity](f"{_(t.cognitivity):<10}")
         )
     agency = s.agency
     name = labels[Category.AGENCY]
@@ -291,12 +376,21 @@ def render_slop(report: Report) -> str:
     )
     out.append("-" * 79)
     if s.top_files:
-        parts = [f"{p} {ngettext('%d line', '%d lines', n) % n}" for p, n in s.top_files]
-        out.append(f"{_('Top slop files:')}  " + " · ".join(parts))
+        out.append(bold(_("Top slop files:")))
+        top_max = max(n for _, n in s.top_files)
+        name_w = min(max(len(p) for p, _ in s.top_files), _TOP_NAME_CAP)
+        for i, (p, n) in enumerate(s.top_files, 1):
+            shown = p if len(p) <= name_w else "…" + p[-(name_w - 1) :]
+            # цвет — строго после паддинга: ANSI-байты ломают выравнивание
+            rank = dim(f"{i}.")
+            name = cyan(f"{shown:<{name_w}}")
+            bar = yellow(_rel_bar(n, top_max))
+            lines_n = yellow(ngettext("%d line", "%d lines", n) % n)
+            out.append(f"  {rank} {name}  {bar}  {lines_n}")
     if agency:
         names = ", ".join(sorted({e.file for e in agency}))
-        out.append(f"{_('Agents detected (not counted as slop):')} {names}")
-    out.append(_("Run with --evidence to see every finding with its source line."))
+        out.append(f"{bold(_('Agents detected (not counted as slop):'))} {cyan(names)}")
+    out.append(dim(_("Run with --evidence to see every finding with its source line.")))
     return "\n".join(out)
 
 

@@ -6,7 +6,7 @@ Python                                               2              8
 Total SLOC                                              = 8
 Files in scan                                           = 4
 Documentation                                           = 12 lines (2 files)
-Documentation-to-Code Ratio (MD/SLOC)                   = 1.500 [████████████████████] 150.0% RECURSION
+Documentation-to-Code Ratio (MD/SLOC)                   = 1.500 [▚▞▚▞▚▞▚▞▚▞▚▞▚▞▚▞▚▞▚▞] 150.0% RECURSION
                                                          You ran slopcount inside slop. Recursion
 Comments                                                = 12 lines
 Comments-to-Code Ratio (comment/SLOC)                   = 1.500 [████████████████████] 150.0% COMMENT_DRIVEN
@@ -72,6 +72,9 @@ Code style                           1             2      12.5  medium
 Git history                          0             0       0.0  low       
 Environment markers                  1             —         —  —         
 -------------------------------------------------------------------------------
-Top slop files:  README.md 13 lines · src/defensive.py 2 lines · src/greeter.py 1 line
+Top slop files:
+  1. README.md         ████████████████████  13 lines
+  2. src/defensive.py  ███░░░░░░░░░░░░░░░░░  2 lines
+  3. src/greeter.py    ██░░░░░░░░░░░░░░░░░░  1 line
 Agents detected (not counted as slop): CLAUDE.md
 Run with --evidence to see every finding with its source line.

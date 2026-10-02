@@ -159,3 +159,14 @@ def test_scc_path_valid(tmp_path):
     (tmp_path / "a.py").write_text("x = 1\n")
     code, out = run_cli([str(tmp_path), "--scc-path", binary, "--lang", "en"])
     assert code == 0 and "SLOC" in out
+
+
+def test_color_flag_forces_ansi():
+    """Явный --color бьёт NO_COLOR из plain_output: принудительная подсветка."""
+    _code, out = run_cli([str(SLOP), "--color", "--lang", "en"])
+    assert "\x1b[" in out
+
+
+def test_no_color_flag_beats_color():
+    _code, out = run_cli([str(SLOP), "--color", "--no-color", "--lang", "en"])
+    assert "\x1b" not in out

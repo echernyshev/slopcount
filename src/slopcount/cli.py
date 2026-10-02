@@ -9,6 +9,7 @@ import typer
 from slopcount import __version__, i18n
 from slopcount.app import Options, run
 from slopcount.i18n import _
+from slopcount.render import ansi
 from slopcount.render.csv_out import render_csv
 from slopcount.render.json_out import render_json
 from slopcount.render.text import (
@@ -52,6 +53,9 @@ def scan(
     ),
     coffee_price: float = typer.Option(4.0, "--coffee-price", help="Coffee cup price, USD"),
     no_therapy: bool = typer.Option(False, "--no-therapy", help="Skip the therapy estimate"),
+    color: bool | None = typer.Option(
+        None, "--color/--no-color", help="ANSI colors in the text report (default: auto)"
+    ),
     wide: bool = typer.Option(False, "--wide", help="Wide table layout"),
     version: bool | None = typer.Option(
         None, "--version", callback=_version, is_eager=True, help="Show version and exit"
@@ -95,6 +99,8 @@ def scan(
     elif csv_out:
         print(render_csv(report), end="")
     else:
+        # Явный флаг бьёт авто-детект (NO_COLOR/isatty) — как --color=always.
+        ansi.set_enabled(color if color is not None else ansi.autodetect())
         print(render_volume(report))
         print(render_comprehension(report))
         print(render_slop(report))

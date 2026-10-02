@@ -12,6 +12,17 @@ def _english_by_default():
     yield
 
 
+@pytest.fixture(autouse=True)
+def _color_off_by_default():
+    """ANSI-флаг рендера — тоже глобальное состояние: тест не наследует
+    включённый цвет от предыдущего (напр. --color в test_cli)."""
+    from slopcount.render import ansi
+
+    ansi.set_enabled(False)
+    yield
+    ansi.set_enabled(False)
+
+
 @pytest.fixture(scope="session")
 def scc_ready():
     """e2e-тесты гоняют настоящий конвейер → нужен бинарник scc.

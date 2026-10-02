@@ -217,7 +217,10 @@ Code style                           1             2      12.5  medium
 Git history                          0             0       0.0  low       
 Environment markers                  1             —         —  —         
 -------------------------------------------------------------------------------
-Top slop files:  README.md 13 lines · src/defensive.py 2 lines · src/greeter.py 1 line
+Top slop files:
+  1. README.md         ████████████████████  13 lines
+  2. src/defensive.py  ███░░░░░░░░░░░░░░░░░  2 lines
+  3. src/greeter.py    ██░░░░░░░░░░░░░░░░░░  1 line
 Agents detected (not counted as slop): CLAUDE.md
 Run with --evidence to see every finding with its source line.
 ```
@@ -234,6 +237,7 @@ Run with --evidence to see every finding with its source line.
 | `--personcost USD` | месячные затраты на человека для оценок (по умолчанию 4690.5) |
 | `--overhead X` | множитель накладных расходов для COCOMO и SLOCOMO (по умолчанию 2.4) |
 | `--coffee-price USD`, `--no-therapy` | настройка шутливых единиц |
+| `--color` / `--no-color` | ANSI-цвета в текстовом отчёте (по умолчанию: авто — TTY, уважает `NO_COLOR`/`FORCE_COLOR`) |
 | `--history N` | также сканировать git-историю на N коммитов |
 | `--perplexity` | детектор перплексии на GPT-2 (см. ниже) |
 
