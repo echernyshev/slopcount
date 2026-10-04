@@ -24,7 +24,7 @@ msgid "slop %"
 msgstr "слоп %"
 
 msgid "cognitivity"
-msgstr "когнитивность"
+msgstr "когнитивная сложность"
 
 msgid "low"
 msgstr "низкая"
@@ -445,7 +445,7 @@ msgid "(not read)"
 msgstr "(не читаем)"
 
 msgid "incl. cognitive %s h"
-msgstr "вкл. когнитиву %s ч"
+msgstr "вкл. штраф за когнитивную сложность %s ч"
 
 msgid "docs"
 msgstr "доки"
