@@ -184,7 +184,7 @@ def test_ru_output():
 def test_ru_table_headers_and_cognitivity():
     _code, out = run_cli([str(SLOP), "--lang", "ru"])
     assert "Источник" in out and "файлы" in out and "строки слопа" in out
-    assert "когнитивность" in out
+    assert "когнитивная сложность" in out
     assert "высокая" in out  # Prose row: cognitivity=high
     assert "Требуется кофе" in out and "чашка" in out
 
